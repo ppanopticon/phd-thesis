@@ -1,0 +1,27 @@
+\def\defineCMYK(#1,#2,#3,#4)#5{%
+    \pgfmathsetmacro{\myc}{#1/100}%
+    \pgfmathsetmacro{\mym}{#2/100}%
+    \pgfmathsetmacro{\myy}{#3/100}%
+    \pgfmathsetmacro{\myk}{#4/100}%
+    \definecolor{#5}{cmyk}{\myc,\mym,\myy,\myk}%
+}
+
+\def\defineRGB(#1,#2,#3)#4{%
+    \pgfmathsetmacro{\myr}{#1/255}%
+    \pgfmathsetmacro{\myg}{#2/255}%
+    \pgfmathsetmacro{\myb}{#3/255}%
+    \definecolor{#4}{rgb}{\myr,\myg,\myb}%
+}
+
+\defineCMYK(24,0,9,0){unimint}
+\defineRGB(36,165,165){unimarine}
+\defineCMYK(30,0,0,90){unianthrazit}
+\defineRGB(123,140,146){unidarkgray}
+\defineCMYK(0,100,65,0){unired}
+\defineRGB(234,130,156){unirose}
+\defineRGB(190,195,200){unilightgray}
+\defineRGB(21,109,110){uniseawed}
+\defineRGB(0,0,0){uniblack}
+\defineRGB(255,255,255){uniwhite}
+
+\definecolor{almostwhite}{rgb}{.9,.9,.9}

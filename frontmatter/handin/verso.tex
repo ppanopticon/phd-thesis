@@ -1,0 +1,44 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Verso page after title page
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\thispagestyle{empty}
+\begin{otherlanguage}{ngerman}
+% !TeX spellcheck = de
+
+\noindent Genehmigt von der Philosophisch-Naturwissenschaftlichen Fakultät \newline auf Antrag von
+
+\bigskip \bigskip \bigskip \bigskip
+\bigskip \bigskip \bigskip \bigskip
+
+\noindent
+\thesisexaminerone \newline \thesisexamineroneposition \\[5ex] %  EXTRA vertical height
+\noindent
+\thesisexaminertwo \newline \thesisexaminertwoposition \\[5ex] %  EXTRA vertical height
+\noindent
+\thesisexaminerexpert \newline \thesisexaminerexpertposition \\[5ex] %  EXTRA vertical height
+
+\bigskip \bigskip \bigskip \bigskip
+\bigskip \bigskip \bigskip \bigskip
+
+\noindent
+Basel, \thesisdateofacceptance
+
+\bigskip \bigskip \bigskip \bigskip
+\bigskip \bigskip \bigskip \bigskip
+
+\hfill\begin{tabular}{@{}l@{}}
+\facultydean \\
+Dekan
+\end{tabular}
+
+\end{otherlanguage}
+\clearpage
+
+% phantom page to force start of new odd page
+\newpage
+\phantom{placeholder} % doesn't appear on page
+\thispagestyle{empty} % no header/footer on this page
+\cleardoublepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

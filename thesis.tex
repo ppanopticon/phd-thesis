@@ -1,0 +1,153 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  MAIN DOCUMENT OF PHD THESIS
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% contains all the meta information to your thesis
+\input{meta}
+
+\documentclass[a4paper,twoside,openright,12pt,
+% options: 
+%libertine, % turn on Libertine font (font used on ACM papers)
+%endnotes, % enable endnotes
+%medievalnumerals,    % use medieval numerals (https://en.wikipedia.org/wiki/Text_figures, https://de.wikipedia.org/wiki/Medi%C3%A4valziffer)
+%ebook,     % highlight links
+%edoc,      % display edoc information, only necessary for final online version; removes logo
+%cclicense, % add CC license
+%phddraft,  % use draft mode
+%todonotes, % enables the todonotes package
+final      % disables draft mode and todonotes
+]{thesis}
+
+% add you bibliographic entries
+\addbibresource{references/main.bib}
+
+% define your abbreviations
+\input{abbreviations}
+
+% specify symbols used
+\input{symbols}
+
+\ifdrft
+  % draft mode
+\else
+  % only create indexes and glossaries if not in draft mode
+  \makeindex
+  \makeglossaries
+\fi
+
+
+\begin{document}
+\selectlanguage{USenglish}
+
+% specify hyphenations
+\input{hyphenations}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  FRONTMATTER
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter
+
+\ifdrft
+  % draft front matter
+  \subincludefrom{frontmatter/title/}{draft}
+\else
+  % front matter
+  \subincludefrom{frontmatter/title/}{title}
+
+  % license, add cclicense option above
+  \ifcclicense
+    \subincludefrom{frontmatter/disclaimer/}{disclaimer}
+  \fi
+
+  %\subincludefrom{frontmatter/handin/}{verso}
+
+  %\subincludefrom{frontmatter/dedication/}{dedication}
+  %\subincludefrom{frontmatter/quote/}{quote}
+
+  \subincludefrom{frontmatter/abstract/}{zusammenfassung}
+  \subincludefrom{frontmatter/abstract/}{abstract}
+  \subincludefrom{frontmatter/acknowledgements/}{acknowledgements}
+  \subincludefrom{frontmatter/toc/}{toc}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  MAINMATTER
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+
+\part{Introduction}
+\subimport{mainmatter/01-introduction/}{main}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  APPENDIX
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\bookmarksetup{startatroot}
+
+\appendix
+% appendix
+
+% remove appendix figures and tables from table of contents, table of figures, etc.
+\captionsetup{list=no}
+
+\appendixpage %If you are not using parts, comment this!
+
+%\subimport{appendices/.../}{main}
+%\subimport{appendices/01-appendix/}{main}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  BACKMATTER
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\bookmarksetup{startatroot}
+
+\ifdrft %draft mode
+  % empty back
+  \printbibliography
+
+\else %non draft mode
+
+  \backmatter
+  % back matter
+
+  \ifendnotes
+    % endnotes (use \endnote{...})
+    \printendnotes
+  \fi
+
+  % bibliography (use \cite{...})
+  \printbibliography
+
+  % index (use \index{...})
+  \printindex
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  CURRICULUM VITAE
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\bookmarksetup{startatroot}
+
+\ifdrft
+  % No CV
+\else
+  \subincludefrom{backmatter/cv/}{cv}
+  \subincludefrom{backmatter/authorship/}{authorship}
+\fi
+
+\end{document}

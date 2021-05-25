@@ -1,0 +1,21 @@
+% \usepackage{titlecaps}
+% \Addlcwords{the of into and on}
+% \DeclareFieldFormat{titlecase}{\MakeSentenceCase{#1}}
+% \DeclareFieldFormat{booktitlecase}{\titlecap{#1}}
+
+\DeclareSourcemap{%
+  \maps[datatype=bibtex,overwrite=true]{%
+   \map{%
+     \step[fieldsource = title, match = \regexp{\s-\s}, replace = { --- }]%
+   }%
+   \map{%
+     \step[fieldsource = url, match = \regexp{\{\\_\}}, replace = {_}]% fix Mendeley's escaping of "_" in URLs
+   }%
+  }%
+}%
+
+\AtEveryBibitem{\clearfield{issn}}
+\AtEveryCitekey{\clearfield{issn}}
+
+\AtEveryBibitem{\clearfield{isbn}}
+\AtEveryCitekey{\clearfield{isbn}}

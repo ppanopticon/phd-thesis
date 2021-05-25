@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Text symbols.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\YOURPRODUCT/{\textsf{YOURproduct}} % use YOURPRODUCT as \YOURPRODUCT/
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Symbols.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% A group (the group is specified in the sort field)
+\newcommand*{\Agroupname}{A group name}
+
+% this is the definition of a symbol entry, note that glossaryentry is defined; for convenience using a newcommand, glssymbol is printed
+% see also the use of \ensuremath
+\newglossaryentry{symproj}{sort={Asymproj},name=\ensuremath{\pi_A(\cdot)},symbol=\ensuremath{\pi},type={symbols},description={projection function}}
+\newcommand{\symproj}{{\glssymbol{symproj}}}
+
+%% B group (the group is specified in the sort field)
+\newcommand*{\Bgroupname}{B group name}
+
+\newglossaryentry{symsel}{sort={Bsymsel},name=\ensuremath{\sigma_A(\cdot)},symbol=\ensuremath{\sigma},type={symbols},description={selection function}}
+\newcommand{\symsel}{{\glssymbol{symsel}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math Symbols.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Image.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\pin}{\includegraphics[height=\heightof{M}]{figures/pin}}
