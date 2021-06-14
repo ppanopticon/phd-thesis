@@ -15,8 +15,8 @@
 %edoc,      % display edoc information, only necessary for final online version; removes logo
 %cclicense, % add CC license
 %phddraft,  % use draft mode
-%todonotes, % enables the todonotes package
-final      % disables draft mode and todonotes
+todonotes, % enables the todonotes package
+%final      % disables draft mode and todonotes
 ]{thesis}
 
 % add you bibliographic entries
@@ -35,7 +35,6 @@ final      % disables draft mode and todonotes
   \makeindex
   \makeglossaries
 \fi
-
 
 \begin{document}
 \selectlanguage{USenglish}
@@ -84,6 +83,20 @@ final      % disables draft mode and todonotes
 
 \part{Introduction}
 \subimport{mainmatter/01-introduction/}{main}
+\subimport{mainmatter/02-usecases/}{main}
+\subimport{mainmatter/03-relatedwork/}{main}
+
+\part{Foundations}
+\subimport{mainmatter/04-multimediaretrieval/}{main}
+\subimport{mainmatter/05-databasesystems/}{main}
+
+\part{Dynamic Multimedia Data Management}
+\subimport{mainmatter/06-systemmodel/}{main}
+\subimport{mainmatter/07-cottontaildb/}{main}
+
+\part{Discussion}
+\subimport{mainmatter/08-evaluation/}{main}
+\subimport{mainmatter/09-conclusion/}{main}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

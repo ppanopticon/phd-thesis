@@ -242,8 +242,8 @@
 %    reltag={$RELTAG}
 %  ]{gitexinfo}" HEAD > .git/gitHeadInfo.gin
 %post-{commit,checkout,merge} END
-\RequirePackage[]{gitinfo2}
-\newcommand{\draftnote}{\texttt{DRAFT~-~\gitCommitterDate ~-~(rev.~\gitAbbrevHash, branch: \gitBranch)}}
+%\RequirePackage[]{gitinfo2}
+%\newcommand{\draftnote}{\texttt{DRAFT~-~\gitCommitterDate ~-~(rev.~\gitAbbrevHash, branch: \gitBranch)}}
 
 % Mercurial
 % requires running pdflatex with -shell-escape

@@ -1,24 +1,70 @@
 \chapter{Introduction}
 %\epiquote{Websites that collect quotes are full of mistakes and never check original sources}{Randall Munroe, XKCD}
+The term \emph{multimedia} describes the combination of different forms of content -- also called \emph{modalities} -- into a single, sensory experience that carries a higher level semantic. Those modalities include but are not limited to textual, visual (e.g., images or videos) or aural (e.g, music, sound effects, speech) input. In addition, signals produced by various sensors and devices can also be seen as media modalities, even though direct experience by a human consumer may require pre-processing through specialized hard- and software.
 
+People interact with multimedia on a daily basis when watching videos on Netflix or YouTube, when listening to music on Spotify or when browsing a private image collection on their laptop. With continued digitization in all areas and aspects of our lives, one consider most of this mutlimedia content to be digital content. Multimedia data is therefore ubiquitous and touches almost every aspect of our social and economic lives. 
 
-Multimedia data is ubiquitous and in its various forms it touches almost every aspect of our social and economic everyday life. As the word suggest, multimedia encompasses many different content forms including but not limited to images, videos or audio data as well as any combination thereof. 
+Multimedia content makes up a large part of today's Internet and its mere omnipresence makes it a major driving force behind data growth in the Internet as a whole, as both volume and variety increases steadily. A large contributing factor here are social media platforms, where users act as consumer and producer of content. Current estimates~\footnote{Source: Statista.com, ``Social media usage worldwide'', January 2021} suggest, that there are roughly 4.66 billion active Internet users worldwide, of which 4.2 million can be considered active social media users. Facebook alone contributed to $144000$ uploaded images per minute in 2020. And many more of these  platforms, such as \emph{Instagram} org \emph{Twitter} serve billions of users with mixed, self-made content involving text, images, videos or a combination thereof. A similar study found~\footnote{Source: Statista.com, ``Big Data'', January 2021}, that by 2025 we will produce a yearly amount of 175 Zettabytes (i.e, $10^{21}$ bytes).
 
+Given these numbers, the need for efficient and effective tools for \emph{managing}, \emph{manipilating}, \emph{searching}, \emph{exploring} and \emph{analysing} multimedia data corpora comes at no surprise. Unlike traditional data collections that contain only text and numbers, however, this multimedia data is unstructured and more complex to handle, which gives rise to need for special tools that allow such analysis to take place.
 
 \section{Working with Multimedia Data}
+
+\subsection{Multimedia Retrieval}
+
+Retrieval, i.e., the act of searching and finding an item of interest in a large collection, is very different for multimedia data than it is for structured data in a relational database~\cite{Blanken:2007multimedia}. The structure of a relational database is a given and using languages like SQL, a user can specify exactly what elements from the database should be selected using predicates that either match or don't match.
+
+Retrieving multimedia data, on the other hand, comes with many challenges. Firstly, we usually consider different representations of a multimedia item when doing multimedia retrieval, each of which comes with a certain loss of information, a problem usually referred to as the \emph{semantic gap}. Examples for such representations could be a textual description or a feature vector. Secondly, different types of media exhibit different relationship with time. Media items can thus be classified as either being \emph{static}, i.e. independent of time (e.g., in image), or \emph{dynamic} (e.g, a video). And finally, some types of media are multimodal by nature such as, for example, videos. Those media types exhibit both visual as well as aural content, both of which can in theory carry different and sometimes even conflicting information.
+
+In addition, all of the mentioned problems are actually two-fold, since they usually apply  both when deriving storable representations from a media item as well as when expressing an information need in form of a queries.
 
 \subsection{Multimedia Analysis}
 
 \subsection{Multimedia Analytics}
 
-\subsection{Multimedia Retrieval}
 
-\section{Focus and Significance of Research}
+\section{Research Gap and Objective}
 
-The starting point for this Thesis is the current state-of-the-art in multimedia retrieval and analysis as outlined in the previous sections. Motivated by the ``Ten Research Questions for Scalable Multimedia Analytics''~\cite{Jonson:2016}, it challenges some of the basic assumptions currently employed and operated on and explores the ramifications thereof, with the higher level goal of furthering convergence between research done in \emph{multimedia retrieval, analysis and analytics} on the one hand, and classical \emph{databases} on the other hand.
+The starting point for the research described in this thesis is the current state-of-the-art for data management in multimedia retrieval and analysis as briefly touched upon in the previous sections. Starting from the models and solutions proposed in \cite{Giangreco:2016adam,Giangreco:2018thesis} and motivated by the ``Ten Research Questions for Scalable Multimedia Analytics''~\cite{Jonson:2016}, this thesis challenges three basic assumptions currently employed and operated upon and explores the ramifications of doing so, with the higher level goal of furthering convergence between research conducted in \emph{multimedia retrieval}, \emph{multimedia analysis} and \emph{multimedia analytics} on the one hand, and classical \emph{database systems} on the other. The assumptions that are being challenged are namely:
 
 \begin{description}
-    \item[Interactivity] Current state-of-the-art, especially in multimedia retrieval, makes a clear distinction between an \emph{offline} phase during which data is added to a collection, and an online 
+    \item[Assumption 1: Staticity of data collections] Most multimedia retrieval systems today make a clear distinction between an \emph{offline} phase during which media items are analysed, features are generated and derived data is ingested into a data management system, and an \emph{online} phase, during which queries of the database take place. Usually, no changes to the data collection are being made during the online phase. This formal model is advertised by both \cite{Giangreco:2018thesis} and \cite{Rossetto:2018thesis} and to the best of our knowledge, most existing systems explicitly or implicitly function in this manner. This simplification allows for time consuming processes related to feature extraction and indexing to take place separated from any concurrent query activities and eases requirements on transaction isolation. While this is convenient from a perspective of system design, such a mode of operation is limiting when facing data that changes frequently, as is the case, for example, when doing real-time analysis or when having an application with CRUD support.
+   
+    \item[Assumption 2: Similarity search is nearest neighbor search] Multimedia retrieval relies strongly on a notion of similarity search that is usually expressed as finding the $k$ nearest neighboring feature vectors $\vec{v}_{i \in \left[1,k\right]} \in \mathrm{C}$ to a query vector $\vec{q} \in \mathbb{R}^d$ in a collection $\mathrm{C} \subset \mathbb{R}^d$ given a certain distance function. Very often, metrics such as the Euclidean or the Manhattan distance are employed for this comparison. This is also refered to as the \emph{vector space model}. While this model is very concise and rather simple, it merely allows for ranking of potential results and finding the relevant or desired item(s). This model is, however, limited when looking at tasks such as summarization or structuring of data, as required for multimedia analysis and analytics. Furthermore, there are cases in which features are not real-valued vectors and similarity is not directly related to proximity.
+
+    \item[Assumption 3: User defines execution] Database management systems usually evaluate and select the execution plan for an incoming query during a step that is refered to as \emph{query planning}. The underlying assumption here is that the database system has all the information required to determine the most effective execution plan in terms of cost parameters such as required I/O, CPU and memory usage. In similarity search, this is not the case since, for example, index selection relies on a lot of different aspects that, to some extent, can be parametrized by the client issuing a query or that may be subject to change. Therefore, the index used for executing a query is usually selected manually by the user issuing the query. This limits the amount of optimization that can be applied by the multimedia database system especially in the face of non-static data collections.
 \end{description}
 
+
+
+\subsection{Motivation}
+
+Teh a
+
+
+\subsection{Research questions}
+
+Challenging the aforementioned assumptions raises very specific questions that fundamentaly impact the design of a \emph{multimedia database}. These questions are briefly summarized in \cref{table:research_questions}.
+
+\begin{table}[h!]
+    \centering
+    \caption{List of research questions resulting from challenging assumptions one, two and three.}
+    \begin{tabular}{|c|p{10cm}|c|} 
+     \hline
+     \textbf{RQ} & \textbf{Question} & \textbf{Related to} \\ [0.5ex] 
+     \hline\hline
+     1 & Which commonly used, secondary index structures for NNS (e.g., VA~\cite{Weber:1998va}, LSH~\cite{Indyk:1998lsh}, PQ~\cite{jegou:2011pq} based indexes) can cope with dynamic data collections and to what extent? & Assumption 1\\ 
+     2 & Can we quantify and estimate how much the retrieval quality of index structures from RQ1 deterioration as changes are being made to the underlying data collections? & Assumption 1 \\ 
+     2 & How can we handle secondary index structures from RQ1 for which to expect deteriorated retrieval quality during query planning and execution? & Assumption 1 \\
+     4 & How can user knowledge about the the retrieval task at hand be factored into query planning without forcing the user the make explicit choices about how a query should be executed? & Assumption 1 \& 3 \\
+     5 & 88 & \\ 
+     \hline
+    \end{tabular}
+    \label{table:research_questions}
+\end{table}
+
+Obviously, the list of questions in \cref{table:research_questions} is not exhaustive and many more implications can be derived from the assumptions challenged so far. However, the questions are the one tackled by the research presented in this thesis.
+
+
+\section{Contribution}
 
