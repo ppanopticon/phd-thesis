@@ -10,16 +10,16 @@
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/adaptive_index.eps}
-        \label{figure:adaptive_index}
+        \label{fig:adaptive_index:architecture}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/adaptive_index_flow.eps}
-        \label{figure:adaptive_index:flow}
+        \label{fig:adaptive_index:flow}
     \end{subfigure}
-    \label{fig:adaptive_index}
     \caption{Adaptive index structures overview.}
+    \label{fig:adaptive_index}
 \end{figure}
 
 Describe model for index management in the face of changing data (adaptive index management):
@@ -27,7 +27,7 @@ Describe model for index management in the face of changing data (adaptive index
 \begin{itemize}
     \item Reason about properties of secondary indexes for NNS (e.q., PQ, VA, LSH) with regards to data change
     \item Derivation of error bounds possible (e.g., usable for planning)?! Use in query planning?
-    \item Systems perspective: How to cope with ``dirty'' indexes (e.g, auxilary data structure, offline optimization)
+    \item Systems perspective: How to cope with ``dirty'' indexes (e.g, auxilary data structure, offline optimization, see \cref{fig:adaptive_index})
 \end{itemize}
 
 \section{Generalization of Similarity Search}
@@ -36,8 +36,9 @@ Describe generalized model for similarity search:
 
 \begin{itemize}
     \item NNS: Scan -> (Predicate) -> Distance Function -> Sort -> Limit -> (Predicate); no need for dedicated language feature aside from distance function
-    \item Distance function is a binary function $D(q,v) \longrightarrow d$ (consequence: different types of distance functions, application of weights merely an operation before executing the function etc.)
+    \item Distance function is a binary function $D(q,v) \longrightarrow d$
     \item $q$ and $v$ can be elements of $\mathbb{R}^d,\mathbb{C}^d$ or even matrices
+    \item Different types of distance functions, depending on parameters they accept; e.g. distance between point \& point or point \& plane etc.
     \item Systems perspective: How enable planner to reason about function execution
 \end{itemize}
 
