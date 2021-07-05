@@ -10,13 +10,17 @@ Looking at these numbers, the need for efficient and effective tools for \emph{m
 
 On a very high level, multimedia data collections consist of individual multimedia items, such as video, image or audio files. Each item, in turn, comprises of \emph{content}, \emph{annotations} and \emph{metdata}. Unlike traditional data collections that contain only text and numbers, the content of the multimedia item itself is unstructured on a data level, which is why \emph{feature representations} that reflect a media item's content in some way and that can be handled by data processing systems are required~\cite{Zahalka:2014towards}. Traditionally, such feature representations have often been numerical vectors $f_i \in \mathbb{R}^d$. However, in theory, any mathematical object that can be processed by a computer can act as a feature. 
 
-It is important to emphasize, that a media item can comprise of all of the aforementioned components and that a multimedia collection may contain items of different types. Furthermore, when looking at a media item's lifecycle, all of the aforementioned aspects are not static; annotations, metdata and features may either be generated upon the item's creation (e.g., for technical metadata), as a result of data-processing and analysis or by manually adding the information at some stage. Hence, any data management system must be able to cope with changes to that information. Those requirements are formalized in \cref{section:multmedia_data}.
-
-\subsection{Multimedia Analysis}
-
-Multimedia analysis has its roots in \emph{computer vision} and \emph{pattern recognition}, which started in the early 1960s and deal with the automated, computer-aided analysis of visual information found in images and later videos. In the early days of computer vision, a lot of effort went into the engineering of feature representations that captured certain aspects of a media item's content, such as the colour distribution, texture or relevant keypoints~\cite{Lowe:1999object,Bay:2006surf} in an image. Once such features have been obtained, they can be used to perform various tasks such as classification, clustering or statistical analysis. With the advent of deep learning, the extraction of such features could largely be automated through neural network architectures such as the \emph{Convolutional Neural Network (CNN)} and sometimes even be integrated with the downstream analysis~\cite{Goodfellow:2016deep}. 
+Multimedia analysis, which has its roots in \emph{computer vision} and \emph{pattern recognition} and started in the early 1960s and deal with the automated, computer-aided analysis of visual information found in images and later videos, i.e., the extraction and processing of feature representations. In the early days of computer vision, a lot of effort went into the engineering of feature representations that captured certain aspects of a media item's content, such as the colour distribution, texture or relevant keypoints~\cite{Lowe:1999object,Bay:2006surf} in an image. Once such features have been obtained, they can be used to perform various tasks such as classification, clustering or statistical analysis. With the advent of deep learning, the extraction of features could largely be automated through neural network architectures such as the \emph{Convolutional Neural Network (CNN)} and sometimes even be integrated with the downstream analysis~\cite{Goodfellow:2016deep}. 
 
 Obviously, such analysis is not restricted to the visual domain and can be applied to other types of media such as speech, music, video or 3D models with specific applications, such as, speech recognition, audio fingerprinting in music, movement detection in videos or classification of 3D models, all of which fall into the broader category of multimedia analysis.
+
+\subsection{Multimedia Retrieval}
+
+Traditionally, multimedia retrieval or content-based retrieval could be seen as a special niche within the  multimedia analysis domain. It constitutes a dedidcated field of research that deals with searching and finding items of interest within a large (multi-)media collection. Even though this may sound like the main function of a database, it is a very different task for multimedia than it is for structured data~\cite{Blanken:2007multimedia}. On the one hand, given the structure of a relational database and languages like SQL, a user can specify exactly what elements from the database should be selected using predicates that either match or don't match the items in a collection. For example, when considering a product database that contains price information for individual items, it is trivial to formulate a query that selects all items above a specific price threshold.
+
+Retrieving multimedia data, on the other hand, comes with indirections due to the unstructured nature of the content, the feature representations used as a proxy for it and the \emph{semantic gap} associated with these representations. A very popular model to work with the feature representations involves calculation of (dis-)similarity scores from the features and sorting and ranking of items based on this score. This is commonly referred to as the \emph{vector space model} of multimedia retrieval and similiarty search. Over the years, many different combinations of features and ranking models have been proposed to facilitate content-based retrieval of different media types, such as, images, audio or video  as have been different types of query formulation, such as \emph{Query-by-Sketch}, \emph{Query-by-Humming} or \emph{Query-by-Sculpting}~\cite{Cao:2010mind,Ghias:1995query,Boerlin:20203d}. \todo{Add sources: Survey for each modality}
+
+Furthermore, when looking at concrete system implementations that facilitate interactive multimedia retrieval for an end-user today, the lines between multimedia retrieval and multimedia analytics quickly start to blur. This is because, in addition to the extraction of appropriate features and the conception of effective ranking algorithms, multimedia retrieval systems today also concern themselves with aspects such as query (re-)formulation and refinement, results presentation and efficient exploration~\cite{Lokovc:2019interactive}. In addition, multimedia retrieval systems do not simply operate on features representations anymore but combine \emph{similarity search} on features and \emph{Boolean retrieval} on annotations and metadata~\cite{Rossetto:2020interactive}. Therefore, one could argue that multimedia retrieval systems perform a very specific type of multimedia analytics task, which is that of finding unknown items that satisfy a specific information need. This makes all the arguments made about data processing and data management requirements for multimedia analytics applicable to multimedia retrieval as well.
 
 \subsection{Multimedia Analytics}
 
@@ -33,13 +37,12 @@ For analytics on a multimedia collection, Zahalka et al. \cite{Zahalka:2014towar
 
 As data collections become large enough for the relevant units of information -- i.e., feature representations, annotations and metadata -- to no longer fit into main memory, multimedia analytics and the associated data processing quickly becomes an issue of scalable data management~\cite{Jonson:2016}. This data management aspect becomes very challenging when considering the volume and variety of the multimedia data, the velocity at which new data is generated and the inherently unstructured nature of the media data itself.
 
-\subsection{Multimedia Retrieval}
+\subsection{Dynamic Data Management}
 
-Traditionally, multimedia retrieval or content-based retrieval could be seen as a special niche within the  multimedia analysis domain. It constitutes a dedidcated field of research that deals with searching and finding items of interest within a large (multi-)media collection. Even though this may sound like the main function of a database, it is a very different task for multimedia than it is for structured data~\cite{Blanken:2007multimedia}. On the one hand, given the structure of a relational database and languages like SQL, a user can specify exactly what elements from the database should be selected using predicates that either match or don't match the items in a collection. For example, when considering a product database that contains price information for individual items, it is trivial to formulate a query that selects all items above a specific price threshold.
+\todo[inline]{Finetune!}
 
-Retrieving multimedia data, on the other hand, comes with indirections due to the unstructured nature of the content, the feature representations used as a proxy for it and the \emph{semantic gap} associated with these representations. A very popular model to work with the feature representations involves calculation of (dis-)similarity scores from the features and sorting and ranking of items based on this score. This is commonly referred to as the \emph{vector space model} of multimedia retrieval and similiarty search. Over the years, many different combinations of features and ranking models have been proposed to facilitate content-based retrieval of different media types, such as, images, audio or video  as have been different types of query formulation, such as \emph{Query-by-Sketch}, \emph{Query-by-Humming} or \emph{Query-by-Sculpting}~\cite{Cao:2010mind,Ghias:1995query,Boerlin:20203d}. \todo{Add sources: Survey for each modality}
+It is important to emphasize, that a media item can comprise of all of the aforementioned components and that a multimedia collection may contain items of different types. Furthermore, when looking at a media item's lifecycle, all of the aforementioned aspects are not static; annotations, metdata and features may either be generated upon the item's creation (e.g., for technical metadata), as a result of data-processing and analysis or by manually adding the information at some stage. Hence, any data management system must be able to cope with changes to that information. Those requirements are formalized in \cref{section:multmedia_data}.
 
-Furthermore, when looking at concrete system implementations that facilitate interactive multimedia retrieval for an end-user today, the lines between multimedia retrieval and multimedia analytics quickly start to blur. This is because, in addition to the extraction of appropriate features and the conception of effective ranking algorithms, multimedia retrieval systems today also concern themselves with aspects such as query (re-)formulation and refinement, results presentation and efficient exploration~\cite{Lokovc:2019interactive}. In addition, multimedia retrieval systems do not simply operate on features representations anymore but combine \emph{similarity search} on features and \emph{Boolean retrieval} on annotations and metadata~\cite{Rossetto:2020interactive}. Therefore, one could argue that multimedia retrieval systems perform a very specific type of multimedia analytics task, which is that of finding unknown items that satisfy a specific information need. This makes all the arguments made about data processing and data management requirements for multimedia analytics applicable to multimedia retrieval as well.
 
 \section{Research Gap and Objective}
 \label{section:research_gap}
@@ -60,6 +63,8 @@ It is worth noting, that Assumption 1 and 3 both go against well-established des
 
 As for Assumption 2, one can state that the described model is only able to accommodate the search-end of the \emph{exploration-search axis}, assuming that features are, in fact, real valued vectors. It quickly becomes unusable for tasks such as browsing, structuring and summarization, delegating the required data processing to upper-tier system components. Refering to \cite{Jonson:2016}, it would however be desirable to offer such primitives at the level of the data management system.
 
+\todo[inline]{Transition from assumptions via overarching research goal to research question.}
+
 \subsection{Research Questions}
 
 Challenging the aforementioned assumptions raises very specific questions that fundamentaly impact the design of a \emph{multimedia data management system}. These questions are briefly summarized in \cref{table:research_questions}.
@@ -67,24 +72,26 @@ Challenging the aforementioned assumptions raises very specific questions that f
 \begin{table}[h!]
     \centering
     \caption{List of research questions (RQ) resulting from challenging assumptions(AS) one, two and three.}
-    \begin{tabular}{|c|p{10cm}|c|} 
+    \begin{tabular}{|c|p{10cm}|c|c|} 
      \hline
-     \textbf{RQ} & \textbf{Question} & \textbf{Related to} \\ [0.5ex] 
+     \textbf{RQ} & \textbf{Question} & \textbf{Assumption} & \textbf{Domain} \\ [0.5ex] 
      \hline\hline
-     1 & Which commonly used, secondary index structures for NNS (e.g., VA~\cite{Weber:1998va}, LSH~\cite{Indyk:1998lsh}, PQ~\cite{jegou:2011pq} based indexes) can cope with changes to data and to what extent? & AS 1\\ 
-     2 & Can we estimate and quantify deterioration of retrieval quality of index structures from RQ1 as changes are being made to the underlying data collections? & AS 1 \\ 
-     3 & How can we handle index structures from RQ1 for which to expect deterioration during query planning and execution? & AS 1 \\
-     4 & Can we devise a model that (temporarily) compensates deterioration of retrieval quality of index structures? & AS 1 \\
-     5 & How can user knowledge about the the retrieval task at hand be factored into query planning without forcing the user the make explicit choices about how a query should be executed? & AS 1 \& 3 \\
-     6 & How would a cost model that factors in desired retrieval accuracy look like and can it be applied during query planning? & AS 3\\ 
-     7 & Assuming the cost model in RQ6 exists, at what levels of the system can it be applied (globally, per query, context)? & AS 3\\ 
-     8 & Is there a measurable impact (e.g., on query execution time vs. accuracy) of having such a cost model? & AS 3 \\ 
-     9 & Can we generalize the model for similarity search (i.e., the vector space model) and what is the consequence of doing so? & AS 2 \\ 
-     10 & Do the existing applications and use-cases justify a generalization? & AS 2 \\ 
+     1 & Which commonly used, secondary index structures for NNS (e.g., VA~\cite{Weber:1998va}, LSH~\cite{Indyk:1998lsh}, PQ~\cite{jegou:2011pq} based indexes) can cope with changes to data and to what extent? & AS 1 &\\ 
+     2 & Can we estimate and quantify deterioration of retrieval quality of index structures from RQ1 as changes are being made to the underlying data collections? & AS 1 & \\ 
+     3 & How can we handle index structures from RQ1 for which to expect deterioration during query planning and execution? & AS 1 & \\
+     4 & Can we devise a model that (temporarily) compensates deterioration of retrieval quality of index structures? & AS 1 & \\
+     5 & How can user knowledge about the the retrieval task at hand be factored into query planning without forcing the user the make explicit choices about how a query should be executed? & AS 1 \& 3 & \\
+     6 & How would a cost model that factors in desired retrieval accuracy look like and can it be applied during query planning? & AS 3 & \\ 
+     7 & Assuming the cost model in RQ6 exists, at what levels of the system can it be applied (globally, per query, context)? & AS 3 & \\ 
+     8 & Is there a measurable impact (e.g., on query execution time vs. accuracy) of having such a cost model? & AS 3 & \\ 
+     9 & Can we generalize the model for similarity search (i.e., the vector space model) and what is the consequence of doing so? & AS 2 & \\ 
+     10 & Do the existing applications and use-cases justify a generalization? & AS 2 & \\ 
      \hline
     \end{tabular}
     \label{table:research_questions}
 \end{table}
+
+\todo[inline]{Associated research questions to domains (retrieval, analytics, dynamic).}
 
 RQ1 to RQ5 address the issue of index structures for NNS, which are mostly unable to cope with data that is subject to change, since their correctness deteriorates as data is modified. The focus of these questions are whether deterioration can be quantified and how it can be handled by a system. We argue, that both is necessary for practical application in dynamic data management.
 
