@@ -26,6 +26,20 @@
   organization = {{IEEE}}
 }
 
+@inproceedings{Budikova:2012Query,
+  title = {Query Language for Complex Similarity Queries},
+  booktitle = {Advances in Databases and Information Systems},
+  author = {Budikova, Petra and Batko, Michal and Zezula, Pavel},
+  editor = {Morzy, Tadeusz and H{\"a}rder, Theo and Wrembel, Robert},
+  year = {2012},
+  pages = {85--98},
+  publisher = {{Springer Berlin Heidelberg}},
+  address = {{Berlin, Heidelberg}},
+  abstract = {For complex data types such as multimedia, traditional data management methods are no longer suitable. Instead of attribute matching approaches, access methods based on object similarity are becoming popular in many applications. Nowadays, efficient methods for similarity search are already available, but using them to build an actual search system still requires specialists that tune the methods and build the system. In this paper, we propose a novel query language that generalizes existing solutions and allows to formulate content-based queries in a flexible way, supporting various advanced query operations such as similarity joins, reverse nearest neighbor queries, or distinct kNN queries, as well as multi-object and multi-modal queries. The language is primarily designed to be used with the MESSIF \textendash{} a framework for content-based searching \textendash{} but can be employed by other retrieval systems as well.},
+  file = {/Users/rgasser/Zotero/storage/44KDNMLQ/Budikova et al. - 2012 - Query language for complex similarity queries.pdf},
+  isbn = {978-3-642-33074-2}
+}
+
 @inproceedings{Cao:2010mind,
   title = {{{MindFinder}}: Interactive Sketch-Based Image Search on Millions of Images},
   booktitle = {Proceedings of the 18th {{ACM}} International Conference on Multimedia},
@@ -49,6 +63,13 @@
   doi = {10.1109/MCG.2010.92},
   journal = {IEEE Computer Graphics and Applications},
   number = {5}
+}
+
+@book{Codd:1990Relational,
+  title = {The Relational Model for Database Management: Version 2},
+  author = {Codd, Edgar F.},
+  year = {1990},
+  publisher = {{Addison-Wesley Longman Publishing Co., Inc.}}
 }
 
 @inproceedings{Gasser:2020cottontail,
@@ -96,6 +117,20 @@
   publisher = {{MIT Press}}
 }
 
+@inproceedings{Hojsgaard:2019Index,
+  title = {Index Maintenance Strategy and Cost Model for Extended Cluster Pruning},
+  booktitle = {Similarity Search and Applications},
+  author = {H{\o}jsgaard, Anders Munck and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Bonnet, Philippe},
+  editor = {Amato, Giuseppe and Gennaro, Claudio and Oria, Vincent and Radovanovi{\'c}, Milo{\v s}},
+  year = {2019},
+  pages = {32--39},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  abstract = {With today's dynamic multimedia collections, maintenance of high-dimensional indexes is an important, yet understudied topic. Extended Cluster Pruning (eCP) is a highly-scalable approximate indexing approach based on clustering, that is targeted at stable performance in a disk-based scenario. In this work, we propose an index maintenance strategy for the eCP index, which utilizes the tree structure of the index and its approximate nature. We then develop a cost model for the strategy and evaluate its cost using a simulation model.},
+  file = {/Users/rgasser/Zotero/storage/R8SNTSZR/Højsgaard et al. - 2019 - Index maintenance strategy and cost model for exte.pdf},
+  isbn = {978-3-030-32047-8}
+}
+
 @inproceedings{Indyk:1998lsh,
   title = {Approximate {{Nearest Neighbors}}: {{Towards Removing}} the {{Curse}} of {{Dimensionality}}},
   booktitle = {Proceedings of the Thirtieth Annual {{ACM}} Symposium on Theory of Computing},
@@ -127,12 +162,67 @@
   organization = {{Springer}}
 }
 
+@inproceedings{Jonsson1998:Interaction,
+  title = {Interaction of Query Evaluation and Buffer Management for Information Retrieval},
+  booktitle = {Proceedings of the 1998 {{ACM SIGMOD}} International Conference on Management of Data},
+  author = {J{\'o}nsson, Bj{\"o}rn T. and Franklin, Michael J. and Srivastava, Divesh},
+  year = {1998},
+  pages = {118--129},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/276304.276316},
+  abstract = {The proliferation of the World Wide Web has brought information retrieval (IR) techniques to the forefront of search technology. To the average computer user, ``searching'' now means using IR-based systems for finding information on the WWW or in other document collections. IR query evaluation methods and workloads differ significantly from those found in database systems. In this paper, we focus on three such differences. First, due to the inherent fuzziness of the natural language used in IR queries and documents, an additional degree of flexibility is permitted in evaluating queries. Second, IR query evaluation algorithms tend to have access patterns that cause problems for traditional buffer replacement policies. Third, IR search is often an iterative process, in which a query is repeatedly refined and resubmitted by the user. Based on these differences, we develop two complementary techniques to improve the efficiency of IR queries: 1) Buffer-aware query evaluation, which alters the query evaluation process based on the current contents of buffers; and 2) Ranking-aware buffer replacement, which incorporates knowledge of the query processing strategy into replacement decisions. In a detailed performance study we show that using either of these techniques yields significant performance benefits and that in many cases, combining them produces even further improvements.},
+  isbn = {0-89791-995-5},
+  series = {{{SIGMOD}} '98}
+}
+
 @article{Keim:2010mastering,
   title = {Mastering the Information Age: {{Solving}} Problems with Visual Analytics},
   author = {Keim, Daniel and Kohlhammer, J{\"o}rn and Ellis, Geoffrey and Mansmann, Florian},
   year = {2010},
   publisher = {{Goslar: Eurographics Association}},
   file = {/Users/rgasser/Zotero/storage/I3KF97KN/Keim et al. - 2010 - Mastering the information age Solving problems wi.pdf}
+}
+
+@article{Lejsek:2009NVTree,
+  title = {{{NV}}-{{Tree}}: {{An}} Efficient Disk-Based Index for Approximate Search in Very Large High-Dimensional Collections},
+  author = {Lejsek, Herwig and {\'A}smundsson, Fri{\dh}rik Hei{\dh}ar and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Amsaleg, Laurent},
+  year = {2009},
+  volume = {31},
+  pages = {869--883},
+  doi = {10.1109/TPAMI.2008.130},
+  file = {/Users/rgasser/Zotero/storage/JNSRJRXL/Lejsek et al. - 2009 - NV-Tree An efficient disk-based index for approxi.pdf},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  number = {5}
+}
+
+@inproceedings{Lejsek:2018Transactional,
+  title = {Transactional Support for Visual Instance Search},
+  booktitle = {Similarity Search and Applications},
+  author = {Lejsek, Herwig and {\'A}smundsson, Fri{\dh}rik Hei{\dh}ar and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Amsaleg, Laurent},
+  editor = {{Marchand-Maillet}, St{\'e}phane and Silva, Yasin N. and Ch{\'a}vez, Edgar},
+  year = {2018},
+  pages = {73--86},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  abstract = {This article addresses the issue of dynamicity and durability for scalable indexing of very large and rapidly growing collections of local features for visual instance retrieval. By extending the NV-tree, a scalable disk-based high-dimensional index, we show how to implement the ACID properties of transactions which ensure both dynamicity and durability. We present a detailed performance evaluation of the transactional NV-tree, showing that the insertion throughput is excellent despite the effort to enforce the ACID properties.},
+  file = {/Users/rgasser/Zotero/storage/DUJTS6JK/Lejsek et al. - 2018 - Transactional support for visual instance search.pdf},
+  isbn = {978-3-030-02224-2}
+}
+
+@inproceedings{Lejsek:211NVTree,
+  title = {{{NV}}-{{Tree}}: {{Nearest}} Neighbors at the Billion Scale},
+  booktitle = {Proceedings of the 1st {{ACM}} International Conference on Multimedia Retrieval},
+  author = {Lejsek, Herwig and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Amsaleg, Laurent},
+  year = {2011},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/1991996.1992050},
+  abstract = {This paper presents the NV-Tree (Nearest Vector Tree). It addresses the specific, yet important, problem of efficiently and effectively finding the approximate k-nearest neighbors within a collection of a few billion high-dimensional data points. The NV-Tree is a very compact index, as only six bytes are kept in the index for each high-dimensional descriptor. It thus scales extremely well when indexing large collections of high-dimensional descriptors. The NV-Tree efficiently produces results of good quality, even at such a large scale that the indices cannot be kept entirely in main memory any more. We demonstrate this with extensive experiments using a collection of 2.5 billion SIFT (Scale Invariant Feature Transform) descriptors.},
+  articleno = {54},
+  file = {/Users/rgasser/Zotero/storage/HGT32Y6C/Lejsek et al. - 2011 - NV-Tree Nearest neighbors at the billion scale.pdf},
+  isbn = {978-1-4503-0336-1},
+  series = {{{ICMR}} '11}
 }
 
 @article{Lokovc:2019interactive,
@@ -155,6 +245,21 @@
   volume = {2},
   pages = {1150--1157},
   organization = {{Ieee}}
+}
+
+@article{Olafsson:2011Dynamic,
+  title = {Dynamic Behavior of Balanced {{NV}}-Trees},
+  author = {{\'O}lafsson, Arnar and {\TH}{\'o}r J{\'o}nsson, Bj{\"o}rn and Amsaleg, Laurent and Lejsek, Herwig},
+  year = {2011},
+  month = mar,
+  volume = {17},
+  pages = {83--100},
+  issn = {1432-1882},
+  doi = {10.1007/s00530-010-0199-4},
+  abstract = {In recent years, some approximate high-dimensional indexing techniques have shown promising results by trading off quality guarantees for improved query performance. While the query performance and quality of these methods has been well studied, however, the performance of index maintenance has not yet been reported in any detail. Here, we focus on the dynamic behavior of the balanced NV-tree, which is a disk-based approximate index for very large collections. We report on an initial study of the effects of several implementation choices for the balanced NV-tree, and show that with appropriate implementation, significant performance improvements are possible. Overall, the proposed techniques not only reduce maintenance cost, but can also improve search performance significantly with minimal loss of search quality.},
+  file = {/Users/rgasser/Zotero/storage/XUUZIIAR/Ólafsson et al. - 2011 - Dynamic behavior of balanced NV-trees.pdf},
+  journal = {Multimedia Systems},
+  number = {2}
 }
 
 @book{Petrov:2019Database,
@@ -199,6 +304,29 @@
   publisher = {{IEEE}},
   copyright = {All rights reserved},
   journal = {IEEE Transactions on Multimedia}
+}
+
+@inproceedings{Siguroardottir:2005Quality,
+  title = {The Quality vs. {{Time}} Trade-off for Approximate Image Descriptor Search},
+  booktitle = {21st International Conference on Data Engineering Workshops ({{ICDEW}}'05)},
+  author = {Siguroardottir, R. and Jonsson, B.P. and Hauksson, H. and Amsaleg, L.},
+  year = {2005},
+  pages = {1175--1175},
+  doi = {10.1109/ICDE.2005.294},
+  file = {/Users/rgasser/Zotero/storage/2C4996D5/Siguroardottir et al. - 2005 - The quality vs. Time trade-off for approximate ima.pdf}
+}
+
+@inproceedings{Spiess:2021competitive,
+  title = {Competitive Interactive Video Retrieval in Virtual Reality with Vitrivr-{{VR}}},
+  booktitle = {{{MultiMedia}} Modeling},
+  author = {Spiess, Florian and Gasser, Ralph and Heller, Silvan and Rossetto, Luca and Sauter, Loris and Schuldt, Heiko},
+  editor = {Loko{\v c}, Jakub and Skopal, Tom{\'a}{\v s} and Schoeffmann, Klaus and Mezaris, Vasileios and Li, Xirong and Vrochidis, Stefanos and Patras, Ioannis},
+  year = {2021},
+  pages = {441--447},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  abstract = {Virtual Reality (VR) has emerged and developed as a new modality to interact with multimedia data. In this paper, we present vitrivr-VR, a prototype of an interactive multimedia retrieval system in VR based on the open source full-stack multimedia retrieval system vitrivr. We have implemented query formulation tailored to VR: Users can use speech-to-text to search collections via text for concepts, OCR and ASR data as well as entire scene descriptions through a video-text co-embedding feature that embeds sentences and video sequences into the same feature space. Result presentation and relevance feedback in vitrivr-VR leverages the capabilities of virtual spaces.},
+  isbn = {978-3-030-67835-7}
 }
 
 @inproceedings{Weber:1998va,
