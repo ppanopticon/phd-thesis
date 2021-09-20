@@ -1,15 +1,53 @@
 \chapter{On The Design of a Database Management System}
 \label{chapter:theory_databases}
 
-\todo[inline]{Digression into design considerations of a database management system (storage, locking, query planning, execution model etc.)}
+\epiquote{Not everything that can be counted counts and not everything that counts can be counted.}{Attributed to Albert Einstein}
 
 \section{The Relational Data Model}
 \label{section:relational_data_model}
 
+In June 1970, E. F. Codd published his research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes a mathematical model for databases he refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. Since some of the contributions presented in this work rely on the relational data model, we will briefly introduce it in this section.
+
+The relational model can be summarized as follows~\cite{Codd:1970Relational,Codd:1990Relational}: For $i,j,n \in \mathbb{N}_{> 0}$, given a collection of sets $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_n$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (e_{i,1}, e_{i,2} ... e_{i,n})$ such that the first element $e_{i,1}$ of the tuple stems from $\mathcal{D}_1$, the second element from $\mathcal{D}_2$ and so forth. Mathematically speaking, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\mathcal{D}_j$, that is, $\mathcal{D}_1 \times \mathcal{D}_2 ... \times \mathcal{D}_n$. The number of data domains $n$ in a relation is referred to as its \emph{degree}. It is important to note, that tuples in a relation are inherently unordered whereas as a strict ordering with respect to the occurence of the individual data domains within the tuples is assumed.
+
+To make things a bit less formal, one can see the data domains $D_j$ as \emph{columns} of a table and the individual tuples as \emph{rows}. Instead of indexes, one can also assign human readable names to the domains. All this is exemplified in \cref{example:relational_table}. 
+
+\begin{example}[label=example:relational_table]{Table Representation of a Relation $\mathcal{R}_{paintings}$}{}
+    
+The following table lists the content of a ternay relation ($n = 3$) $\mathcal{R}_{paintings}$. The data domains are $\mathcal{D}_{id}, \mathcal{D}_{title}, \mathcal{D}_{artist}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
+    
+    \begin{center}
+        \begin{tabular}{ l || l | l | l |}
+         $\mathcal{R}_{paintings}$ & $\mathcal{D}_{id}$ & $\mathcal{D}_{title}$  & $\mathcal{D}_{artist}$ \\ 
+         \hline
+         \hline
+         $t_1$ &  1 & Mona Lisa &  Leonardo da Vinci \\
+         \hline
+         $t_2$ &  2 & The Starry Night & Vincent van Gogh \\
+         \hline
+         $t_3$ &  3 & Las Meninas & Diego Velázquez \\
+         \hline
+        \end{tabular}
+    \end{center}
+\end{example}
+
+
+The sum of all data contained in a database can then be seen as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $n_k$ and data domains. Those relations are subject to change over time, for example, by adding tuples to a relation (insert), removing tuples from it (delete) or altering one or multiple elements of a tuple (update).
+
+\subsection{Normal Form}
+
+\subsection{Relational Algebra}
+
+\subsection{Extensions}
+
+\section{Queries: From Expression to Execution}
+
+\subsection{Structured Query Language (SQL)}
+
+\subsection{Query Planning}
+
+\subsection{Query Execution}
+
 \section{Storage, Indexes and Caching}
-
-\section{Operational Primitives}
-
-\section{Query Parsing, Planning and Execution}
 
 \section{Architectual Considerations}
