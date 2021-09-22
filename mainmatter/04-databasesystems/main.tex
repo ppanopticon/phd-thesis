@@ -6,15 +6,27 @@
 \section{The Relational Data Model}
 \label{section:relational_data_model}
 
-In June 1970, E. F. Codd published his research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes a mathematical model for databases he refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. Since some of the contributions presented in this work rely on the relational data model, we will briefly introduce it in this section.
+In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes a mathematical model for databases he refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. Since some of the contributions presented in this work rely on the relational data model, we will briefly introduce it in this section.
 
-The relational model can be summarized as follows~\cite{Codd:1970Relational,Codd:1990Relational}: For $i,j,n \in \mathbb{N}_{> 0}$, given a collection of sets $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_n$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (e_{i,1}, e_{i,2} ... e_{i,n})$ such that the first element $e_{i,1}$ of the tuple stems from $\mathcal{D}_1$, the second element from $\mathcal{D}_2$ and so forth. Mathematically speaking, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\mathcal{D}_j$, that is, $\mathcal{D}_1 \times \mathcal{D}_2 ... \times \mathcal{D}_n$. The number of data domains $n$ in a relation is referred to as its \emph{degree}. It is important to note, that tuples in a relation are inherently unordered whereas as a strict ordering with respect to the occurence of the individual data domains within the tuples is assumed.
+The relational model~\cite{Codd:1970Relational,Codd:1990Relational} describes how data in a database is structured, how data can be manipulated and operated upon and what contraints lie on the data. 
 
-To make things a bit less formal, one can see the data domains $D_j$ as \emph{columns} of a table and the individual tuples as \emph{rows}. Instead of indexes, one can also assign human readable names to the domains. All this is exemplified in \cref{example:relational_table}. 
+
+For $i,j,N \in \mathbb{N}_{> 0}$, given a collection of sets $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_N$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (e_{i,1}, e_{i,2} ... e_{i,n})$ such that the first element $e_{i,1}$ of the tuple stems from $\mathcal{D}_1$, the second element from $\mathcal{D}_2$ and so forth. Mathematically speaking, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\mathcal{D}_j$, that is, $\mathcal{D}_1 \times \mathcal{D}_2 ... \times \mathcal{D}_N$. The number of data domains $N$ in a relation is referred to as its \emph{degree} and we're referring to them as \emph{N-ary relations} (e.g., binary for $N=2$ or ternary for $N=3$) .
+
+In its original form, the relational model assumes the following properties to be true for relations:
+
+\begin{description}
+    \item[Order] Tuples in a relation are inherently unordered as opposed to the strict ordering of the individual data domains within the tuples.
+    \item[No Duplicates] Relations do not allow for duplicates, i.e., every tuple $t_i$ is unique.
+    \item[Atomicity] The entries in a tuple are considered to be atomic, i.e., it is not possible to further decompose them.
+\end{description}
+
+
+To make things a bit less formal, one can view the data domains $D_j$ as \emph{columns} of a table and the individual tuples as \emph{rows}. Instead of indexes, one can also assign human readable names to the data domains, which we also call \emph{attribute names}. This is exemplified in \cref{example:relational_table}. 
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\mathcal{R}_{paintings}$}{}
     
-The following table lists the content of a ternay relation ($n = 3$) $\mathcal{R}_{paintings}$. The data domains are $\mathcal{D}_{id}, \mathcal{D}_{title}, \mathcal{D}_{artist}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
+The following table lists the content of a ternary relation ($N = 3$) $\mathcal{R}_{paintings}$. The data domains $\mathcal{D}_{id}, \mathcal{D}_{title}, \mathcal{D}_{artist}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
     
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
@@ -32,7 +44,13 @@ The following table lists the content of a ternay relation ($n = 3$) $\mathcal{R
 \end{example}
 
 
-The sum of all data contained in a database can then be seen as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $n_k$ and data domains. Those relations are subject to change over time, for example, by adding tuples to a relation (insert), removing tuples from it (delete) or altering one or multiple elements of a tuple (update).
+Given the notion of a relation, the sum of all data contained in a database can be regarded as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $N_k$ and data domains. As \cite{Codd:1970Relational} points out, those relations are subject to change over time, for example, by adding tuples to a relation (insert), removing tuples from it (delete) or altering one or multiple elements of a tuple (update).
+
+
+\begin{equation}
+    
+\end{equation}
+
 
 \subsection{Normal Form}
 
