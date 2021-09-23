@@ -1,53 +1,125 @@
 \chapter{On The Design of a Database Management System}
 \label{chapter:theory_databases}
 
-\epiquote{Not everything that can be counted counts and not everything that counts can be counted.}{Attributed to Albert Einstein}
+\epiquote{Under third normal form, a non-key field must provide a fact about the key, use the whole key, and nothing but the key.}{William Kent}
+
+Database Management Systems (DBMS), or simply ``databases'', power everything from small and simple websites to large data warehouses that serve millions of users in parallel. Database systems play a crucial role in banking, e-commerce, science, entertainment and practically every aspect of our socio-economic lives. The first commercial DBMS systems were introduced in the 1960s \cite{Garcia:2009Database} and they have evolved ever since to adapt to a wide range of requirements. Even though many different flavours of DBMS have emerged over the years, at their core, they still serve the same, fundamental purpose:
+
+\begin{itemize}
+    \item DBMS manage data corpora that can range from a few megabytes to houndreds of terrabytes in size.
+    \item DBMS provide users with the ability to query the data using a data query language (DQL). Such queries answer specific ``questions'' about the data.
+    \item DBMS provide users with the ability to modify the data using a data manipulation language (DML). Modifications include adding, removing or changing existing entries.
+    \item DBMS usually assure durability upon failure, provide access control for concurrent read/write operation and means to manage data's logical structure.
+\end{itemize}
+
+Since the contributions of this Thesis rely on decades of database research, we use this chapter to provide a brief overview over the relevant fundamentals. Most of the basic aspects are inspired by \cite{Garcia:2009Database} and \cite{Petrov:2019Database}.
+
 
 \section{The Relational Data Model}
 \label{section:relational_data_model}
 
-In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes a mathematical model for databases he refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. Since some of the contributions presented in this work rely on the relational data model, we will briefly introduce it in this section.
+A data model is a formal framework that describes any type of data or information. It usually involves a description of the data's \emph{structure}, the \emph{operations} that can be performed on the data and the \emph{constraints} that should be imposed~\cite{Garcia:2009Database}. The purpose of any data model is to formalize how data governed by it can be accessed, modified and queried.
 
-The relational model~\cite{Codd:1970Relational,Codd:1990Relational} describes how data in a database is structured, how data can be manipulated and operated upon and what contraints lie on the data. 
+In the context of database systems, it has become common practice to make a clear distinction between the \emph{physical data model} and the a higher-level \emph{logical data model}. While the former captures low-level structure (representation in bits and bytes, data structures etc.) and operations (reads and writes), the latter describes higher-level semantics (attributes, relationships etc.). The argument for this separation is that ``users'' of any DBMS should not concern themselves with how exactly data is organized and accessed at the lowest level.
 
+In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes such a logical data model for databases, which he himself refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. 
 
-For $i,j,N \in \mathbb{N}_{> 0}$, given a collection of sets $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_N$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (e_{i,1}, e_{i,2} ... e_{i,n})$ such that the first element $e_{i,1}$ of the tuple stems from $\mathcal{D}_1$, the second element from $\mathcal{D}_2$ and so forth. Mathematically speaking, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\mathcal{D}_j$, that is, $\mathcal{D}_1 \times \mathcal{D}_2 ... \times \mathcal{D}_N$. The number of data domains $N$ in a relation is referred to as its \emph{degree} and we're referring to them as \emph{N-ary relations} (e.g., binary for $N=2$ or ternary for $N=3$) .
-
-In its original form, the relational model assumes the following properties to be true for relations:
-
-\begin{description}
-    \item[Order] Tuples in a relation are inherently unordered as opposed to the strict ordering of the individual data domains within the tuples.
-    \item[No Duplicates] Relations do not allow for duplicates, i.e., every tuple $t_i$ is unique.
-    \item[Atomicity] The entries in a tuple are considered to be atomic, i.e., it is not possible to further decompose them.
-\end{description}
-
-
-To make things a bit less formal, one can view the data domains $D_j$ as \emph{columns} of a table and the individual tuples as \emph{rows}. Instead of indexes, one can also assign human readable names to the data domains, which we also call \emph{attribute names}. This is exemplified in \cref{example:relational_table}. 
+The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualized as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. \cref{example:relational_table} features a relation \emph{paintings} and each entry in the table represents a painting and the related attribute values for attributes \emph{title}, \emph{artist} and \emph{painted}. Note, that we already use the mathematical notation introduced in \cref{defintion:relation}.
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\mathcal{R}_{paintings}$}{}
     
-The following table lists the content of a ternary relation ($N = 3$) $\mathcal{R}_{paintings}$. The data domains $\mathcal{D}_{id}, \mathcal{D}_{title}, \mathcal{D}_{artist}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
-    
+    The following table lists the content of a ternary relation ($N = 3$) $\mathcal{R}_{paintings}$. The attributes $\mathcal{A}_{title}, \mathcal{A}_{artist}, \mathcal{A}_{id}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
+        
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-         $\mathcal{R}_{paintings}$ & $\mathcal{D}_{id}$ & $\mathcal{D}_{title}$  & $\mathcal{D}_{artist}$ \\ 
-         \hline
-         \hline
-         $t_1$ &  1 & Mona Lisa &  Leonardo da Vinci \\
-         \hline
-         $t_2$ &  2 & The Starry Night & Vincent van Gogh \\
-         \hline
-         $t_3$ &  3 & Las Meninas & Diego Velázquez \\
-         \hline
+            $\mathcal{R}_{paintings}$ & $\mathcal{A}^{*}_{title}$  & $\mathcal{A}_{artist}$  & $\mathcal{A}_{painted}$ \\ 
+            \hline
+            \hline
+            $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
+            \hline
+            $t_2$ & The Starry Night & Vincent van Gogh & 1889 \\
+            \hline
+            $t_3$ & Las Meninas & Diego Velázquez & 1665 \\
+            \hline
         \end{tabular}
     \end{center}
 \end{example}
 
+In order to formalize the structure of and the operations that can be executed on the data represented by a relation, one can use \cref{defintion:relation}. 
 
-Given the notion of a relation, the sum of all data contained in a database can be regarded as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $N_k$ and data domains. As \cite{Codd:1970Relational} points out, those relations are subject to change over time, for example, by adding tuples to a relation (insert), removing tuples from it (delete) or altering one or multiple elements of a tuple (update).
+\begin{definition}[label=defintion:relation]{Relation according to \cite{Codd:1970Relational}}{}
+    Given $i,j,N \in \mathbb{N}_{> 0}$ and a collection of sets $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_N$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,n}) \in \mathcal{R}$ such that the attribute values $a_{i,1} \in \mathcal{D}_1, a_{i,2} \in \mathcal{D}_2 ... a_{i,N} \in \mathcal{D}_N$. Ergo, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\mathcal{D}_j$, that is, $\mathcal{D}_1 \times \mathcal{D}_2 ... \times \mathcal{D}_N$. The number of data domains $N$ is referred to as the relation's \emph{degree} and we call a relation \emph{N-ary}, e.g., binary for $N=2$. 
+\end{definition}
 
 
-\subsection{Normal Form}
+The relational model does not dictate what the data domains should be. However, in a relational database system, the data domains $\mathcal{D}_1, \mathcal{D}_2, ... \mathcal{D}_N$ usually correspond to the data types supported by the database, for example, \lstinline{Int} for integer numbers, \lstinline{Float} for floating point numbers or \lstinline{Varchar} for text \footnote{Strictly speaking as per definition, the data domains of a given relation $\mathcal{R}$ are merely subsets of the sets that represent the respective data type which, in turn, are subsets of even more basic sets such as $\mathbb{N}$ or $\mathbb{R}$ for \lstinline{Int} and \lstinline{Float} respectively. The relationship between types and data domains is subject of a more categorical approach to data models and nicely layed out in \cite{Spivak:2009Simplicial}}. To keep things simple, we will use \emph{data domain} synonymous for \emph{data type}. The combination of a data domain with a human readable label is called attribute and we will use subscripts to indicate an attribute's name or index, that is, $\mathcal{A}_{name} = (\mathcal{D}, name)$. In its original form, the relational model assumes the following properties to be true for a relation $\mathcal{R}$ and its attributes~\cite{Codd:1970Relational}:
+
+\begin{description}
+    \item[Ordering of tuples] Tuples $t_i \in \mathcal{R}$ are inherently unordered and two relations are considered equal if they contain the same tuples, regardless of order.
+    \item[Ordering of attributes] Attribute values $a_{i,j}$ always occur in the same order within the $t_i \in \mathcal{R}$, which corresponds to the order of the attributes $\mathcal{A}_j$. This order can evolve over time but remains constant in a momentary snapshot of $\mathcal{R}$.
+    \item[Duplicates] Relations do not allow for duplicates, i.e., every tuple $t_i$ must be unique in terms of their attributes.
+    \item[Atomicity] The attribute values in a tuple $t_i$ are considered to be atomic, i.e., it is not possible to further decompose them.
+\end{description}
+
+Given the notion and the properties of a relation $\mathcal{R}$, one can introduce the idea of a \emph{heading} or \emph{schema} $SCH(\mathcal{R})$ and \emph{body} or \emph{extent} $EXT(\mathcal{R})$ of a relation. Which are the set of attributes and tuples respectively that make up $\mathcal{R}$.
+
+\begin{equation}
+    SCH(\mathcal{R}) = \lbrace \mathcal{A}_1, \mathcal{A}_2, ... \mathcal{A}_N \rbrace
+\end{equation}
+
+\begin{equation}
+    EXT(\mathcal{R}) = \lbrace (a_{1,1}, ..., a_{1,N}), ... (a_{M,1}, ..., a_{M,N})\rbrace, a_{i,j} \in \mathcal{D}_j 
+\end{equation}
+
+The sum of all data contained in a database system can be regarded as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $N_k$ and data domains $\mathcal{D}_j \in \mathbb{D}$, with $\mathbb{D}$ being the set of all data domains supported by the system. The schema of a database can then be seen as the sum of all $SCH(\mathcal{R}_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $SCH(\mathcal{R})$ or $EXT(\mathcal{R})$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
+
+
+\subsection{Keys and Normal Forms}
+
+The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. \cite{Codd:1970Relational} proposed a wide range of additional constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
+
+\begin{description}
+    \item[Primary key] A \emph{primary key} is a combination of attributes $P \subset SCH(\mathcal{R})$ that uniquely identify a tuple $t_i \in \mathcal{R}$. That is, the attributes $SCH(\mathcal{R}) \setminus P$ and their values are functionally determined by $P$.
+    \item[Foreign key] Foreign keys are attributes $F \subset SCH(\mathcal{R})$ that are not primary keys but reference the primary key of $R$ or some other relation $R_k$. Foreign keys can be used to model relationships between relations.
+\end{description}
+
+An example of relations with primary and foreign key attributes is given in \cref{example:relational_table_pkfk}. Primary keys are indicated with a * and foreign keys are underlined.
+
+\begin{example}[label=example:relational_table_pkfk]{Relations with Primary and Foreign Keys}{}
+    
+    The following tables lists the heading and the body of relations $\mathcal{R}_{paintings}$ and $\mathcal{R}_{artists}$.  Note that $\mathcal{R}_{paintings}$ only contains attributes that are functionally dependend on the painting, identified by $\mathcal{A}_{title}$. Information about the artist, e.g. their date of birth, do not depend on the the title of the paining and thus belong to another relation.
+        
+    \begin{center}
+        \begin{tabular}{ l || l | l | l |}
+            $\mathcal{R}_{paintings}$ & $\mathcal{A}^{*}_{title}$  & $\mathcal{A}_{artist}$  & $\mathcal{A}_{painted}$ \\ 
+            \hline
+            \hline
+            $t_1$ & Mona Lisa &  1 & 1506 \\
+            \hline
+            $t_2$ & The Starry Night & 2 & 1889 \\
+            \hline
+            $t_3$ & Las Meninas & 3 & 1665 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \begin{center}
+        \begin{tabular}{ l || l | l | l | l | l |}
+            $\mathcal{R}_{artist}$ & $\mathcal{A}^{*}_{id}$ & $\mathcal{A}_{fname}$ & $\mathcal{A}_{lname}$ & $\mathcal{A}_{birth}$ & $\mathcal{A}_{death}$\\ 
+            \hline
+            \hline
+            $t_1$ & 1 & Leonardo & da Vinci & 1452 & 1519 \\
+            \hline
+            $t_2$ & 2 & Vincent & van Gogh & 1853 & 1890 \\
+            \hline
+            $t_3$ & 3 & Diego & Velázquez & 1599 & 1660 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    Note, that we used an artifical primary key for $\mathcal{R}_{artists}$, which is often done in practice.
+\end{example}
+
 
 \subsection{Relational Algebra}
 
