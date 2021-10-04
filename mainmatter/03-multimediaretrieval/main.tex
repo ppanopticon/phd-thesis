@@ -10,7 +10,19 @@ Formalisation of what multimedia data is and what forms it can take (video, audi
 
 \section{Multimedia Retrieval}
 
-\subsection{Similarity and the Vector Space Model}
+\subsection{Similarity Search and the Vector Space Model}
+
+In multimedia retrieval, there are two important assumptions for similiarity search. These assumptions can be summarized as follows:
+
+\begin{itemize}
+    \item For every object $c_{i}$ in a (multimedia) collection $\mathcal{C}$, there exists a feature transformation $\phi \colon \mathcal{C} \to \mathcal{F}$, that maps the object $o_{i} \in \mathcal{C}$ to a feature space $\mathcal{F}$.
+    \item The feature space $\mathcal{F}$ and a to be defined distance function $\delta \colon \mathcal{F} \times \mathcal{F} \to \mathbb{R}_{\geq 0}$, constitute a metric space $(\mathcal{F},\delta)$, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity condition.
+\end{itemize}
+
+The output of $\delta$ -- i.e., the calculated distance $d$ -- acts as a proxy for (dis-)similiarty between two objects $o_{i}$, $o_{j} \in \mathcal{C}$ given the feature transformation $\phi$. Hence, the closer two objects $o_{i}$, $o_{j}$ appear under the transformation, the more (dis-)similar they are. For the sake of completeness, it must be pointed out, that whether similarity is directly or inversely proportional to the distance is a matter of definition and depends on the concrete application. Also, in practice, multiple feature transformations $\phi_m$ may exist for a given media collection, leading to different feature spaces $\mathcal{F}_m$ for a collection $\mathcal{C}$ that must be considered jointly. Both aspects are usually addressed by additional \emph{correspondence} and \emph{scoring} functions.
+
+\todo[inline]{Correspondence and score functions, score fusion}
+
 \subsection{Approximate Nearest Neighbor Search}
 \todo[inline]{Describe techniques for approximate nearest neighbor search (ANN). Focus on a more conceptual overview of the types of algorithms rather than just enumerating concrete examples; this can be used as a build-up for discussing properties of different index structures later. }
 

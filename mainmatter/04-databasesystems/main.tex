@@ -125,6 +125,40 @@ An example of relations with primary and foreign key attributes is given in \cre
 
 \subsection{Extensions}
 
+\subsubsection{Extended Projection}
+
+\subsubsection{Ranked Relational Algebra}
+
+\subsubsection{Similarity Search and the Relational Model}
+
+Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set of allowed data domains $\mathbb{D}$ by $\mathcal{D} \subset \mathbb{R}^{dim}, dim \in \mathbb{N}_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\mathcal{R}$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
+
+While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it  comes with limitations that become apparent upon disection of $\tau$'s structure. In its postulated form, $\tau$ addresses several functions at once:
+
+\begin{enumerate}
+    \item It specifies the distance function and its parameters.
+    \item It generates an implicit distance attribute on the underlying relation $\mathcal{R}$.
+    \item It imposes an ascending ordering and limits the cardinality of $\mathcal{R}$ based on a predicate or a specified limit.
+\end{enumerate}
+
+While being very specific and thus straightforward to implement and optimize, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general similarity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
+
+Another important issue with the definition of $\tau$ in its current form is that despite the two opreations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
+
+\begin{equation}
+    \sigma(\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})) \neq \tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\sigma(\mathcal{R}))
+\end{equation}
+
+These two queries are very different: On the one hand, the first query filters the results of a kNN-search on $\mathcal{R}$, thus returning $n \leq l$ results, wherein $n = k$ only if $\sigma$ matches all tuples. The second query performs a kNN-search on a pre-filtered relation $\mathcal{R}$, also returning $n \leq k$ entries. However, $n$ will only be smaller than $k$ if $\sigma$ selects fewer than $k$ tuples. 
+
+The same isn't true for $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, due to the limitation of the cardinality being facilitated by an \emph{implicit} selection $\sigma_{\delta \geq \epsilon}$.
+
+\begin{equation}
+    \sigma(\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})) = \tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\mathcal{R}))
+\end{equation}
+
+Hence, $\sigma$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ commute and yield equivalent results.
+
 \section{Queries: From Expression to Execution}
 
 \subsection{Structured Query Language (SQL)}

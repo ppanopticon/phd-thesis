@@ -1,94 +1,127 @@
 \chapter{Modelling a Database for Dynamic Multimedia Data}
 \label{chapter:system_model}
 
+\section{Generalized Distance Based Operations}
 
-\section{Generalized Similarity Operations}
+Starting with the metric space model~\cite{Zezula:2006similarity} for similarity search presented in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we propose to extend the notion of proximity-based similarity search to that of a more general \emph{proximity based operation (pOP)} following \cref{definition:pop}.
 
-It has been describe in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, that there are two important assumptions for similiarity based operations, such as similarity search in multimedia retrieval. These assumptions can be summarized as follows:
+\begin{definition}[label=definition:pop]{Proximity Based Operation (pOP)}{}
+    Any database query operation on relation $\mathcal{R}$ that relies on a notion of distance $d = \delta(a_{i}, q)$ between an attribute $a_{i} \in \mathcal{D}_q$ and some query $q \in \mathcal{D}_q$ given $\mathcal{D}_q \in SCH(\mathcal{R})$ and distance function $\delta: \mathcal{D}_q \times \mathcal{D}_q \rightarrow \mathbb{R}$, is called a \emph{proximity based operation}. We call $q$ the \emph{query} and $a_i$ the \emph{probing attribute} both sharing the same \emph{query data domain} $\mathcal{D}_q$.
+\end{definition}
 
-\begin{itemize}
-    \item For every object $c_{i}$ in a (multimedia) collection $\mathcal{C}$, there exists a feature transformation $\phi \colon \mathcal{C} \to \mathcal{F}$, that maps the object $o_{i} \in \mathcal{C}$ to a feature space $\mathcal{F}$.
-    \item The feature space $\mathcal{F}$ and a to be defined distance function $\delta \colon \mathcal{F} \times \mathcal{F} \to \mathbb{R}_{\geq 0}$, constitute a metric space $(\mathcal{F},\delta)$, thus satisfying the identity of indiscernibles, symmetry and subadditivity condition.
-\end{itemize}
+It is important to note, that \cref{definition:pop} simply requires a notion of proximity between some attribute and a query to be obtained by means of some distance function. The definition does not make any assumption as to what data domains $\mathcal{D}_q$ query and probing attribute belong to nor how the distance is being used within the query, once it has been obtained. 
 
-For all similarity based operations, the output of $\delta$ -- i.e., the calculated distance $d$ -- acts as a proxy for (dis-)similiarty between two objects $o_{i}$, $o_{j} \in \mathcal{C}$ given the feature transformation $\phi$. Hence, the closer two objects $o_{i}$, $o_{j}$ appear under the transformation, the more (dis-)similar they are. It must be pointed out for the sake of completeness, that whether similarity is directly or inversely proportional to the distance is a matter of definition and depends on the concrete application. Also, in practice, multiple feature transformations $\phi_m$ may exist for a given media collection, leading to different feature spaces $\mathcal{F}_m$ for a collection $\mathcal{C}$ that must be considered jointly. Both aspects are usually addressed by additional correspondence and scoring functions, however, since they are not relevant for the discussion at hand, we will ignore them for now.
-
-Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases~\cite{Codd:1970Relational,Codd:1990Relational} as described in \cref{chapter:theory_databases}, one can extend the list of allowed data domains by $\mathcal{D} \subset \mathbb{R}^{D}, D \in \mathbb{N}_{>0}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $R$, which in turn induces an ascending ordering of the tuples. Using this operation, the authors then go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(R)$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(R)$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
+It is straightforward to see, that similarity search falls into the broader category of a pOP, wherein the distance is being used to rank the relation and subsequently limit its cardinality. In addition, pOPs include other operations such as calculating the distance value followed by some filtering or grouping based on the computed value. Hence, we do not limit ourselves to simple search.
 
 \subsection{Revisiting Distance Computation}
 
-Considerding the definition provided in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we identify the following (implicit) constraints of the postulated model:
+Since the choice of the distance function $\delta$ is a crucial part of any pOP, it is worth revisiting its definition. Again, starting with the metric space modell~\cite{Zezula:2006similarity}, we identify the following constraints with respect to the distance function:
 
 \begin{enumerate}
-    \item The codomain (i.e., the output) of the distance function $\delta$ is assumed to be $\mathbb{R}_{\geq 0}$, hence, the distance value we generate is a positive, real number.
-    \item The domain (i.e., the input) of the distance function $\delta$ is assumed to be $\mathbb{R}^{D} \times \mathbb{R}^{D}$, hence, we restrict ourselves to real-valued vectors and the distance function is assumed to be a binary function.
+    \item The codomain (i.e., the output) of the distance function $\delta$ is assumed to be $\mathbb{R}_{\geq 0}$, hence, the generated distance value is a positive, real number.
+    \item The domain (i.e., the input) of the distance function $\delta$ is assumed to be $\mathbb{R}^{dim} \times \mathbb{R}^{dim}$, hence, restricted to real-valued vectors and the distance function is assumed to be a binary function.
+    \item $(\mathcal{D}_q,\delta)$ are supposed to constitute a metric, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity property.
 \end{enumerate}
 
-Upon further examination, one can see that there is very good reason to assume the codomain of $\delta$ to lie in $\mathbb{R}$. On the one hand, it is obviously convenient both for the underlying mathematics as well as from a programming prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for the sorting that is part of most similarity based operations. If, however, we turn to the use cases presented in \cref{section:application_retrieval} and \cref{section:application_mrf}, one can see that both the domain and the arity of a regular distance function are often too limited, as is shown in examples \cref{example:mrf} and \cref{example:svmdistance}. Furthermore, it is not always desired to have a positive distance value.
+Upon closer examination, one can see that there is good reason to assume the codomain of $\delta$ to lie in $\mathbb{R}$. On the one hand, it is obviously convenient both for the underlying mathematics as well as from a programming prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for the sorting that is part of many pOPs. If, however, we turn to \cref{example:mrf}, we realise that it is not reasonable to restrict the domain of the distance function to $R^{dim}$
 
 \begin{example}[label=example:mrf]{Maximum Inner Product Search (MIPS) for MRF}{}
-In MRF, which we introduced in \cref{section:application_mrf}, we try to obtain the signal vector $f_i \in \mathcal{F}$ from a dictionary $\mathcal{F} \subset \mathbb{C}^{D}$ so that it maximizes the inner product to a query vector $q \in \mathbb{C}^{D}$. In this case, the distance function $\delta$ has the form $\delta \colon \mathbb{C}^{D} \times \mathbb{C}^{D} \to \mathbb{R}_{\geq 0}$ with $D \in \mathbb{N}_{>0}$.
+    In MRF (see \cref{section:application_mrf}), we try to obtain the signal vector $a_{i \in N} \in \mathcal{D}_q \subset \mathbb{C}^{dim}$ so that it maximizes the inner product to a query vector $q \in \mathbb{C}^{dim}$. In this case, the distance function $\delta$ has the form $\delta \colon \mathbb{C}^{dim} \times \mathbb{C}^{dim} \to \mathbb{R}_{\geq 0}$ with $dim \in \mathbb{N}_{>1}$. Hence, to domain of $\delta$ is complex.
 \end{example}
+
+Obviously, this limitation of the definition of $\delta$ can be easily remediated simply by extending the set of supported data domains $\mathbb{D}$ by $\mathbb{C}^{dim}$ similarily to how we did for $\mathbb{R}^{dim}$ as proposed by \cite{Giangreco:2018thesis}. Still we have to acknowledge, that the text-book definition of a distance function is too limited for many real-world applications, and that the query and probing arguments of a distance function could be any type of value supported by the database management system. For example, the \emph{Levenshtein distance}~\cite{Levensthtein:1965Binary}, often used in computer linguistics, is a distance metric on string values.
+
+If now in addition, we consider \cref{example:svmdistance}, we see that restricting oneself to binary functions is also too limiting when considering practical scenarios.
 
 \begin{example}[label=example:svmdistance]{Distance Between a Vector and a Hyperplane}{}
-In the example introduced in \cref{section:application_retrieval}, we want to find positive/negative examples for features in $\mathcal{F} \subset \mathbb{R}^{D}$ given a linear classifier, e.g., provided by a SVM. Mathematically, such a classifier can be defined by a hyperplane $\mathbf{w}^T\mathbf{x} - b = 0$ with $\mathbf{w},\mathbf{x} \in \mathbb{R}^{D}$ and $b \in \mathbb{R}$. The distance function can then be defined as $d \colon \mathbb{R}^{D} \times \mathbb{R}^{D} \times \mathbb{R} \to \mathbb{R}$ as both $\mathbf{w}$ and $b$ become parameters of the function, in addition to the attributes $f_i \in \mathcal{F}$ for which a distance is obtained. Hence, the distance function is no longer a binary but a ternay function with attributes $\mathbf{f_{i}}$, $\mathbf{w}$ and $b$. Furthermore, the resulting distance may take negative values depending on whether a result is considered a positive or negative example.
+    To find positive and negative examples $a_{i} \in \mathcal{D}_q \subset \mathbb{R}^{dim}$ given a linear classifier, e.g., provided by a SVM, we evaluate the distances between the attributes and a (query-)hyperplane described as $\mathbf{q}^T\mathbf{x} - b = 0$ with $\mathbf{q},\mathbf{x} \in \mathbb{R}^{dim}$ and $b \in \mathbb{R}$. The distance function is then given by:
+
+    \begin{equation}
+        \delta (\mathbf{a}_i, \mathbf{q}, b) = \frac{\left\|\mathbf{q}^T \mathbf{a_i} + b \right\|}{\left\|\mathbf{q}\right\|}
+    \end{equation}
+    
+    The distance function then has the form $\delta \colon \mathbb{R}^{dim} \times \mathbb{R}^{dim} \times \mathbb{R} \to \mathbb{R}$. Hence, $\delta$ is no longer a binary but a ternay function with arguments $\mathbf{a_{i}}$, $\mathbf{q}$ and $b$. Furthermore, the distance may take negative values depending on whether a result is considered a positive or negative example.
 \end{example}
 
-In order to address these limitations, we propose the extension of a the distance function to the notion of a \emph{Distance Function Class (DFC)} following \cref{definition:dfc}. As the name implies, such a function represents a family of fucntion that can be employed when executing similarity based operations.
 
-\begin{definition}[label=definition:spf]{Distance Function Class (DFC)}{}
-    A \emph{Distance Function Class (DFC)} $\delta \colon \mathcal{F} \times \mathcal{F} \times \mathcal{D}_{1} ... \times \mathcal{D}_{n} \to \mathbb{R}$ is an n-ary but at least binary function that outputs a distance $d \in \mathbb{R}$ between a probing argument $f_{a} \in \mathcal{F} \subset \mathcal{D}_i$ and a query argument $f_{q} \in \mathcal{D}_i$ using a well defined number of \emph{support arguments} from any of the data domains $\mathcal{D}_{j}$ supported by the database system, with $i,j \in \mathbb{N}$.
+Again, we are confronted with an example that violates the text-book definition of a distance function. While the idealized idea that distance functions used in pOPs must always constitute a metric on some real-valued vector space may be very common~\cite{Zezula:2006similarity}, we see in practice that this assumption is often violated~\cite{Bernhauer:2019Nonmetric} \todo{More examples} and that many functions used to calculate proximity between objects, are not actual metrics. Even though, this can be a disadvantage when considering high-dimensional index structures that exploit the geometric properties of metrics, it is obvious that such functions exist and must thus be considered in any generalized database application supporting pOPs.
+
+In order to address the aforementioned limitations while still accomodating classical, metric distance functions, we propose the extension of a the distance function to the notion more general notion of a \emph{Distance Function Class (DFC)} following \cref{definition:dfc}.
+
+\begin{definition}[label=definition:dfc]{Distance Function Classes (DFC)}{}
+    A \emph{Distance Function Class (DFC)} $\hat{\delta} \colon \mathcal{D}_q \times \mathcal{D}_q \times \mathcal{D}_{1} ... \times \mathcal{D}_{n} \to \mathbb{R}$ is an n-ary but at least binary function $\hat{\delta}(a,q,s_1,...,s_n)$ that outputs a distance $d \in \mathbb{R}$ between a probing argument $a \in \mathcal{D}_q \subset \mathcal{R}$ and a query argument $q \in \mathcal{D}_q$ using a defined number of \emph{support arguments} $s_{k \in \mathbb{N}}$ from any of the data domains in $\mathbb{D}$.
 \end{definition}
 
-Upon closer examination one can see that a DFC can be seen as a distance function that is being parametrized by its support arguments. A very simple and widely used example would be the Manhattan (L1) and the Euclidean (L2) distance, which are both parametrized versions of the more general Minkowski distance $\delta_{M} \colon \mathbb{R}^{D} \times \mathbb{R}^{D} \times \mathbb{N} \to \mathbb{R}_{\geq 0}$:
+As convention for notation, the probing argument $a$ of a DFC $\hat{\delta}(a,q,s_1,...,s_n)$ will always come first, followed by the query argument $q$, followed by its support arguments $s_k$ in no particular order. 
 
+From the perspective of the database system, DFCs represent a family of higher-order functions available for distance calculation in pOPs. With the idea of a DFC in mind, we can start to reason about their properties in the broader context of database operations in general and pOPs in particular:
+
+\begin{description}
+
+    \item[DFC and pOPs] In extension to \cref{definition:pop}, we see that any database query that involves the execution of a DFC falls into the category of a pOP.
+
+    \item[Purity] Since the purpose is a DFC is to quantify proximity between a probing argument $a$ and a query argument $q$, we require that $a, q \in \mathcal{D}_q$, i.e., both must be member of the same data domain $\mathcal{D}_q$.
+
+    \item[Definition] A $N$-ary DFC is uniquely defined by its \emph{signature}, which is a ($N+1$)-tuple specifying the name of the DFC and the data domains $D_i$ of the arguments it can accept as defined in \cref{equation:dfc_signature}. 
+
+    \item[Implementation] In the context a concrete pOP instance, the query argument $q$ and the support arguments $s_i$ remain constant. Hence, irrespective of the arity of the DFC, the \emph{implementation} $\delta$ of DFC $\hat{\delta}$ is always a unary function with signature ($\mathtt{NAME}, \mathcal{D}_q$), i.e., \cref{equation:dfc_implementation} holds.
+\end{description}
+
+\begin{definition}[label=definition:dfc_sig_imp]{Signature and Implementation of DFCs}{}    
+    The \emph{signature} of a DFC $\hat{\delta}$ is defined as:
+    \begin{equation}
+        \label{equation:dfc_signature}
+        \texttt{SIG}(\hat{\delta}) = (\mathtt{NAME}, \mathcal{D}_q, \mathcal{D}_q, \mathcal{D}_1,... \mathcal{D}_{N-2})
+    \end{equation}
+
+    The \emph{implementation} $\delta$ of a DFC $\hat{\delta}$ is defined as:
+
+    \begin{equation}
+        \label{equation:dfc_implementation}
+        \delta = \texttt{IMP}(\hat{\delta}) \: with \: \texttt{SIG}(\delta) = (\mathtt{NAME}, \mathcal{D}_q)
+    \end{equation}
+\end{definition}
+
+
+In the context of a database system, DFCs $\hat{\delta}$ can be viewed as higher-level functions that parametrize a unary function using the query and support arguments. A very simple and widely used example would be the Manhattan (L1) and the Euclidean (L2) distance, which are both parametrized versions of the more general Minkowski distance $\hat{\delta}_{M} \colon \mathbb{R}^{dim} \times \mathbb{R}^{dim} \times \mathbb{R} \to \mathbb{R}_{\geq 0}$:
 
 \begin{equation}
-    \delta_{L1}(\mathbf{q},\mathbf{f}) = \sum_{i=1}^{n} \mid q_i - f_i \mid = \left(\sum_{i=1}^{n} \mid q_i - f_i \mid^p\right)^{\frac{1}{p}}, p = 1
+    \hat{\delta}_{M}(\mathbf{a},\mathbf{q},p) = \left(\sum_{i=1}^{n} \mid q_i - a_i \mid^p\right)^{\frac{1}{p}}
 \end{equation}
 
 \begin{equation}
-    \delta_{L2}(\mathbf{q},\mathbf{f}) = \sqrt{\sum_{i=1}^{n} \mid q_i - f_i \mid^2}= \left(\sum_{i=1}^{n} \mid q_i - f_i \mid^p\right)^{\frac{1}{p}}, p = 2
+    \delta_{L1}(\mathbf{a},\mathbf{q}) = \texttt{IMP}_{p=1}(\hat{\delta}_M) = \sum_{i=1}^{n} \mid q_i - a_i \mid
 \end{equation}
 
-It is to be noted, that in the context of a similarity based operation in a database query, we assume  the query argument and the support arguments to be effectively constant, since changing any of these gives rise to a new query.
+\begin{equation}
+    \delta_{L2}(\mathbf{a},\mathbf{q}) = \texttt{IMP}_{p=2}(\hat{\delta}_M) = \sqrt{\sum_{i=1}^{n} \mid q_i - a_i \mid^2}
+\end{equation}
+
+We will show in \cref{chapter:cottontaildb}, that a database system can use the \emph{definition} property to plan the execution of a query involving a DFC using optimized versions for different data types and/or substituting DFCs using an index. Furthermore, the \emph{implementation} property can be leveraged to facilitate pre-computation and caching.
+    
+
+Using the idea of a DFC, we can express many different types of distance functions in a simple yet expressive framework. Two examples are illustrated in \cref{figure:distance_computations} and it is easy to see that both the functions used in \cref{example:mrf} and \cref{example:svmdistance} fall into the category of a DFC.
+
+\begin{figure}[bt]
+    \centering
+    \centering
+    \includegraphics[width=\textwidth]{figures/distance_computations.eps}
+    \label{figure:distance_computations}
+    \caption{Two examples of distance functions that fall into the broader category of a DFC.}
+\end{figure}
 
 \subsubsection{Parametrized dimensionality}
-As an aside, we must address the role of dimensionality in the case of vector spaces such as $\mathbb{R}^{D}$ or $\mathbb{C}^{D}$. One could argue, that the dimensionality of such a vector space can also be seens as a parameter of the SPF. Nevertheless, we consider the dimensionality to be a structural property of the underlying data domain as, for example, the data type. This means, that dimensionality as well as the type are well-defined and most importantly constant properties for a given relation.
+As an aside, we must address the role of dimensionality in the case of vector spaces such as $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. One could argue, that the dimensionality of such a vector space can also be seens as a parameter of the SPF. Nevertheless, we consider the dimensionality to be a structural property of the underlying data domain as, for example, the data type. This means, that dimensionality as well as the type are well-defined and most importantly constant properties for a given relation.
 
 \subsection{Extending the Relational Model}
 
-Assuming the existence of an DFC as described in \cref{definition:dfc}, one can start to integrate this into the relational algebra model. While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it  comes with limitations that become apparent upon disection of its structure. In its postulated form, $\tau$ addresses several functions at once:
+Using the definition of a DFC as described in \cref{definition:dfc}, one can start to integrate these into the relational algebra model. Following~\cite{Giangreco:2018thesis}, we first assume the set of supported data domains $\mathbb{D}$ to be extended by whatever data domain $\mathcal{D}$ is desired. Following that recipe, a database management system can be extended to support every type of (mathematical) object that is useful for a given application.
 
-\begin{enumerate}
-    \item It specifies the distance function and its parameters.
-    \item It generates an implicit distance attribute on the underlying relation $\mathcal{R}$.
-    \item It imposes an ascending ordering and limits the cardinality of $\mathcal{R}$.
-\end{enumerate}
-
-While being very specific and thus straightforward to implement and optimize, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general similarity-based query operations. If we, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. Another important issue with the definition of $\tau$ in its current form is given in Examples \ref{example:limitsoftauknn} and \ref{example:limitsoftauepsilonnn}.
-
-\begin{example}[label=example:limitsoftauknn]{Shortcomings of $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}$}{}
-    Given a relation $R$ with $SCH(R) = \{ a_1, a_2 \}$, we consider the two relational expressions $\pi_{a1,d}(\tau^{kNN}_{\delta(\cdot,\cdot),a_2,q}(\sigma_{a_1 = true}(R)))$ and $\pi_{a1,d}(\sigma_{a_1 = true}(\tau^{kNN}_{\delta(\cdot,\cdot),a_2,q}(R)))$. 
-    
-    The keen observer will notice that for small numbers of $k$ with respect to the number of tuples that match the selection $\sigma$, the two expressions will not return the same resultset due to the order of execution. The first expression will always return a result set of size $k$ given that at least $k$ tuples in $R$ satisfy $\sigma$. The second expression, however, is likely to produce a resultset smaller than $k$ since the selection takes place on a top $k$ ranked subset of $R$.
-\end{example}
-
-\begin{example}[label=example:limitsoftauepsilonnn]{Shortcomings of $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}$}{}
-    Given a relation $R$ with $SCH(R) = \{ a_1, a_2 \}$, we consider the two relational expressions $\pi_{a1,d}(\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a_2,q}(\sigma_{a_1 = true}(R)))$ and $\pi_{a1,d}(\sigma_{a_1 = true}(\tau^{\epsilon  NN}_{\delta(\cdot,\cdot),a_2,q}(R)))$, which select all entries that pass predicate $\sigma$ and whose distance $d \geq \epsilon$.
-    
-    Again, the keen observer will notice that the two result sets are going to be equal in this case. This can be attributed to the fact that the limiting of the resultset is formally introduced by another selection, i.e., the expression can be restated as $\pi_{a1,d}(\sigma_{d \geq \epsilon}(\tau_{\delta(\cdot,\cdot),a_2,q}(\sigma_{a_1 = true}(R))))$. It is perfectly valid to move the inner selection to the outside due to the commutativity of the selection operation. The only limitation is, that  $\sigma \geq \epsilon$ requires prior execution of $\tau_{\delta(\cdot,\cdot),a_2,q}$.
-\end{example}
-
-With these example, we have demonstrated the limitations of $\tau$ and the fact that the two proposed implementations for $k$NN and $\epsilon$NN actually behave very differently despite their common core. We therefore propose to decompose $\tau$ into distinct extensions to the relational model, with a clear focus on separation of concerns.
-
-\subsubsection{Extended Project and DFC}
-
-We assume the existence of an extended projection $\pi_{\mathcal{A}}$ as defined in \cref{section:relational_data_model} and described, for example, in \cite{Garcia:2009Database}. In addition to projection on attributes, the extended projection allows to project on general algebraic expressions involving attributes, constants and function invocations. Given the extended projection, the invocation of a DFC can be expressed as follows.
+Using the idea of an extended projection $\pi_{\mathcal{A}}$ as defined in \cref{section:relational_data_model} and described, for example, by \cite{Garcia:2009Database}, the invocation of a DFC can be expressed as follows.
 
 \begin{definition}[label=definition:spf_rel]{Distance Function Classes (DFC) in Extended Projection}{}
-Let $\delta \colon \mathcal{F} \times \mathcal{F} \times \mathcal{D}_{1} ... \times \mathcal{D}_{n-2} \to \mathbb{R}$ be a DFC and $\mathcal{R}$ be a relation with $SCH(\mathcal{R}) = \{ a_1, a_2, ... a_{n} \}$. The \emph{extended projection} $\pi_{\delta(a_1,a_2,...,a_n)}(\mathcal{R})$ describes
-the execution of the n-ary SPF $\delta$ using attributes $a_1,a_2,...a_n$ from relation $\mathcal{R}$ as parameters. Note that $\pi_{\delta(a_1,a_2,...,a_n)}$ introduces a new, calculated distance attribute $a_d \in \mathbb{R}$ on each tuple $t_i \in \mathcal{R}$, i.e., $SCH(\pi_{\delta(a_1,a_2,...,a_n), a_1, a_2, ..., a_n}) = SCH(\mathcal{R}) \cup \{ a_d \}$.
+Let $\delta \colon \mathcal{D}_q \times \mathcal{D}_q \times \mathcal{D}_{1} ... \times \mathcal{D}_{n-2} \to \mathbb{R}$ be a DFC and $\mathcal{R}$ be a relation with $SCH(\mathcal{R}) = \{ a_1, a_2, ... a_{n} \}$. The \emph{extended projection} $\pi_{\delta(a_1,a_2,...,a_n)}(\mathcal{R})$ describes
+the execution of the n-ary DFC $\delta$ using attributes $a_1,a_2,...a_n$ from relation $\mathcal{R}$ as parameters. Note that $\pi_{\delta(a_1,a_2,...,a_n)}$ introduces a new, calculated distance attribute $a_d \in \mathbb{R}$ on each tuple $t_i \in \mathcal{R}$, i.e., $SCH(\pi_{\delta(a_1,a_2,...,a_n), a_1, a_2, ..., a_n}) = SCH(\mathcal{R}) \cup \{ a_d \}$.
 \end{definition}
 
 Obviously, the combination of multiple DFCs in a single, extended projection or the combination of simple attribute projection with DFCs are also allowed. Hence, the following expressions are valid examples of the extended projection on relation $\mathcal{R}$ with $SCH(\mathcal{R}) = \{ a_1, a_2, a_3, a_4 \}$: $\pi_{\delta_1(a_1,a_2), \delta_2(a_2,a_3,a_1)}(R)$ or $\pi_{\delta(a_1,a_2), a_3, a_4}(\mathcal{R})$ or $\pi_{a_1, a_3, a_4}(\mathcal{R})$.
