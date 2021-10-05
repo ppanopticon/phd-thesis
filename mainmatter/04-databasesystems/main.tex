@@ -61,17 +61,17 @@ The relational model does not dictate what the data domains should be. However, 
     \item[Atomicity] The attribute values in a tuple $t_i$ are considered to be atomic, i.e., it is not possible to further decompose them.
 \end{description}
 
-Given the notion and the properties of a relation $\mathcal{R}$, one can introduce the idea of a \emph{heading} or \emph{schema} $SCH(\mathcal{R})$ and \emph{body} or \emph{extent} $EXT(\mathcal{R})$ of a relation. Which are the set of attributes and tuples respectively that make up $\mathcal{R}$.
+Given the notion and the properties of a relation $\mathcal{R}$, one can introduce the idea of a \emph{heading} or \emph{schema} $\mathtt{SCH}(\mathcal{R})$ and \emph{body} or \emph{extent} $\mathtt{EXT}(\mathcal{R})$ of a relation. Which are the set of attributes and tuples respectively that make up $\mathcal{R}$.
 
 \begin{equation}
-    SCH(\mathcal{R}) = \lbrace \mathcal{A}_1, \mathcal{A}_2, ... \mathcal{A}_N \rbrace
+    \mathtt{SCH}(\mathcal{R}) = \lbrace \mathcal{A}_1, \mathcal{A}_2, ... \mathcal{A}_N \rbrace
 \end{equation}
 
 \begin{equation}
-    EXT(\mathcal{R}) = \lbrace (a_{1,1}, ..., a_{1,N}), ... (a_{M,1}, ..., a_{M,N})\rbrace, a_{i,j} \in \mathcal{D}_j 
+    \mathtt{EXT}(\mathcal{R}) = \lbrace (a_{1,1}, ..., a_{1,N}), ... (a_{M,1}, ..., a_{M,N})\rbrace, a_{i,j} \in \mathcal{D}_j 
 \end{equation}
 
-The sum of all data contained in a database system can be regarded as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $N_k$ and data domains $\mathcal{D}_j \in \mathbb{D}$, with $\mathbb{D}$ being the set of all data domains supported by the system. The schema of a database can then be seen as the sum of all $SCH(\mathcal{R}_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $SCH(\mathcal{R})$ or $EXT(\mathcal{R})$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
+The sum of all data contained in a database system can be regarded as a collection of different relations $\mathcal{R}_k, k \in \mathbb{N}_{\geq 0}$ of assorted degrees $N_k$ and data domains $\mathcal{D}_j \in \mathbb{D}$, with $\mathbb{D}$ being the set of all data domains supported by the system. The schema of a database can then be seen as the sum of all $\mathtt{SCH}(\mathcal{R}_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $\mathtt{SCH}(\mathcal{R})$ or $\mathtt{EXT}(\mathcal{R})$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
 
 
 \subsection{Keys and Normal Forms}
@@ -79,8 +79,8 @@ The sum of all data contained in a database system can be regarded as a collecti
 The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. \cite{Codd:1970Relational} proposed a wide range of additional constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
 
 \begin{description}
-    \item[Primary key] A \emph{primary key} is a combination of attributes $P \subset SCH(\mathcal{R})$ that uniquely identify a tuple $t_i \in \mathcal{R}$. That is, the attributes $SCH(\mathcal{R}) \setminus P$ and their values are functionally determined by $P$.
-    \item[Foreign key] Foreign keys are attributes $F \subset SCH(\mathcal{R})$ that are not primary keys but reference the primary key of $R$ or some other relation $R_k$. Foreign keys can be used to model relationships between relations.
+    \item[Primary key] A \emph{primary key} is a combination of attributes $P \subset \mathtt{SCH}(\mathcal{R})$ that uniquely identify a tuple $t_i \in \mathcal{R}$. That is, the attributes $\mathtt{SCH}(\mathcal{R}) \setminus P$ and their values are functionally determined by $P$.
+    \item[Foreign key] Foreign keys are attributes $F \subset \mathtt{SCH}(\mathcal{R})$ that are not primary keys but reference the primary key of $R$ or some other relation $R_k$. Foreign keys can be used to model relationships between relations.
 \end{description}
 
 An example of relations with primary and foreign key attributes is given in \cref{example:relational_table_pkfk}. Primary keys are indicated with a * and foreign keys are underlined.
@@ -122,8 +122,11 @@ An example of relations with primary and foreign key attributes is given in \cre
 
 
 \subsection{Relational Algebra}
+\label{section:rel_algebra}
 
 \subsection{Extensions}
+\label{section:rel_extensions}
+
 
 \subsubsection{Extended Projection}
 
@@ -131,33 +134,34 @@ An example of relations with primary and foreign key attributes is given in \cre
 
 \subsubsection{Similarity Search and the Relational Model}
 
-Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set of allowed data domains $\mathbb{D}$ by $\mathcal{D} \subset \mathbb{R}^{dim}, dim \in \mathbb{N}_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\mathcal{R}$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
+Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set system of allowed data domains $\mathbb{D}$ by $\mathcal{D} \subset \mathbb{R}^{dim}, dim \in \mathbb{N}_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\mathcal{R}$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
 
-While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it  comes with limitations that become apparent upon disection of $\tau$'s structure. In its postulated form, $\tau$ addresses several functions at once:
+While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it comes with limitations that become apparent upon disection of its structure. In its postulated form, $\tau$ addresses several functions at once:
 
 \begin{enumerate}
-    \item It specifies the distance function and its parameters.
+    \item It specifies the distance function that should be evaluated and the provided arguments.
     \item It generates an implicit distance attribute on the underlying relation $\mathcal{R}$.
     \item It imposes an ascending ordering and limits the cardinality of $\mathcal{R}$ based on a predicate or a specified limit.
 \end{enumerate}
 
-While being very specific and thus straightforward to implement and optimize, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general similarity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
+While being very specific and thus straightforward to implement, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general proximity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
 
 Another important issue with the definition of $\tau$ in its current form is that despite the two opreations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
 
 \begin{equation}
+    \label{equation:commutation_of_tau}
     \sigma(\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})) \neq \tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\sigma(\mathcal{R}))
 \end{equation}
 
-These two queries are very different: On the one hand, the first query filters the results of a kNN-search on $\mathcal{R}$, thus returning $n \leq l$ results, wherein $n = k$ only if $\sigma$ matches all tuples. The second query performs a kNN-search on a pre-filtered relation $\mathcal{R}$, also returning $n \leq k$ entries. However, $n$ will only be smaller than $k$ if $\sigma$ selects fewer than $k$ tuples. 
+The left-hand side of \cref{equation:commutation_of_tau} filters the results of a kNN-search on $\mathcal{R}$, thus returning $n \leq k$ results, wherein $n = k$ only if $\sigma$ matches all tuples. The right-hand side of \cref{equation:commutation_of_tau} performs a kNN-search on a pre-filtered relation $\mathcal{R}$, also returning $n \leq k$ entries. However, $n$ will only be smaller than $k$ if $\sigma$ selects fewer than $k$ tuples.
 
-The same isn't true for $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, due to the limitation of the cardinality being facilitated by an \emph{implicit} selection $\sigma_{\delta \geq \epsilon}$.
+The same isn't true for $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$, due to the limitation of the cardinality being facilitated by an \emph{implicit} selection $\sigma_{\delta \leq \epsilon}$.
 
 \begin{equation}
     \sigma(\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})) = \tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\mathcal{R}))
 \end{equation}
 
-Hence, $\sigma$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ commute and yield equivalent results.
+Hence, $\sigma$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\mathcal{R})$ commute and yield equivalent results as long as $\sigma$ does not rely on the distance attribute introduced by $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\mathcal{R}))$
 
 \section{Queries: From Expression to Execution}
 
