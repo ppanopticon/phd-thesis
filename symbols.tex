@@ -9,26 +9,39 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% A group (the group is specified in the sort field)
-\newcommand*{\Agroupname}{A group name}
+\newcommand*{\Agroupname}{Basics}
+
+\newglossaryentry{symnatural}{sort={Asymnatural},name=\ensuremath{\mathbb{N}},symbol=\ensuremath{\mathbb{N}},type={symbols},description={Set of natural numbers.}}
+\newcommand{\symnatural}{{\glssymbol{symnatural}}}
+
+\newglossaryentry{symreal}{sort={Asymreal},name=\ensuremath{\mathbb{R}},symbol=\ensuremath{\mathbb{R}},type={symbols},description={Set of all real numbers.}}
+\newcommand{\symreal}{{\glssymbol{symreal}}}
+
+\newglossaryentry{symcomplex}{sort={Asymcomplex},name=\ensuremath{\mathbb{C}},symbol=\ensuremath{\mathbb{C}},type={symbols},description={Set of all complex numbers.}}
+\newcommand{\symcomplex}{{\glssymbol{symcomplex}}}
+
+%% B group (the group is specified in the sort field)
+\newcommand*{\Bgroupname}{Relational Algebra}
 
 % this is the definition of a symbol entry, note that glossaryentry is defined; for convenience using a newcommand, glssymbol is printed
 % see also the use of \ensuremath
-\newglossaryentry{symproj}{sort={Asymproj},name=\ensuremath{\pi_A(\cdot)},symbol=\ensuremath{\pi},type={symbols},description={projection function}}
-\newcommand{\symproj}{{\glssymbol{symproj}}}
+\newglossaryentry{symrel}{sort={Bsymrel},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes used with subscript, e.g., \(\symrel_{\mathtt{name}}\) to specify name or index.}}
+\newcommand{\symrel}{\glssymbol{symrel}}
 
-%% B group (the group is specified in the sort field)
-\newcommand*{\Bgroupname}{B group name}
+\newglossaryentry{symdomain}{sort={Bsymdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes used with subscript, e.g., \(\symdomain_{\mathtt{name}}\), to specify name or index.}}
+\newcommand{\symdomain}{\glssymbol{symdomain}}
 
-\newglossaryentry{symsel}{sort={Bsymsel},name=\ensuremath{\sigma_A(\cdot)},symbol=\ensuremath{\sigma},type={symbols},description={selection function}}
-\newcommand{\symsel}{{\glssymbol{symsel}}}
+\newglossaryentry{symattr}{sort={Bsymattr},name=\ensuremath{\mathcal{A}},symbol=\ensuremath{\mathcal{A}},type={symbols},description={An attribute of a relation, i.e., a tuple \((\mathtt{name}, \symdomain)\). Always used with subscript to specify name.}}
+\newcommand{\symattr}{\glssymbol{symattr}}
 
+\newglossaryentry{symattrp}{sort={Bsymattrp},name=\ensuremath{\mathcal{A}^{*}},symbol=\ensuremath{\mathcal{A}^{*}},type={symbols},description={An attribute that acts as a primary key.}}
+\newcommand{\symattrp}{\glssymbol{symattrp}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Math Symbols.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\argmax}{argmax}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Image.
