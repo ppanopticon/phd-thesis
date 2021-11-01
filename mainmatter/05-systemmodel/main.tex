@@ -23,7 +23,7 @@ Since the choice of the distance function $\delta$ is a crucial part of any prox
     \item $(\mathcal{D}_q,\delta)$ are supposed to constitute a metric, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity properties.
 \end{enumerate}
 
-Upon closer examination, one can see that there is good reason to assume the codomain of $\delta$ to lie in $\mathbb{R}$. On the one hand, it is obviously convenient both for the underlying mathematics as well as from a programming prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for the sorting that is part of many proximity based queries. If, however, we turn to \cref{example:mrf}, we realise that it is not reasonable to impose a restriction of the domain of the distance function to $\mathbb{R}^{dim}$ with $dim \in \mathbb{N^{+}}$
+Upon closer examination, one can come to the concluseion that there is good reason to assume the codomain of $\delta$ to lie in $\mathbb{R}$. On the one hand, it is obviously convenient both for the underlying mathematics as well as from an implementation prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for the sorting that is part of many proximity based queries. If, however, we turn to \cref{example:mrf}, we realise that it is not reasonable to impose a general restriction of the domain of the distance function to $\mathbb{R}^{dim}$ with $dim \in \mathbb{N^{+}}$
 
 \begin{example}[label=example:mrf]{Maximum Inner Product Search (MIPS) for MRF}{}
     In MRF (see \cref{section:application_mrf}), we try to obtain the signal vector $a_{i \in \mathbb{N}} \in \mathcal{D}_q \subset \mathbb{C}^{dim}$ so that it maximizes the inner product to a query vector $q \in \mathbb{C}^{dim}$. In this case, the distance function $\delta$ has the form $\delta \colon \mathbb{C}^{dim} \times \mathbb{C}^{dim} \to \mathbb{R}_{\geq 0}$. Hence, the domain of $\delta$ is a complex vector space.
@@ -46,7 +46,7 @@ If now in addition, we consider \cref{example:svmdistance}, we see that restrict
 
 Again, we are confronted with an example that violates the text-book definition of a distance function. While the idealized idea that distance functions used in proximity based queries must always constitute a metric on some real-valued vector space may be very common~\cite{Zezula:2006similarity}, we see in practice that this assumption is often violated~\cite{Bernhauer:2019Nonmetric} \todo{More examples} and that many functions used to calculate proximity between objects, are not actual metrics. Even though, this can be a disadvantage when considering high-dimensional index structures that exploit the geometric properties of metric functions, it is obvious that such functions exist and must thus be considered in any generalized database application supporting proximity based queries. 
 
-To summarize, we now find ourselves in the position where, on the one hand, we require a proper definition of what is considered to be a valid distance function so as to be able to efficiently plan and execute queries, while on the other hand keeping that definition open enough to accomodate the many different, practical considerations.
+To summarize, we now find ourselves in the position where, on the one hand, we require a proper definition of what is considered to be a valid distance function so as to be able to efficiently plan and execute queries, while on the other hand keeping that definition open enough to accomodate the many different, practical application now and in the future.
 
 In order to address the aforementioned limitations while still accomodating classical, metric distance functions and the need to be able to plan query execution, we propose the extension of a the distance function to the more general notion of a \emph{Distance Function Class (DFC)} following \cref{definition:dfc}.
 
@@ -60,7 +60,7 @@ With the idea of a DFC in mind, we can start to reason about their properties in
 
 \begin{description}
 
-    \item[DFC and Execution Plans] In extension to \cref{definition:pbq}, we see that any execution plan for a database query that involves the evaluation of a DFC falls into the category of a proximity based query.
+    \item[DFC and Execution Plans] In extension to \cref{definition:pbq}, we realise that any execution plan for a database query that involves the evaluation of a DFC falls into the category of a proximity based query.
 
     \item[Purity] Since the purpose of a DFC is to quantify proximity between a probing argument $a$ and a query argument $q$, we require that $a, q \in \mathcal{D}_q$, i.e., both arguments must belong to the same data domain $\mathcal{D}_q \in \mathbb{D}$ for a given DFC.
 
@@ -69,7 +69,7 @@ With the idea of a DFC in mind, we can start to reason about their properties in
     \item[Implementation] In the context a concrete execution plan, we require the query argument $q$ and the support arguments $s_i$ for a DFC to remain constant. Hence, irrespective of the arity of the DFC, the \emph{implementation} $\delta$ of DFC $\hat{\delta}$ is always a unary function with signature ($\mathtt{NAME}, \mathcal{D}_q$), i.e., \cref{equation:dfc_implementation} holds.
 \end{description}
 
-From the perspective of the database management system, DFCs represent a family of higher-order functions\footnote{In a real-world system, available DFCs described by their signature could be stored in a global \emph{function registry} from which they can be obtained during query planning (see \cref{chapter:cottontaildb}).} that in turn parametrize unary functions using the query $q$ and support arguments $s_k$. Implementing a DFC in essence means chosing values for $q$ and $s_k$ in the context of a query. The implementation requirement enshrines the fact that for a proximity based query, altering $q$ and $s_k$ alters the executed query, which is why for a given execution plan, those values must remain constant.
+From the perspective of the database management system implementation, DFCs represent a family of higher-order functions\footnote{In a real-world system, available DFCs described by their signature could be stored in a global \emph{function registry} from which they can be obtained during query planning (see \cref{chapter:cottontaildb}).} that in turn parametrize unary functions using the query $q$ and support arguments $s_k$. Implementing a DFC in essence means chosing values for $q$ and $s_k$ in the context of a query. The implementation requirement enshrines the fact that for a proximity based queries, altering $q$ and $s_k$ gives rise to a new query, which is why for a given execution plan instance, those values must remain constant.
 
 \begin{definition}[label=definition:dfc_sig_imp]{Signature and Implementation of DFCs}{}    
     The \emph{signature} of a DFC $\hat{\delta}$ is defined as:
@@ -93,11 +93,11 @@ A very simple and widely used example of a DFC would be the \emph{Minkowski Dist
 \end{equation}
 
 \begin{equation}
-    \delta_{L1}(\mathbf{a},\mathbf{q}) = \texttt{IMP}_{p=1}(\hat{\delta}_M) = \sum_{i=1}^{n} \mid q_i - a_i \mid
+    \hat{\delta_{L1}(\mathbf{a},\mathbf{q})} = \texttt{IMP}_{p=1}(\hat{\delta}_M) = \sum_{i=1}^{n} \mid q_i - a_i \mid
 \end{equation}
 
 \begin{equation}
-    \delta_{L2}(\mathbf{a},\mathbf{q}) = \texttt{IMP}_{p=2}(\hat{\delta}_M) = \sqrt{\sum_{i=1}^{n} \mid q_i - a_i \mid^2}
+    \hat{\delta_{L2}(\mathbf{a},\mathbf{q})} = \texttt{IMP}_{p=2}(\hat{\delta}_M) = \sqrt{\sum_{i=1}^{n} \mid q_i - a_i \mid^2}
 \end{equation}
 
 Using the idea of a DFC, we can express many different types of distance functions in a simple yet powerful framework. Two examples are illustrated in \cref{figure:distance_computation} and it is easy to see that both the functions used in \cref{example:mrf} and \cref{example:svmdistance} fall into the category of a DFC.
@@ -112,13 +112,13 @@ We will show in \cref{section:dfc_and_planning}, that a database management syst
 \end{figure}
 
 \subsubsection{Parametrized Dimensionality}
-As an aside, we must address the role of dimensionality $dim$ in the case of vector spaces such as $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. One could argue, that the dimensionality of such a vector space can also be seens as a parameter of the DFC. Nevertheless, we consider the dimensionality to be a structural property of the underlying data domain $\mathcal{D_q}$ and thus thightly coupled to the data type. This means, that dimensionality as well as the data type are well-defined and remain constant between queries for a given relation.
+As an aside, we must address the role of dimensionality $dim$ in the case of vector spaces such as $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. One could argue, that the dimensionality of such a vector space can also be seen as a parameter of the DFC. Nevertheless, we consider the dimensionality to be a structural property of the underlying data domain $\mathcal{D_q}$ and thus thightly coupled to the data type. This means, that dimensionality as well as the data type are well-defined and remain constant withing and, for most parts, even between queries for a given relation.
 
 \subsection{Extending the Relational Model}
 
 Using the definition of a DFC as provided in \cref{definition:dfc}, one can start to integrate DFCs into the relational data model. Following~\cite{Giangreco:2018thesis}, we first assume  $\mathbb{D}$ -- the set system of data domains supprted by the database -- to be extended by whatever data domain $\mathcal{D}_q$ is required. Following that recipe, a database management system can be extended to support every type of (mathematical) object that is useful for a given application, such as but not limited to $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. 
 
-Using the idea of an extended projection $\pi_{\mathcal{A}}$ as defined in \cref{section:relational_data_model} and described by \cite{Garcia:2009Database}\todo{1-2 additional references}, the evaluation of a DFC can be expressed as follows.
+Using the idea of an extended projection $\pi_{\mathcal{A}}$ as introduced in \cref{section:relational_data_model} and described by \cite{Garcia:2009Database}\todo{1-2 additional references}, the evaluation of a DFC can be expressed as follows.
 
 \begin{definition}[label=definition:spf_rel]{Distance Function Classes (DFC) in Extended Projection}{}
     Let $\hat{\delta} \colon \mathcal{D}_q \times \mathcal{D}_q \times \mathcal{D}_{1} ... \times \mathcal{D}_{N-2} \to \mathbb{R}$ be a N-ary DFC and $\delta = \mathtt{IMP}(\hat{\delta})$ its implementation. Let further $\mathcal{R}$ be a relation with attribute $\mathcal{A}_p \in \mathtt{SCH}(\mathcal{R})$. The \emph{extended projection} $\pi_{\delta(\mathcal{A}_p)}(\mathcal{R})$ describes the evaluation of $\delta$ using $\mathcal{A}_p$ as probing argument. $\pi_{\delta(\mathcal{A}_p)}(\mathcal{R})$ introduces a new distance attribute $\mathcal{A}_d$, i.e., $\mathtt{SCH}(\pi_{\delta(\mathcal{A}_p), \mathcal{A}_1, ..., \mathcal{A}_n}(\mathcal{R})) = \mathtt{SCH}(\mathcal{R}) \cup \{ \mathcal{A}_d \}$
@@ -130,8 +130,8 @@ The following expressions are valid examples of the extended projection on relat
 
 \begin{itemize}
     \item $\pi_{\delta_1(\mathcal{A}_1), \delta_2(\mathcal{A}_1)}(\mathcal{R})$: Evaluation of multiple DFCs.
-    \item $\pi_{\delta_1(\mathcal{A}_1), \delta_1(\mathcal{A}_2)}(\mathcal{R})$: Evaluation of same DFC using different attributes.
-    \item $\pi_{\delta(\mathcal{A}_1), \mathcal{A}_2, \mathcal{A}_4}(\mathcal{R})$: Evaluation DFC with attribute projection.
+    \item $\pi_{\delta_1(\mathcal{A}_1), \delta_1(\mathcal{A}_2)}(\mathcal{R})$: Evaluation of same DFC using different probing arguments.
+    \item $\pi_{\delta(\mathcal{A}_1), \mathcal{A}_2, \mathcal{A}_4}(\mathcal{R})$: Evaluation of a DFC with attribute projection.
 \end{itemize}
 
 Combining the extended projection with the notion of a ranked relation $\mathcal{R^{\mathcal{O}}}$, the order operator $\tau_{\mathcal{O}}(\mathcal{R})$ and the k-selection operator $\lambda_k(\mathcal{R})$~\cite{Chengkai:2005RankSQL}, both described in \cref{section:rel_extensions}, we can now impose a sort order based on $\mathcal{A}_d$ and limit the cardinality of $\mathcal{R}^{\mathcal{O}}$. Hence, the three operators can be used to express a wide range of proximity based queries, including but not limited to NNS.

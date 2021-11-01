@@ -9,10 +9,10 @@
     \item[Management \& Definition] \glsname{dbms} provide mechanisms to structure and organize data corpora that can range from a few megabytes to houndreds of terrabytes in size. For example, data can be structured into documents, relations or graph-like structures.
     \item[Manipulation] \glsname{dbms} provide users with the ability to modify the data using a \gls{dml}. Modifications may include adding, removing or changing existing entries.
     \item[Querying] \glsname{dbms} provide users with the ability to query the data using a \gls{dql}. Such queries can be used to answer specific ``questions'' about the data.
-    \item[Guarantees] \glsname{dbms} usually provide guarantees for the execution of the aforementioned, such as assuring durability upon failure or providing access control for concurrent read and write operations. A famous set of guarantees is known by its acronym ACID -- which stands for \textbf{A}tomicity, \textbf{C}onsistency, \textbf{I}solation and \textbf{D}urability~\cite{Haerder:1983principles}.
+    \item[Guarantees] \glsname{dbms} usually provide guarantees, such as assuring durability upon failure or providing access control for concurrent read and write operations. A well-known set of guarantees is known by its acronym ACID -- which stands for \textbf{A}tomicity, \textbf{C}onsistency, \textbf{I}solation and \textbf{D}urability~\cite{Haerder:1983principles}.
 \end{description}
 
-Since the contributions of this Thesis rely on decades of database research, we use this chapter to provide a brief overview over the relevant fundamentals. Most of the basic aspects are inspired by \cite{Garcia:2009Database} and \cite{Petrov:2019Database}.
+Since the contributions of this Thesis rely on decades of database research, we use this chapter to provide a brief overview over the relevant fundamentals. Most of the basic aspects are inspired and guided by \cite{Garcia:2009Database} and \cite{Petrov:2019Database}.
 
 
 \section{The Relational Data Model}
@@ -20,19 +20,21 @@ Since the contributions of this Thesis rely on decades of database research, we 
 
 A data model is a formal framework that describes any type of data or information. It usually involves a formal description of the data's \emph{structure}, the \emph{operations} that can be performed and the \emph{constraints} that should be imposed on the data~\cite{Garcia:2009Database}. The purpose of any data model is to formalize how data governed by it can be accessed, modified and queried.
 
-In the context of database systems, it has become common practice to make a clear distinction between the \emph{physical data model} and the a higher-level \emph{logical data model}. While the former captures low-level structure (representation in bits and bytes, data structures etc.) and operations (reads and writes), the latter describes higher-level semantics (attributes, relationships etc.). The argument for this separation is that ``users'' of any \gls{dbms} should not concern themselves with how exactly data is organized and accessed at the lowest level.
+In the context of database systems, it has become common practice to make a clear distinction between the \emph{physical data model} and the a higher-level \emph{logical data model}. While the former captures low-level structure (representation in bits and bytes, data structures etc.) and operations (reads and writes), the latter describes higher-level semantics (attributes, relationships etc.). The argument in favour of this separation is that ``users'' of any \gls{dbms} should not concern themselves with how exactly data is organized and accessed at the lowest level.
 
-In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes such a logical data model for databases, which he himself refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades. 
+In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes such a logical data model for databases, which he himself refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades, with early examples dating back to the 1970s \cite{Astrahan:1976Systemr} and promintent, contemporary examples including systems such as \emph{MySQL}, \emph{PostgreSQL} or \emph{Oracle}. 
 
-The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualized as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. \cref{example:relational_table} features a relation \emph{paintings} and each entry in the table represents a painting and the related attribute values for attributes \emph{title}, \emph{artist} and \emph{painted}. Note, that we already use the mathematical notation introduced in \cref{defintion:relation}.
+The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualized as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. \cref{example:relational_table} features a relation \emph{paintings} and each entry in the table represents a painting and the related attribute values for attributes \emph{title}, \emph{artist} and \emph{painted}.
+
+Semantically, a relation can be seen as a knowledge-base about some fact -- such as, the paintings held by a museum -- under a \gls{cwa}{}\todo{Reference}. That is, the relation contains all the information available about the fact and can thus be used do derive conclusive answers or results given a stated question or query.
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\symrel_{paintings}$}{}
     
-    The following table lists the content of a ternary relation ($N = 3$) $\mathcal{R}_{paintings}$. The attributes $\symattr_{title}, \symattr_{artist}, \symattr_{id}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
+    The following table lists the content of a ternary relation ($N = 3$) $\symrel_{paintings}$. The attributes $\symattr_{title}, \symattr_{artist}, \symattr_{id}$ correspond to the table's columns. The individual tuples $t_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
         
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\mathcal{R}_{paintings}$ & $\symattrp_{title}$  & $\symattr_{artist}$  & $\symattr_{painted}$ \\ 
+            $\symrel_{paintings}$ & $\symattrp_{title}$  & $\symattr_{artist}$  & $\symattr_{painted}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -48,11 +50,13 @@ The relational model is structured around \emph{relations}, which are a mathemat
 In order to formalize the structure of and the operations that can be executed on the data represented by a relation, one can use \cref{defintion:relation}. 
 
 \begin{definition}[label=defintion:relation]{Relation according to \cite{Codd:1970Relational}}{}
-    Given $i,j,N \in \symnatural_{> 0}$ and a collection of sets $\symdomain_1, \symdomain_2, ... \symdomain_N$, a \emph{relation} $\mathcal{R}$ on these sets is a set of \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,n}) \in \mathcal{R}$ such that the attribute values $a_{i,1} \in \symdomain_1, a_{i,2} \in \symdomain_2 ... a_{i,N} \in \symdomain_N$. Ergo, $\mathcal{R}$ is a subset of the Cartesian product of the relation's \emph{data domains} $\symdomain_j$, that is, $\symdomain_1 \times \symdomain_2 ... \times \symdomain_N$. The number of data domains $N$ is referred to as the relation's \emph{degree} and we call a relation \emph{N-ary}, e.g., binary for $N=2$. 
+    Given $i,j,N \in \symnatural_{> 0}$ and a collection of sets $\symdomain_1, \symdomain_2, ... \symdomain_N$, a \emph{relation} $\symrel$ on these sets is a set of \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,n}) \in \symrel$ such that the attribute values $a_{i,1} \in \symdomain_1, a_{i,2} \in \symdomain_2 ... a_{i,N} \in \symdomain_N$. Ergo, $\symrel$ is a subset of the Cartesian product of the relation's \emph{data domains} $\symdomain_j$, that is, $\symdomain_1 \times \symdomain_2 ... \times \symdomain_N$. The number of data domains $N$ is referred to as the relation's \emph{degree} and we call a relation \emph{N-ary}, e.g., binary for $N=2$. 
 \end{definition}
 
 
-The relational model does not dictate what the data domains should be. However, in a relational database system, the data domains $\symdomain_1, \symdomain_2, ... \symdomain_N$ usually correspond to the data types supported by the database, for example, \lstinline{Int} for integer numbers, \lstinline{Float} for floating point numbers or \lstinline{Varchar} for text \footnote{Strictly speaking as per definition, the data domains of a given relation $\mathcal{R}$ are merely subsets of the sets that represent the respective data type which, in turn, are subsets of even more basic sets such as $\symnatural$ or $\symreal$ for \lstinline{Int} and \lstinline{Float} respectively. The relationship between types and data domains is subject of a more categorical approach to data models and nicely layed out in \cite{Spivak:2009Simplicial}}. To keep things simple, we will use \emph{data domain} synonymous for \emph{data type}. The combination of a data domain with a human readable label is called attribute and we will use subscripts to indicate an attribute's name or index, that is, $\symattr_{name} = (\symdomain, name)$. In its original form, the relational model assumes the following properties to be true for a relation $\mathcal{R}$ and its attributes~\cite{Codd:1970Relational}:
+The relational model itself does not dictate what the data domains should be. However, in a relational database system, the data domains $\symdomain_1, \symdomain_2, ... \symdomain_N$ usually correspond to the data types supported by the database, for example, \lstinline{Int} for integer numbers, \lstinline{Float} for floating point numbers or \lstinline{Varchar} for text. We use the set-system $\mathbb{D}$ to denote the set of all data domains supported by a \gls{dbms}, i.e., $\symdomain_i \in \mathbb{D} \: \forall \:  i \in \symnatural$. To keep things simple, we will use \emph{data domain} synonymous for \emph{data type} \footnote{Strictly speaking, the data domains of a given relation $\symrel$ are merely subsets of the sets that represent the respective data type which, in turn, are subsets of even more basic sets such as $\symnatural$ or $\symreal$ for \lstinline{Int} and \lstinline{Float} respectively. The relationship between types and data domains is subject of a more categorical approach to data models and nicely layed out in \cite{Spivak:2009Simplicial}}. The combination of a data domain with a human readable label is called attribute and we will use subscripts to indicate an attribute's name or index, that is, $\symattr_{name} = (\symdomain, name)$. 
+
+In its original form, the relational model assumes the following properties to be true for a relation $\symrel$ and its attributes~\cite{Codd:1970Relational}:
 
 \begin{description}
     \item[Ordering of tuples] Tuples $t_i \in \mathcal{R}$ are inherently unordered and two relations are considered equal if they contain the same tuples, regardless of order.
@@ -61,17 +65,17 @@ The relational model does not dictate what the data domains should be. However, 
     \item[Atomicity] The attribute values in a tuple $t_i$ are considered to be atomic, i.e., it is not possible to further decompose them.
 \end{description}
 
-Given the notion and the properties of a relation $\mathcal{R}$, one can introduce the idea of a \emph{heading} or \emph{schema} $\mathtt{SCH}(\mathcal{R})$ and \emph{body} or \emph{extent} $\mathtt{EXT}(\mathcal{R})$ of a relation. Which are the set of attributes and tuples respectively that make up $\mathcal{R}$.
+Given the notion and the properties of a relation $\symrel$, one can introduce the idea of a \emph{heading} or \emph{schema} $\mathtt{SCH}(\mathcal{R})$ and \emph{body} or \emph{extent} $\mathtt{EXT}(\symrel)$ of a relation. Which are the set of attributes and tuples respectively that make up $\symrel$.
 
 \begin{equation}
-    \mathtt{SCH}(\mathcal{R}) = \lbrace \symattr_1, \symattr_2, ... \symattr_N \rbrace
+    \symsch(\mathcal{R}) = \lbrace \symattr_1, \symattr_2, ... \symattr_N \rbrace
 \end{equation}
 
 \begin{equation}
-    \mathtt{EXT}(\mathcal{R}) = \lbrace (a_{1,1}, ..., a_{1,N}), ... (a_{M,1}, ..., a_{M,N})\rbrace, a_{i,j} \in \symdomain_j 
+    \symext(\mathcal{R}) = \lbrace (a_{1,1}, ..., a_{1,N}), ... (a_{M,1}, ..., a_{M,N})\rbrace, a_{i,j} \in \symdomain_j 
 \end{equation}
 
-The sum of all data contained in a database system can be regarded as a collection of different relations $\mathcal{R}_k, k \in \symnatural_{\geq 0}$ of assorted degrees $N_k$ and data domains $\symdomain_j \in \mathbb{D}$, with $\mathbb{D}$ being the set of all data domains supported by the system. The schema of a database can then be seen as the sum of all $\mathtt{SCH}(\mathcal{R}_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $\mathtt{SCH}(\mathcal{R})$ or $\mathtt{EXT}(\mathcal{R})$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
+The sum of all data contained in a database system can be regarded as a collection of different relations $\symrel_k, k \in \symnatural_{\geq 0}$ of assorted degrees $N_k$ and data domains $\symdomain_j \in \mathbb{D}$, . The schema of a database can then be seen as the sum of all $\mathtt{SCH}(\mathcal{R}_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $\mathtt{SCH}(\mathcal{R})$ or $\mathtt{EXT}(\mathcal{R})$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
 
 
 \subsection{Keys and Normal Forms}
