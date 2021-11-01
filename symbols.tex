@@ -25,23 +25,40 @@
 
 % this is the definition of a symbol entry, note that glossaryentry is defined; for convenience using a newcommand, glssymbol is printed
 % see also the use of \ensuremath
-\newglossaryentry{symrel}{sort={Bsymrel},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes used with subscript, e.g., \(\symrel_{\mathtt{name}}\) to specify name or index.}}
-\newcommand{\symrel}{\glssymbol{symrel}}
+\newglossaryentry{relation}{sort={Barelation},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newcommand{\relation}{\glssymbol{relation}}
 
-\newglossaryentry{symdomain}{sort={Bsymdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes used with subscript, e.g., \(\symdomain_{\mathtt{name}}\), to specify name or index.}}
-\newcommand{\symdomain}{\glssymbol{symdomain}}
+\newglossaryentry{domain}{sort={Bbdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes used with subscript, e.g., \(\domain_{\mathtt{name}}\), to specify name or index.}}
+\newcommand{\domain}{\glssymbol{domain}}
 
-\newglossaryentry{symattr}{sort={Bsymattr},name=\ensuremath{\mathcal{A}},symbol=\ensuremath{\mathcal{A}},type={symbols},description={An attribute of a relation, i.e., a tuple \((\mathtt{name}, \symdomain)\). Always used with subscript to specify name.}}
-\newcommand{\symattr}{\glssymbol{symattr}}
+\newglossaryentry{attribute}{sort={Bcattribute},name=\ensuremath{\mathcal{A}},symbol=\ensuremath{\mathcal{A}},type={symbols},description={An attribute of a relation, i.e., a tuple \((\mathtt{name}, \domain)\). Sometimes used with subscript to specify name or index.}}
+\newcommand{\attribute}{\glssymbol{attribute}}
 
-\newglossaryentry{symattrp}{sort={Bsymattrp},name=\ensuremath{\mathcal{A}^{*}},symbol=\ensuremath{\mathcal{A}^{*}},type={symbols},description={An attribute that acts as a primary key.}}
-\newcommand{\symattrp}{\glssymbol{symattrp}}
+\newglossaryentry{tuple}{sort={Bdtuple},name=\ensuremath{t},symbol=\ensuremath{t},type={symbols},description={A tuple \( \tuple \in \relation \) of attribute values \( a_i \in \attribute_i \). Sometimes used with subscript, e.g., \( \tuple_i \)  to specify the i-th tuple in \(  \relation \).}}
+\newcommand{\tuple}{\glssymbol{tuple}}
 
-\newglossaryentry{symsch}{sort={Bsymsch},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \(\symrel \), i.e., all attributes \(\symschema(\symrel) = (\symattr_1, \symattr_2, \ldots, \symattr_N)\) that make up \(\symrel \).}}
-\newcommand{\symsch}{\glssymbol{symsch}}
+\newglossaryentry{domainset}{sort={Bedomainset},name=\ensuremath{\mathbb{D}},symbol=\ensuremath{\mathbb{D}},type={symbols},description={The set of all data domains \(\domain_{i}\) supported by a database.}}
+\newcommand{\domainset}{\glssymbol{domainset}}
 
-\newglossaryentry{symext}{sort={Bsymext},name=\ensuremath{\mathtt{EXT}},symbol=\ensuremath{\mathtt{EXT}},type={symbols},description={The extent of a relation \(\symrel \), i.e., the tuples \(t_i\) it contains.}}
-\newcommand{\symext}{\glssymbol{symext}}
+\newglossaryentry{attributep}{sort={Bfattributep},name=\ensuremath{\mathcal{A}^{*}},symbol=\ensuremath{\mathcal{A}^{*}},type={symbols},description={An attribute that acts as a primary key.}}
+\newcommand{\attributep}{\glssymbol{attributep}}
+
+\newglossaryentry{schema}{sort={Bgschema},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \( \relation \), i.e., all attributes \(\schema (\relation) = (\attribute_1, \attribute_2, \ldots, \attribute_N)\) that make up \(\relation \).}}
+\newcommand{\schema}{\glssymbol{schema}}
+
+\newglossaryentry{extent}{sort={Bhextent},name=\ensuremath{\mathtt{EXT}},symbol=\ensuremath{\mathtt{EXT}},type={symbols},description={The extent of a relation \( \relation \), i.e., the tuples \(t_i\) it contains.}}
+\newcommand{\extent}{\glssymbol{extent}}
+
+
+%% C group (the group is specified in the sort field)
+\newcommand*{\Cgroupname}{Multimedia Retrieval}
+
+\newglossaryentry{symdfc}{sort={Csymdfc},name=\ensuremath{\hat{\delta}},symbol=\ensuremath{\hat{\delta}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
+\newcommand{\symdfc}{\glssymbol{symdfc}}
+
+\newglossaryentry{distance}{sort={Cdistance},name=\ensuremath{\delta},symbol=\ensuremath{\delta},type={symbols},description={A relation. Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newcommand{\distance}{\glssymbol{distance}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Math Symbols.
