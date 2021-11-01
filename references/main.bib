@@ -21,6 +21,19 @@
   pages = {404--417}
 }
 
+@inproceedings{Belohlavek:2007relational,
+  title = {Relational Algebra for Ranked Tables with Similarities: Properties and Implementation},
+  booktitle = {Advances in Intelligent Data Analysis {{VII}}},
+  author = {Belohlavek, Radim and Opichal, Stanislav and Vychodil, Vilem},
+  editor = {R. Berthold, Michael and {Shawe-Taylor}, John and Lavra{\v c}, Nada},
+  year = {2007},
+  pages = {140--151},
+  publisher = {{Springer Berlin Heidelberg}},
+  address = {{Berlin, Heidelberg}},
+  abstract = {The paper presents new developments in an extension of Codd's relational model of data. The extension consists in equipping domains of attribute values with a similarity relation and adding ranks to rows of a database table. This way, the concept of a table over domains (i.e., relation over a relation scheme) of the classical Codd's model extends to the concept of a ranked table over domains with similarities. When all similarities are ordinary identity relations and all ranks are set to 1, our extension becomes the ordinary Codd's model. The main contribution of our paper is twofold. First, we present an outline of a relational algebra for our extension. Second, we deal with implementation issues of our extension. In addition to that, we also comment on related approaches presented in the literature.},
+  isbn = {978-3-540-74825-0}
+}
+
 @inproceedings{Bernhauer:2019Nonmetric,
   title = {Non-Metric Similarity Search Using Genetic {{TriGen}}},
   booktitle = {Similarity Search and Applications},
@@ -80,7 +93,7 @@
 }
 
 @inproceedings{Chengkai:2005RankSQL,
-  title = {{{RankSQL}}: Query Algebra and Optimization for Relational Top-k Queries},
+  title = {{{RankSQL}}: Query {{Algebra}} and {{Optimization}} for {{Relational Top}}-k {{Queries}}},
   booktitle = {Proceedings of the 2005 {{ACM SIGMOD}} International Conference on Management of Data},
   author = {Li, Chengkai and Chang, Kevin Chen-Chuan and Ilyas, Ihab F. and Song, Sumin},
   year = {2005},
@@ -89,7 +102,6 @@
   publisher = {{Association for Computing Machinery}},
   address = {{New York, NY, USA}},
   doi = {10.1145/1066157.1066173},
-  abstract = {This paper introduces RankSQL, a system that provides a systematic and principled framework to support efficient evaluations of ranking (top-k) queries in relational database systems (RDBMS), by extending relational algebra and query optimization. Previously, top-k query processing is studied in the middleware scenario or in RDBMS in a "piecemeal" fashion, i.e., focusing on specific operator or sitting outside the core of query engines. In contrast, we aim to support ranking as a first-class database construct. As a key insight, the new ranking relationship can be viewed as another logical property of data, parallel to the "membership" property of relational data model. While membership is essentially supported in RDBMS, the same support for ranking is clearly lacking. We address the fundamental integration of ranking in RDBMS in a way similar to how membership, i.e., Boolean filtering, is supported. We extend relational algebra by proposing a rank-relational model to capture the ranking property, and introducing new and extended operators to support ranking as a first-class construct. Enabled by the extended algebra, we present a pipelined and incremental execution model of ranking query plans (that cannot be expressed traditionally) based on a fundamental ranking principle. To optimize top-k queries, we propose a dimensional enumeration algorithm to explore the extended plan space by enumerating plans along two dual dimensions: ranking and membership. We also propose a sampling-based method to estimate the cardinality of rank-aware operators, for costing plans. Our experiments show the validity of our framework and the accuracy of the proposed estimation model.},
   isbn = {1-59593-060-4},
   file = {/Users/gassra02/Zotero/storage/B9KYNVVF/Li et al. - 2005 - RankSQL Query algebra and optimization for relati.pdf}
 }
@@ -212,6 +224,12 @@
   publisher = {{MIT Press}}
 }
 
+@inproceedings{Gupta:1995Generalized,
+  title = {Generalized {{Projections}}: A {{Powerful Approach}} to {{Aggregation}}},
+  author = {Gupta, Ashish Kumar and Harinarayan, Venky and Quass, Dallan},
+  year = {1995}
+}
+
 @article{Haerder:1983principles,
   title = {Principles of Transaction-Oriented Database Recovery},
   author = {Haerder, Theo and Reuter, Andreas},
@@ -223,7 +241,7 @@
   publisher = {{ACM New York, NY, USA}}
 }
 
-@inproceedings{Heller:2021Towards,
+@inproceedings{Heller:2021towards,
   title = {Towards {{Explainable Interactive Multi}}-{{Modal Video Retrieval}} with Vitrivr},
   booktitle = {Proceedings of the 27th {{International Conference}} on {{Multimedia Modeling}}},
   author = {Heller, Silvan and Gasser, Ralph and Illi, Cristina and Pasquinelli, Maurizio and Sauter, Loris and Spiess, Florian and Schuldt, Heiko},
@@ -429,7 +447,7 @@
   file = {/Users/gassra02/Zotero/storage/QG75RMQN/Rossetto - 2018 - Multi-modal video retrieval.pdf}
 }
 
-@inproceedings{Rossetto:2019Deep,
+@inproceedings{Rossetto:2019deep,
   title = {Deep Learning-Based Concept Detection in Vitrivr},
   booktitle = {Proceedings of the 25th {{International Conference}} on {{Multimedia Modelling}}},
   author = {Rossetto, Luca and Amiri Parian, Mahnaz and Gasser, Ralph and Giangreco, Ivan and Heller, Silvan and Schuldt, Heiko},
@@ -463,7 +481,7 @@
   isbn = {978-3-030-67835-7}
 }
 
-@article{Rossetto:2021On,
+@article{Rossetto:2021on,
   title = {On the {{User}}-{{Centric Comparative Remote Evaluation}} of {{Interactive Video Search Systems}}},
   author = {Rossetto, Luca and Gasser, Ralph and Heller, Silvan and {Parian-Scherb}, Mahnaz and Sauter, Loris and Spiess, Florian and Schuldt, Heiko and Peska, Ladislav and Soucek, Tomas and Kratochvil, Miroslav and Mejzlik, Frantisek and Vesely, Patrik and Lokoc, Jakub},
   year = {2021},
