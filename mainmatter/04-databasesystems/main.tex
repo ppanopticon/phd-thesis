@@ -89,7 +89,7 @@ The sum of all data contained in a database system can be regarded as a collecti
 The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. \cite{Codd:1970Relational} proposed a wide range of additional constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
 
 \begin{description}
-    \item[Primary key] A \emph{primary key} is a combination of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t_i \in \relation$. That is, the attributes $\schema(\relation) \setminus \mathcal{P}$ and the associated attribute values are functionally determined by $\mathcal{P}$.
+    \item[Primary key] A \emph{primary key} is a combination of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t_i \in \relation$. That is, the attributes that are not part of the primary key (non-prime), i.e., $\schema(\relation) \setminus \mathcal{P}$ and the associated attribute values are functionally determined by $\mathcal{P}$.
     \item[Foreign key] Foreign keys are attributes $\mathcal{F} \subset \schema(\relation)$ that are not primary keys but reference the primary key of $R$ or some other relation $R_k$. Foreign keys can be used to model relationships between relations.
 \end{description}
 
@@ -132,9 +132,9 @@ An example of relations with primary and foreign key attributes is given in \cre
 Given the notion of primary and foreign keys, Codd proposed a series of \emph{normal forms} that are an indication of the normalization and transitively the quality of a data model.
 
 \begin{description}
-    \item[\acrfull{1nf}] requires, that no attribute of in a relation has other relations as values (atomicity).
-    \item[\acrfull{2nf}] requires, that every attribute that is not part of the primary key is functionally determined by the whole primary key and not any subset thereof. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}$ and $\attributep_{\mathtt{lname}}$ jointly.
-    \item[\acrfull{3nf}] requires, that every attribute that is not part of the primary key is functionally determined solely by the primary key and that they do not depend on any other key. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}, \attributep_{\mathtt{lname}}$ alone\footnote{The normal forms introduced thus far have also led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similar sentence used as a vow in courts of law.}.
+    \item[\acrfull{1nf}] requires, that no attribute in a relation has other relations as values, i.e. attributes are atomic.
+    \item[\acrfull{2nf}] requires, that every non-prime attribute is functionally determined by the whole primary key and not any subset thereof. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}$ and $\attributep_{\mathtt{lname}}$ jointly.
+    \item[\acrfull{3nf}] requires, that every non-prime attribute is functionally determined solely by the primary key and that they do not depend on any other key. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}, \attributep_{\mathtt{lname}}$ alone\footnote{The normal forms introduced thus far have also led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similar sentence used as a vow in courts of law.}.
 \end{description}
 
 All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{3nf} is also required to satisfy \acrshort{2nf}  and \acrshort{1nf}. Additional normal forms up to \emph{6NF} and the \acrfull{bcnf} have been defined. For the sake of brevity, we will ommit those since they are not relevant for the further discussion.
