@@ -78,11 +78,11 @@ With the idea of a \acrshort{dfc} and its implementation in mind, we can start t
     \item[Scalar Codomain] A \acrshort{dfc} and its implementations are a scalar functions, that is, for any choice of arguments they produce a single, scalar output $d \in \symreal$. 
 \end{description}
 
-From the perspective of the \acrshort{dbms} implementation, \acrshort{dfc}s represent a family of higher-order functions, which in turn parametrize unary functions using the query $q$ and support arguments $s_k$. Implementing a DFC in essence means chosing values for $q$ and $s_k$ in the context of a query. This implementation requirement enshrines the fact that for a proximity based query, altering $q$ and $s_k$ effectively gives rise to a new query, which is why for a given execution plan instance, those values must remain constant. 
+From the perspective of the \acrshort{dbms} implementation, \acrshort{dfc}s represent a family of higher-order functions, which in turn parametrize unary functions using the query $q$ and support arguments $s_k$. Implementing a \acrshort{dfc} in essence means chosing values for $q$ and $s_k$ in the context of a query. This implementation requirement enshrines the fact that for a proximity based query, altering $q$ and $s_k$ effectively gives rise to a new query, which is why for a given execution plan instance, those values must remain constant. 
 
-During the execution of a proximity based query, the \acrshort{dbms} can simply read the probing arguments from the data store for every tuple in the underlying relation $\relation$, execute the \acrshort{dfc}'s implementation using the probing argument and obtain the output of the DFC.
+During the execution of a proximity based query, the \acrshort{dbms} can simply read the probing arguments from the data store for every tuple in the underlying relation $\relation$, execute the \acrshort{dfc}'s implementation using the probing argument and obtain the output of the \acrshort{dfc}.
 
-A very simple yet widely used example of a DFC would be the \emph{Minkowski Distance} $\symdfc_{M} \colon \mathbb{R}^{dim} \times \mathbb{R}^{dim} \times \mathbb{R} \to \mathbb{R}_{\geq 0}$ with its two, partial implementations, the Manhattan (L1) and the Euclidean (L2) distance:
+A very simple yet widely used example of a \acrshort{dfc} would be the \emph{Minkowski Distance} $\symdfc_{M} \colon \mathbb{R}^{dim} \times \mathbb{R}^{dim} \times \mathbb{R} \to \mathbb{R}_{\geq 0}$ with its two, partial implementations, the Manhattan (L1) and the Euclidean (L2) distance:
 
 \begin{equation}
     \symdfc_{M}(\mathbf{a},\mathbf{q},p) = \left(\sum_{i=1}^{n} \mid q_i - a_i \mid^p\right)^{\frac{1}{p}}
@@ -96,35 +96,35 @@ A very simple yet widely used example of a DFC would be the \emph{Minkowski Dist
     \hat{\delta_{L2}(\mathbf{a},\mathbf{q})} = \texttt{IMP}_{p=2}(\symdfc_M) = \sqrt{\sum_{i=1}^{n} \mid q_i - a_i \mid^2}
 \end{equation}
 
-However, using the idea of a DFC, we can express many different types of much more complex distance functions in a simple yet powerful framework. Two examples are illustrated in \cref{figure:distance_computation} and it is easy to see that both the functions used in \cref{example:mrf} (complex domain) and \cref{example:svmdistance} (ternay function with scalar support argument) fall into the category of a DFC. We will show in \cref{section:dfc_and_planning}, that a \acrshort{dbms} can leverage the \emph{signature} and the \emph{implementation} property of a DFC to plan the execution of proximity based queries.
+However, using the idea of a \acrshort{dfc}, we can express many different types of much more complex distance functions in a simple yet powerful framework. Two examples are illustrated in \cref{figure:distance_computation} and it is easy to see that both the functions used in \cref{example:mrf} (complex domain) and \cref{example:svmdistance} (ternay function with scalar support argument) fall into the category of a \acrshort{dfc}. We will show in \cref{section:dfc_and_planning}, that a \acrshort{dbms} can leverage the \emph{signature} and the \emph{implementation} property of a \acrshort{dfc} to plan the execution of proximity based queries.
 
 \begin{figure}[bt]
     \centering
     \includegraphics[width=\textwidth]{figures/distance_computations.eps}
-    \caption{Two examples of distance functions that fall into the broader category of a DFC. On the left, the point-distance between $q$ and $p_i$ and on the right, the distance between a hyperplane $q^Tx+b = 0$ and points $p_i$.}
+    \caption{Two examples of distance functions that fall into the broader category of a \acrshort{dfc}. On the left, the point-distance between $q$ and $p_i$ and on the right, the distance between a hyperplane $q^Tx+b = 0$ and points $p_i$.}
     \label{figure:distance_computation}
 \end{figure}
 
-As an aside, we must address the role of dimensionality $dim$ in the case of data domains that are subsets of vector spaces, i.e.,  $\domain_q \subset \mathbb{R}^{dim}$ or $\domain_q \subset \mathbb{C}^{dim}$. One could argue, that the dimensionality of such a vector space can also be seen as a parameter of the DFC. Irrespective of the merits such an argument might have, we consider the dimensionality of the vector space to be a strictly structural property of the underlying data domain $\domain_q$ and thus thightly coupled to the data type. This means, that dimensionality as well as the data type are well-defined and remain constant within and, for most parts, even between queries for a given relation.
+As an aside, we must address the role of dimensionality $dim$ in the case of data domains that are subsets of vector spaces, i.e.,  $\domain_q \subset \mathbb{R}^{dim}$ or $\domain_q \subset \mathbb{C}^{dim}$. One could argue, that the dimensionality of such a vector space can also be seen as a parameter of the \acrshort{dfc}. Irrespective of the merits such an argument might have, we consider the dimensionality of the vector space to be a strictly structural property of the underlying data domain $\domain_q$ and thus thightly coupled to the data type. This means, that dimensionality as well as the data type are well-defined and remain constant within and, for most parts, even between queries for a given relation.
 
 \subsection{Extending the Relational Model}
 
-Using \cref{definition:dfc}, one can start to integrate DFCs into the relational data model. Following~\cite{Giangreco:2018thesis}, we first assume  $\domainset$ -- the set system of data domains supported by the database -- to be extended by whatever data domain $\domain_q$ is required. Following that recipe, a \acrshort{dbms} can be extended to support every type of (mathematical) object that is useful for a given application, such as but not limited to $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. 
+Using \cref{definition:dfc}, one can start to integrate \acrshort{dfc} into the relational data model. Following~\cite{Giangreco:2018thesis}, we first assume  $\domainset$ -- the set system of data domains supported by the database -- to be extended by whatever data domain $\domain_q$ is required. Following that recipe, a \acrshort{dbms} can be extended to support every type of (mathematical) object that is useful for a given application, such as but not limited to $\mathbb{R}^{dim}$ or $\mathbb{C}^{dim}$. 
 
-We now use the idea of an extended projection $\pi_{\mathcal{E}}$ -- as proposed by \cite{Gupta:1995Generalized,Garcia:2009Database} and introduced in \cref{section:relational_data_model} -- wherein $\mathcal{E}$ is simply a list of expressions involving attributes $\attribute_i \in \relation$. That is, in addition to the simple projection onto attributes $\attribute_i$, an extended projection may also include the evaluation of algebraic and function expressions. Assuming that a function invocation involving constants as well as arguments from the underlying relation are supported, the evaluation of a DFC can be expressed as follows:
+We now use the idea of an extended projection $\pi_{\mathcal{E}}$ -- as proposed by \cite{Gupta:1995Generalized,Garcia:2009Database} and introduced in \cref{section:relational_data_model} -- wherein $\mathcal{E}$ is simply a list of expressions involving attributes $\attribute_i \in \relation$. That is, in addition to the simple projection onto attributes $\attribute_i$, an extended projection may also include the evaluation of algebraic and function expressions. Assuming that a function invocation involving constants as well as arguments from the underlying relation are supported, the evaluation of a \acrshort{dfc} can be expressed as follows:
 
-\begin{definition}[label=definition:spf_rel]{Distance Function Classes (DFC) in Extended Projection $\pi_{\mathcal{E}}$}{}
-    Let $\symdfc \colon \domain_q \times \domain_q \times \domain_{1} ... \times \domain_{N-2} \to \mathbb{R}$ be a N-ary DFC and $\delta = \mathtt{IMP}(\symdfc)$ its implementation. Let further $\relation$ be a relation with attribute $\mathcal{A}_p \in \mathtt{SCH}(\relation)$. The \emph{extended projection} $\pi_{\delta(\mathcal{A}_p)}(\relation)$ describes the evaluation of $\delta$ using argument values $p_{i} \in \mathcal{A}_p$ as probing arguments. Applying $\pi_{\delta(\mathcal{A}_p)}$ on a M-ary relation $\relation$ introduces a new distance attribute $\mathcal{A}_d$, i.e., $\mathtt{SCH}(\pi_{\delta(\mathcal{A}_p), \mathcal{A}_1, ..., \mathcal{A}_M}(\relation)) = \mathtt{SCH}(\relation) \cup \{ \mathcal{A}_d \}$
+\begin{definition}[label=definition:spf_rel]{\acrlong{dfc} in Extended Projection $\pi_{\mathcal{E}}$}{}
+    Let $\symdfc \colon \domain_q \times \domain_q \times \domain_{1} ... \times \domain_{N-2} \to \mathbb{R}$ be a N-ary \acrshort{dfc} and $\delta = \mathtt{IMP}(\symdfc)$ its implementation. Let further $\relation$ be a relation with attribute $\mathcal{A}_p \in \mathtt{SCH}(\relation)$. The \emph{extended projection} $\pi_{\delta(\mathcal{A}_p)}(\relation)$ describes the evaluation of $\delta$ using argument values $p_{i} \in \mathcal{A}_p$ as probing arguments. Applying $\pi_{\delta(\mathcal{A}_p)}$ on a M-ary relation $\relation$ introduces a new distance attribute $\mathcal{A}_d$, i.e., $\mathtt{SCH}(\pi_{\delta(\mathcal{A}_p), \mathcal{A}_1, ..., \mathcal{A}_M}(\relation)) = \mathtt{SCH}(\relation) \cup \{ \mathcal{A}_d \}$
 \end{definition}
 
-Obviously, the evaluation of multiple DFCs in a single, extended projection or the combination of simple attribute projections with the evaluation of DFCs are also allowed. In fact, all of the following expressions are valid examples of the extended projection on relation $\relation$ with $\mathtt{SCH}(\relation) = \{ \mathcal{A}_1, \mathcal{A}_2, \mathcal{A}_3, \mathcal{A}_4 \}$ and $\delta_i = \mathtt{IMP}(\symdfc_i)$: 
+Obviously, the evaluation of multiple \acrshort{dfc}s in a single, extended projection or the combination of simple attribute projections with the evaluation of \acrshort{dfc}s are also allowed. In fact, all of the following expressions are valid examples of the extended projection on relation $\relation$ with $\mathtt{SCH}(\relation) = \{ \mathcal{A}_1, \mathcal{A}_2, \mathcal{A}_3, \mathcal{A}_4 \}$ and $\delta_i = \mathtt{IMP}(\symdfc_i)$: 
 \begin{enumerate*}[label=(\roman*)]
-    \item Evaluation of multiple DFCs with same or different probing arguments (e.g., $\pi_{\delta_1(\mathcal{A}_1), \delta_2(\mathcal{A}_1)}(\relation)$), 
-    \item evaluation of same DFC using same or different probing arguments (e.g., $\pi_{\delta_1(\mathcal{A}_1), \delta_1(\mathcal{A}_2)}(\relation)$),
-    \item combination of DFCs with any attribute projection and/or algebraic expression evaluation (e.g., $\pi_{\delta(\mathcal{A}_1), \mathcal{A}_2, \mathcal{A}_4}(\relation)$).
+    \item Evaluation of multiple \acrshort{dfc}s with same or different probing arguments (e.g., $\pi_{\delta_1(\mathcal{A}_1), \delta_2(\mathcal{A}_1)}(\relation)$), 
+    \item evaluation of same \acrshort{dfc} using same or different probing arguments (e.g., $\pi_{\delta_1(\mathcal{A}_1), \delta_1(\mathcal{A}_2)}(\relation)$),
+    \item combination of \acrshort{dfc}s with any attribute projection and/or algebraic expression evaluation (e.g., $\pi_{\delta(\mathcal{A}_1), \mathcal{A}_2, \mathcal{A}_4}(\relation)$).
 \end{enumerate*}
 
-In order to support sorting by (the obtained) distance, which is an essential part of many types of proximity based queries, we use the idea of a \emph{ranked relation} $\rankedrel$, as proposed by \cite{Chengkai:2005RankSQL} and described in \cref{section:rel_extensions}. A ranked relation \footnote{Mathematically speaking, ranked relations are not longer relations rather than sequences.} $\rankedrel$ exhibits an ordering of tuples $t_i \in \rankedrel$, which is induced by the ranking or scoring predicate $\mathcal{O}$. As opposed to \cite{Chengkai:2005RankSQL}, we assume $\mathcal{O}$ to be a simple sequence of pairs $(\attribute_i, \mathtt{DIR})$ with $\mathtt{DIR} \in \left\{ \uparrow, \downarrow \right\}$ and $\attribute_i \in \rankedrel$ each denoting an attribute to order by and the desired sort direction \emph{ascending} or \emph{descending}\footnote{We argue that formally, the evaluation of a \emph{scoring function}, as proposed by \cite{Chengkai:2005RankSQL}, can be expressed within the scope of the extended projection and does not need to be part of the order operation.}. If $\relation$ does not exhibit a specific ranking, then the $\mathcal{O}$ is ommitted.
+In order to support sorting by (the obtained) distance, which is an essential part of many types of proximity based queries, we use the idea of a \emph{ranked relation} $\rankedrel$, as proposed by \cite{Chengkai:2005RankSQL} and described in \cref{section:rel_extensions}. A ranked relation \footnote{Mathematically speaking, ranked relations are not longer relations rather than sequences.} $\rankedrel$ exhibits an ordering of tuples $t_i \in \rankedrel$, which is induced by the ranking or scoring predicate $\mathcal{O}$. As opposed to \cite{Chengkai:2005RankSQL} and more in line with \cite{Garcia:2009Database}, we assume $\mathcal{O}$ to be a simple sequence of pairs $(\attribute_i, \mathtt{DIR})$ with $\mathtt{DIR} \in \left\{ \uparrow, \downarrow \right\}$ and $\attribute_i \in \rankedrel$ each denoting an attribute to order by and the desired sort direction \emph{ascending} or \emph{descending}\footnote{We argue that formally, the evaluation of a \emph{scoring function}, as proposed by \cite{Chengkai:2005RankSQL}, can be expressed within the scope of the extended projection and does not need to be part of the order operation.}. If $\relation$ does not exhibit a specific ranking, then the $\mathcal{O}$ is simply ommitted.
 
 In order to sort an (unordered) relation, we introduce the relational operator $\tau_{\mathcal{O}}$ such that:
 
@@ -185,7 +185,10 @@ We can now use the example presented in \cref{example:rel_painting_w_features} t
 
 \subsubsection{Algebraic Properties of $\pi$, $\tau_{\mathcal{O}}$, $\lambda_k$}
 
-During the logical optimization phase of query planning, a \acrshort{dbms} leverages the algebraic properties of the operators it employs in an attempt to generate a more efficient execution plan. Most importantly, these properties determine the types of operations that can be permuted. As opposed to classical relational algebra, we must consider  
+During the logical optimization phase of query planning, a \acrshort{dbms} leverages the algebraic properties of the operators it employs in an attempt to generate a more efficient execution plan. Most importantly, these properties determine the types of operations that can be permuted or even exchanged. As opposed to classical relational algebra, we must consider:
+\begin{enumerate*}[label=(\roman*)]
+     \item Whether a permutation  
+\end{enumerate*}
 
 \todo[inline]{Elaborate on algebraic properties of $\pi$, $\tau_{\mathcal{O}}$, $\lambda_k$}
 
@@ -193,22 +196,22 @@ During the logical optimization phase of query planning, a \acrshort{dbms} lever
 
 \todo[inline]{Elaborate on how $\pi$, $\tau_{\mathcal{O}}$, $\lambda_k$ can be combined with other relational extensions}
 
-\subsection{DFCs and Query Planning}
+\subsection{\acrshort{dfc}s and Query Planning}
 \label{section:dfc_and_planning}
 
-The requirements imposed on the structure of a DFC can be leveraged to enable a \acrshort{dbms} to plan and optimize the execution of a proximity based query by not just altering the execution plan in terms of (relational) operators but also in terms of DFC implementations that should be employed. To illustrate this, we proposed the notion of the \emph{function hierarchy} depicted in \ref{figure:function_hierarchy}.
+The requirements imposed on the structure of a \acrshort{dfc} can be leveraged to enable a \acrshort{dbms} to plan and optimize the execution of a proximity based query by not just altering the execution plan in terms of (relational) operators but also in terms of \acrshort{dfc} implementations that should be employed. To illustrate this, we proposed the notion of the \emph{function hierarchy} depicted in \ref{figure:function_hierarchy}.
 
 \begin{figure}[bt]
     \centering
     \includegraphics[width=\textwidth]{figures/function_hierarchy.eps}
-    \caption{Two examples of distance functions that fall into the broader category of a DFC. On the left, the point-distance between $q$ and $p_i$ and on the right, the distance between a hyperplane $q^Tx+b = 0$ and points $p_i$.}
+    \caption{Two examples of distance functions that fall into the broader category of a \acrshort{dfc}. On the left, the point-distance between $q$ and $p_i$ and on the right, the distance between a hyperplane $q^Tx+b = 0$ and points $p_i$.}
     \label{figure:function_hierarchy}
 \end{figure}
 
-The figure depicts executable functions from a perspective of the \acrshort{dbms} and the amount of insights it has about them. At the very top, we see general functions such as \acrshort{udf}s. In general, the \acrshort{dbms} has little to no knowledge about the internals of these functions and can thus only provide very limited support for optimizing their execution. As we move down the hierarchy, the \acrshort{dbms} ``gains'' insights with respect to the function's properties. At the level of the \acrshort{DFC}, the \acrshort{dbms} is aware of the function's name and the general structure of the DFCs domain and codomain. 
+The figure depicts executable functions from a perspective of the \acrshort{dbms} and the amount of insights it has about them. At the very top, we see general functions such as \acrshort{udf}s. In general, the \acrshort{dbms} has little to no knowledge about the internals of these functions and can thus only provide very limited support for optimizing their execution. As we move down the hierarchy, the \acrshort{dbms} ``gains'' insights with respect to the function's properties. At the level of the \acrshort{dfc}, the \acrshort{dbms} is aware of the function's name and the general structure of the \acrshort{dfc}s domain and codomain. 
 
 
-\todo[inline]{Elaborate on how the structure of a DFC can be exploited for query planning}
+\todo[inline]{Elaborate on how the structure of a \acrshort{dfc} can be exploited for query planning}
 
 
 \section{Cost Model for Retrieval Accuracy}

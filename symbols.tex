@@ -20,6 +20,15 @@
 \newglossaryentry{symcomplex}{sort={Asymcomplex},name=\ensuremath{\mathbb{C}},symbol=\ensuremath{\mathbb{C}},type={symbols},description={Set of all complex numbers.}}
 \newcommand{\symcomplex}{{\glssymbol{symcomplex}}}
 
+\newglossaryentry{symor}{sort={Asymor},name=\ensuremath{\vee},symbol=\ensuremath{\vee},type={symbols},description={The logical, inclusive disjunction.}}
+\newcommand{\symor}{{\glssymbol{symor}}}
+
+\newglossaryentry{symand}{sort={Asymand},name=\ensuremath{\wedge},symbol=\ensuremath{\wedge},type={symbols},description={The logical conjunction.}}
+\newcommand{\symand}{{\glssymbol{symand}}}
+
+\newglossaryentry{symnot}{sort={Asymnot},name=\ensuremath{\neg},symbol=\ensuremath{\neg},type={symbols},description={The logical negation.}}
+\newcommand{\symnot}{{\glssymbol{symnot}}}
+
 %% B group (the group is specified in the sort field)
 \newcommand*{\Bgroupname}{Relational Algebra}
 
@@ -52,6 +61,14 @@
 \newglossaryentry{extent}{sort={Bhextent},name=\ensuremath{\mathtt{EXT}},symbol=\ensuremath{\mathtt{EXT}},type={symbols},description={The extent of a relation \( \relation \), i.e., the tuples \(t_i\) it contains.}}
 \newcommand{\extent}{\glssymbol{extent}}
 
+\newglossaryentry{cardinality}{sort={Bcardinality},name=\ensuremath{\mathtt{CARD}},symbol=\ensuremath{\mathtt{CARD}},type={symbols},description={The cardinality of a relation \( \relation \), i.e., the number tuples \(t_i\).}}
+\newcommand{\cardinality}{\glssymbol{cardinality}}
+
+\newglossaryentry{selection}{sort={Bselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate, e.g. \( \selection_{\mathcal{P}} \).}}
+\newcommand{\selection}{\glssymbol{selection}}
+
+\newglossaryentry{projection}{sort={Bprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes , e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
+\newcommand{\projection}{\glssymbol{projection}}
 
 %% C group (the group is specified in the sort field)
 \newcommand*{\Cgroupname}{Multimedia Retrieval}
