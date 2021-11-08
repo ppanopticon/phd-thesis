@@ -79,11 +79,11 @@ Given the idea of a relation, the sum of all data contained in a \acrshort{dbms}
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\relation_{paintings}$}{}
     
-    The following table lists the content of a ternary relation ($N = 3$) $\relation_{\mathtt{title}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{title}}, \attribute_{\mathtt{title}}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of painting title, artist and year of conception and constitute the rows.
+    The following table lists the content of a ternary relation ($N = 3$) $\relation_{\mathtt{title}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{artist}}, \attribute_{\mathtt{painted}}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of painting title, artist and year of conception and constitute the rows.
         
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{\mathtt{paintings}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation_{\mathtt{paintings}}$ & $\attribute_\mathtt{title}$  & $\attribute_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -99,11 +99,12 @@ Given the idea of a relation, the sum of all data contained in a \acrshort{dbms}
 
 \subsection{Keys and Normal Forms}
 
-The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. In addition to \Cref{definition:relation}, \cite{Codd:1970Relational} proposed a range of constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
+The notion of a relation provides us with the basic tools for data modeling. In addition to \Cref{definition:relation}, Codd proposed a range of constraints to guarantee proper data definition using the relational model and the following, additional definitions~\cite{Codd:1970Relational}:
 
 \begin{description}
-    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a subset of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t \in \relation$. That is, the attributes that are not part of the \acrshort{pk} and the associated values are functionally determined by $\mathcal{P}$.
-    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a subset of attributes $\mathcal{F} \subset \schema(\relation)$ that are not member of a \acrshort{pk}, i.e., $ \mathcal{F} \cap \mathcal{P} = \emptyset$, but reference the \acrshort{pk} of $\relation$ or some other relation $R^{*}$. \acrshort{fk} can be used to model relationships between relations.
+    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a subset of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t \in \relation$. That is, the attributes that are not part of the \acrshort{pk} and the associated values are functionally determined by $\mathcal{P}$. Using \Cref{example:relational_table_pkfk}, the painting and all its attributes, i.e., the artist and the year of its creation, are functionally determined by the name of the painting, which is assumed to uniquely identify the entry.
+ 
+    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a subset of attributes $\mathcal{F} \subset \schema(\relation)$ that are not member of a \acrshort{pk}, i.e., $ \mathcal{F} \cap \mathcal{P} = \emptyset$, but reference the \acrshort{pk} of $\relation$ or some other relation $R^{*}$. \acrshort{fk} can be used to model relationships between relations. Using \Cref{example:relational_table_pkfk}, the artist that created a painting is referenced through a \acrshort{fk} $\attributef_{\mathtt{artist}}$ in $\relation_{\mathtt{painting}}$ that references the \acrshort{pk} $\attributep_{\mathtt{name}}$ in $\relation_{\mathtt{artist}}$.
 \end{description}
 
 An example of relations with primary and foreign key attributes is given in \cref{example:relational_table_pkfk}. \acrshort{pk}s and \acrshort{fk}s are indicated with star and a overline respectively.
@@ -126,15 +127,15 @@ An example of relations with primary and foreign key attributes is given in \cre
     \end{center}
 
     \begin{center}
-        \begin{tabular}{ l || l | l | l | l |}
-            $\relation_{\mathtt{artist}}$ & $\attributep_{\mathtt{fname}}$ & $\attributep_{\mathtt{lname}}$ & $\attribute_{\mathtt{birth}}$ & $\attribute_{\mathtt{death}}$\\ 
+        \begin{tabular}{ l || l | l | l |}
+            $\relation_{\mathtt{artist}}$ & $\attributep_{\mathtt{name}}$ & $\attribute_{\mathtt{birth}}$ & $\attribute_{\mathtt{death}}$\\ 
             \hline
             \hline
-            $t_1$ & Leonardo & da Vinci & 1452 & 1519 \\
+            $t_1$ & Leonardo da Vinci & 1452 & 1519 \\
             \hline
-            $t_2$ & Vincent & van Gogh & 1853 & 1890 \\
+            $t_2$ & Vincent van Gogh & 1853 & 1890 \\
             \hline
-            $t_3$ & Diego & Velázquez & 1599 & 1660 \\
+            $t_3$ & Diego Velázquez & 1599 & 1660 \\
             \hline
         \end{tabular}
     \end{center}
