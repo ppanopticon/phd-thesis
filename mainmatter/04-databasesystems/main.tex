@@ -3,10 +3,10 @@
 
 \epiquote{Under third normal form, a non-key field must provide a fact about the key, use the whole key, and nothing but the key.}{William Kent}
 
-\gls{dbms}{}, or simply ``databases'', power everything from small and simple websites to large data warehouses that serve millions of users in parallel. Database systems play a crucial role in banking, e-commerce, science, entertainment and practically every aspect of our socio-economic lives. The first commercial \gls{dbms} systems were introduced in the 1960s \cite{Garcia:2009Database} and they have evolved ever since to adapt to a wide range of requirements. Even though many different flavours of \gls{dbms} have emerged over the years, at their core, they still serve the same, fundamental purpose:
+\acrfull{dbms}, or simply ``databases'', power everything from small and simple websites to large data warehouses that serve millions of users in parallel. Database systems play a crucial role in banking, e-commerce, science, entertainment and practically every aspect of our socio-economic lives. The first commercial \gls{dbms} were introduced in the 1960s \cite{Garcia:2009Database} and they have evolved ever since to adapt to a wide range of requirements. Even though many different flavours of \gls{dbms} have emerged over the years, at their core, they still serve the same, fundamental purpose:
 
 \begin{description}
-    \item[Management \& Definition] \glsname{dbms} provide mechanisms to structure and organize data corpora that can range from a few megabytes to houndreds of terrabytes in size. For example, data can be structured into documents, relations or graph-like structures.
+    \item[Management \& Definition] \glsname{dbms} provide mechanisms to structure and organize data corpora that can range from a few megabytes to houndreds of terrabytes in size. For example, data can be structured into documents, tables, trees or graph-like structures.
     \item[Manipulation] \glsname{dbms} provide users with the ability to modify the data using a \gls{dml}. Modifications may include adding, removing or changing existing entries.
     \item[Querying] \glsname{dbms} provide users with the ability to query the data using a \gls{dql}. Such queries can be used to answer specific ``questions'' about the data.
     \item[Guarantees] \glsname{dbms} usually provide guarantees, such as assuring durability upon failure or providing access control for concurrent read and write operations. A well-known set of guarantees is known by its acronym ACID -- which stands for \textbf{A}tomicity, \textbf{C}onsistency, \textbf{I}solation and \textbf{D}urability~\cite{Haerder:1983principles}.
@@ -24,17 +24,66 @@ In the context of database systems, it has become common practice to make a clea
 
 In June 1970, E. F. Codd published his pivotal research article \emph{Relational Model of Data for Large Shared Data Banks}~\cite{Codd:1970Relational} in which he describes such a logical data model for databases, which he himself refers to as ``relational''. This model has become the fundament on which many if not most of the modern database management systems have been built in the past decades, with early examples dating back to the 1970s \cite{Astrahan:1976Systemr} and promintent, contemporary examples including systems such as \emph{MySQL}, \emph{PostgreSQL} or \emph{Oracle}. 
 
-The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualized as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. \cref{example:relational_table} features a relation \emph{paintings} and each entry in the table represents a painting and the related attribute values for attributes \emph{title}, \emph{artist} and \emph{painted}.
+The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualized as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. Semantically, a relation can be seen as a knowledge-base about some fact -- such as, the paintings held by a museum -- under a \gls{cwa}{}\todo{Reference}. That is, the relation contains all the information available about the fact and can thus be used do derive conclusive answers or results given a stated question or query.
 
-Semantically, a relation can be seen as a knowledge-base about some fact -- such as, the paintings held by a museum -- under a \gls{cwa}{}\todo{Reference}. That is, the relation contains all the information available about the fact and can thus be used do derive conclusive answers or results given a stated question or query.
+In order to formalize the structure of and the operations that can be executed on the data represented by a relation, one can use \Cref{definition:relation}. 
+
+\begin{definition}[label=definition:relation]{Relation according to \cite{Codd:1970Relational}}{}
+    Given $i,j,N \in \symnatural_{> 0}$ and a collection of sets $\domain_1, \domain_2, \ldots \domain_N$, a \emph{relation} $\relation$ over these sets is a set of \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,n}) \in \relation$ such that the attribute values $a_{i,1} \in \domain_1, a_{i,2} \in \domain_2 ... a_{i,N} \in \domain_N$. Ergo, $\relation$ is a subset of the Cartesian product of the relation's \emph{data domains} $\domain_j$, that is, $\domain_1 \times \domain_2 ... \times \domain_N$. The number of data domains $N$ is referred to as the relation's \emph{degree} and we call a relation \emph{N-ary}, e.g., binary for $N=2$. 
+\end{definition}
+
+
+It is important to note, that the relational model itself does not dictate what the data domains $\domain$ are. However, in a relational \acrshort{dbms}, the data domains usually correspond to the data types supported by the database and the programming environment it was written in, for example, \lstinline{Int} for integer numbers, \lstinline{Float} for floating point numbers or \lstinline{Varchar} for text. In the context of this Thesis, we use \emph{data domain} synonymous for \emph{data type} \footnote{Strictly speaking, the data domains of a given relation $\relation$ are merely subsets of the sets that represent the respective data type which, in turn, are subsets of even more basic sets such as $\symnatural$ or $\symreal$ for \lstinline{Int} and \lstinline{Float} respectively. The relationship between types and data domains is subject of a more categorical approach to data models and nicely layed out in \cite{Spivak:2009Simplicial}}.
+
+In addition to the original definition, we will use the identities \ref{definition:rel_attribute} to \ref{definition:rel_domains} throughout this Thesis when working with relations.
+
+\begin{definition}[label=definition:rel_attribute]{Attribute}{}
+    Let $\relation$ be a $N$-ary relation over the data domains $\domain_i, \: i \in \left[1, N \right]$ and corresponding names or indexes $l_i$. We call the combination of a data domain with a human readable label \emph{attribute}, that is, $\attribute_{i} = (\domain_i, l_i)$. To simplify notation, we sometimes use the label of an attribute in the subscript instead of the index.
+\end{definition}
+
+\begin{definition}[label=definition:rel_schema]{Schema of a relation}{}
+    Let $\relation$ be a $N$-ary relation over the attributes $\attribute_i, \: i \in \left[1, N \right]$. We call the tuple of all attributes over which $\relation$ was constructed the \emph{heading} or \emph{schema} $\schema (\relation)$ of $\relation$.
+
+    \begin{equation*}
+        \schema (\relation) = \left( \attribute \colon \textrm{if} \: \attribute \: \textrm{is an attribute of} \: \relation \right)
+    \end{equation*}   
+\end{definition}
+
+\begin{definition}[label=definition:rel_attribute_value]{Attribute Value Accessor}{}
+    Let $\relation$ be a $N$-ary relation over attributes $\attribute_i, \: i \in \left[1, N \right]$ and let further $t \in \relation$. To address the attribute value $a_i \in t$ that belongs to attribute $\attribute_i \in \schema(\relation) $, we use the \emph{attribute value accessor} $t\left[ \attribute_i \right]$.
+
+    \begin{equation*}
+        a_i = t\left[ \attribute_i \right] = \{ a_j \in t \colon i = j \}
+    \end{equation*}  
+\end{definition}
+
+\begin{definition}[label=definition:rel_domains]{Supported Data Domains}{}
+    For a given \acrshort{dbms} with label $\mathtt{dbms}$, we call $\mathbb{D}_{\mathtt{dbms}}$ the set system of data domains or data types supported by the system.
+    \begin{equation*}
+        \mathbb{D} = \{ \domain \colon \textrm{if} \: \domain \: \textrm{is supported by DBMS} \}
+    \end{equation*}
+\end{definition}
+
+In its original form, the relational model assumes the following properties to be true for a relation $\relation$ and its attributes~\cite{Codd:1970Relational}:
+
+\begin{description}
+    \item[Ordering of Tuples] Tuples $t_i \in \relation$ are inherently unordered and two relations are considered equal if they contain the same tuples, regardless of order.
+    \item[Ordering of Attributes] Attribute values $a_{i}$ always occur in the same order within the tuple $t \in \relation$, which corresponds to the order of the attributes $\attribute_i \in \schema(\relation)$. This order can evolve over time but remains constant in a momentary snapshot of $\relation$. It follws from the definition that $|t| = |\schema(\relation)| \forall t \in \relation$
+    \item[Duplicates] Relations do not allow for duplicates, i.e., every tuple $t \in \relation$ must be unique in terms of their attribute values.
+    \item[Atomicity] The attribute values in a tuple $a_i \in t$ are considered to be atomic, i.e., it is not possible to further decompose them.
+\end{description}
+
+Given the idea of a relation, the sum of all data contained in a \acrshort{dbms} can be regarded as a collection of different relations $\relation_k, \: k \in \symnatural_{\geq 0}$ of assorted degrees $N_k$ over data domains $\domain \in \mathbb{D}_{\mathtt{dbms}}$. The schema of a database can then be seen as the set system of all $\schema(\relation_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $\schema(\relation)$ or tuples $t \in \relation$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple of an existing tuple's attributes.
+
+\cref{example:relational_table} features an example relation $\mathtt{paintings}$ visualized as a table. Each entry in the table represents a painting and the related attribute values.
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\relation_{paintings}$}{}
     
-    The following table lists the content of a ternary relation ($N = 3$) $\relation_{paintings}$. The attributes $\attribute_{title}, \attribute_{artist}, \attribute_{id}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of identifier, painting title and artist and constitute the rows.
+    The following table lists the content of a ternary relation ($N = 3$) $\relation_{\mathtt{title}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{title}}, \attribute_{\mathtt{title}}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of painting title, artist and year of conception and constitute the rows.
         
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{paintings}$ & $\attributep_{title}$  & $\attribute_{artist}$  & $\attribute_{painted}$ \\ 
+            $\relation_{\mathtt{paintings}}$ & $\attributep_{\mathtt{title}}$  & $\overline{\attributef_{\mathtt{artist}}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -47,60 +96,24 @@ Semantically, a relation can be seen as a knowledge-base about some fact -- such
     \end{center}
 \end{example}
 
-In order to formalize the structure of and the operations that can be executed on the data represented by a relation, one can use \cref{defintion:relation}. 
-
-\begin{definition}[label=defintion:relation]{Relation according to \cite{Codd:1970Relational}}{}
-    Given $i,j,N \in \symnatural_{> 0}$ and a collection of sets $\domain_1, \domain_2, ... \domain_N$, a \emph{relation} $\relation$ on these sets is a set of \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,n}) \in \relation$ such that the attribute values $a_{i,1} \in \domain_1, a_{i,2} \in \domain_2 ... a_{i,N} \in \domain_N$. Ergo, $\relation$ is a subset of the Cartesian product of the relation's \emph{data domains} $\domain_j$, that is, $\domain_1 \times \domain_2 ... \times \domain_N$. The number of data domains $N$ is referred to as the relation's \emph{degree} and we call a relation \emph{N-ary}, e.g., binary for $N=2$. 
-\end{definition}
-
-
-The relational model itself does not dictate what the data domains there are. However, in a relational \acrshort{dbms}, the data domains $\domain$ usually correspond to the data types supported by the database, for example, \lstinline{Int} for integer numbers, \lstinline{Float} for floating point numbers or \lstinline{Varchar} for text. We use the set-system $\mathbb{D} = \{ \domain \colon \textrm{if} \: \domain \: \textrm{is supported by DBMS} \}$ to denote the set of all data domains supported by a \gls{dbms}. Furthermore, we use \emph{data domain} synonymous for \emph{data type} \footnote{Strictly speaking, the data domains of a given relation $\relation$ are merely subsets of the sets that represent the respective data type which, in turn, are subsets of even more basic sets such as $\symnatural$ or $\symreal$ for \lstinline{Int} and \lstinline{Float} respectively. The relationship between types and data domains is subject of a more categorical approach to data models and nicely layed out in \cite{Spivak:2009Simplicial}}.
-
-For convenience sake, throughout this thesis, we will use the following notation:
-\begin{enumerate*}[label=(\roman*)]
-    \item  The combination of a data domain with a human readable label is called \emph{attribute} and we use subscripts to indicate it's name or index, that is, $\attribute_{\mathtt{name}} = (\domain, \mathtt{name})$. 
-    \item Attribute values $a_i$ for a tuple $t$ can be addressed by an attribute as follows $a_i = t\left[ \attribute_i \right]$
-\end{enumerate*}
-
-In its original form, the relational model assumes the following properties to be true for a relation $\relation$ and its attributes~\cite{Codd:1970Relational}:
-
-\begin{description}
-    \item[Ordering of tuples] Tuples $t_i \in \relation$ are inherently unordered and two relations are considered equal if they contain the same tuples, regardless of order.
-    \item[Ordering of attributes] Attribute values $a_{i,j}$ always occur in the same order within the $t_i \in \relation$, which corresponds to the order of the attributes $\attribute_j$. This order can evolve over time but remains constant in a momentary snapshot of $\relation$.
-    \item[Duplicates] Relations do not allow for duplicates, i.e., every tuple $t_i \in \relation$ must be unique in terms of their attribute values.
-    \item[Atomicity] The attribute values in a tuple $a_j \in t_i$ are considered to be atomic, i.e., it is not possible to further decompose them.
-\end{description}
-
-Given the notion and the properties of a relation $\relation$, one can introduce the idea of a \emph{heading} or \emph{schema} $\schema(\relation)$ and \emph{body} or \emph{extent} $\extent(\relation)$ of a relation. Which are the set of attributes and tuples respectively that make up $\relation$.
-
-\begin{equation}
-    \schema (\relation) = \lbrace \attribute \colon \textrm{if} \: \attribute \: \textrm{is an attribute of} \: \relation \rbrace
-\end{equation}
-
-\begin{equation}
-    \extent (\relation) = \lbrace t \in \relation \rbrace
-\end{equation}
-
-The sum of all data contained in a database system can be regarded as a collection of different relations $\relation, k \in \symnatural_{\geq 0}$ of assorted degrees $N_k$ over data domains $\domain \in \mathbb{D}$. The schema of a database can then be seen as the set system of all $\schema(\relation_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time, which are changes to either $\schema(\relation)$ or $\extent(\relation)$, for example, by tuples being added to (insert) or removed from (delete) a relation, or by altering one or multiple attributes.
-
 
 \subsection{Keys and Normal Forms}
 
-The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. \cite{Codd:1970Relational} proposed a wide range of additional constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
+The notion of a relation introduced in the previous section provides us with the basic tools for data modeling. In addition to \Cref{definition:relation}, \cite{Codd:1970Relational} proposed a range of constraints to guarantee proper data definition using the relational model and the following, additional definitions. 
 
 \begin{description}
-    \item[Primary key] A \emph{primary key} is a combination of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t_i \in \relation$. That is, the attributes that are not part of the primary key (non-prime), i.e., $\schema(\relation) \setminus \mathcal{P}$ and the associated attribute values are functionally determined by $\mathcal{P}$.
-    \item[Foreign key] Foreign keys are attributes $\mathcal{F} \subset \schema(\relation)$ that are not primary keys but reference the primary key of $R$ or some other relation $R_k$. Foreign keys can be used to model relationships between relations.
+    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a subset of attributes $\mathcal{P} \subset \schema(\relation)$ that uniquely identify a tuple $t \in \relation$. That is, the attributes that are not part of the \acrshort{pk} and the associated values are functionally determined by $\mathcal{P}$.
+    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a subset of attributes $\mathcal{F} \subset \schema(\relation)$ that are not member of a \acrshort{pk}, i.e., $ \mathcal{F} \cap \mathcal{P} = \emptyset$, but reference the \acrshort{pk} of $\relation$ or some other relation $R^{*}$. \acrshort{fk} can be used to model relationships between relations.
 \end{description}
 
-An example of relations with primary and foreign key attributes is given in \cref{example:relational_table_pkfk}. Primary keys are indicated with a * and foreign keys are underlined.
+An example of relations with primary and foreign key attributes is given in \cref{example:relational_table_pkfk}. \acrshort{pk}s and \acrshort{fk}s are indicated with star and a overline respectively.
 
 \begin{example}[label=example:relational_table_pkfk]{Relations with Primary and Foreign Keys}{}
     
     The following tables lists the schema and extent of $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$.
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attribute_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -129,20 +142,20 @@ An example of relations with primary and foreign key attributes is given in \cre
     Note, that we assume here that people (artists) are uniquely identified by their first and lastname, which is obviously a simplification.
 \end{example}
 
-Given the notion of primary and foreign keys, Codd proposed a series of \emph{normal forms} that are an indication of the normalization and transitively the quality of a data model.
+Given the notion of primary and foreign keys, Codd proposed a series of \emph{normal forms} that are an indication of the quality of a data model based on the functional dependency of the attributes on a \acrshort{pk}. The basic idea is to avoid redundancy by normalization, i.e., by putting data that belongs together into dedicated relations and modeling relationships between them using foreign keys. The first three normal forms are as follows:
 
 \begin{description}
-    \item[\acrfull{1nf}] requires, that no attribute in a relation has other relations as values, i.e. attributes are atomic.
-    \item[\acrfull{2nf}] requires, that every non-prime attribute is functionally determined by the whole primary key and not any subset thereof. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}$ and $\attributep_{\mathtt{lname}}$ jointly.
-    \item[\acrfull{3nf}] requires, that every non-prime attribute is functionally determined solely by the primary key and that they do not depend on any other key. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}, \attributep_{\mathtt{lname}}$ alone\footnote{The normal forms introduced thus far have also led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similar sentence used as a vow in courts of law.}.
+    \item[\acrfull{1nf}] requires, that no attribute in a relation has other relations as values, i.e., attributes are atomic and instead, relationships can be established by means of \acrshort{fk}s. Given $\relation_{\mathtt{painting}}$ in \Cref{example:relational_table_pkfk}, this means that $\relation_{\mathtt{artist}}$ cannot be stored as an attribute of $\relation_{\mathtt{painting}}$ and instead requires a dedicated relation.
+    \item[\acrfull{2nf}] requires, that every non-prime attribute is functionally determined by the whole primary key and not any subset thereof. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}$ and $\attributep_{\mathtt{lname}}$ jointly and not just either $\attributep_{\mathtt{fname}}$ or $\attributep_{\mathtt{lname}}$ 
+    \item[\acrfull{3nf}] requires, that every non-prime attribute is functionally determined solely by the primary key and that they do not depend on any other attribute. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}, \attributep_{\mathtt{lname}}$ alone.
 \end{description}
 
-All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{3nf} is also required to satisfy \acrshort{2nf}  and \acrshort{1nf}. Additional normal forms up to \emph{6NF} and the \acrfull{bcnf} have been defined. For the sake of brevity, we will ommit those since they are not relevant for the further discussion.
+All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{3nf} is also required to satisfy \acrshort{2nf}  and \acrshort{1nf}\footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similar sentence used as a vow in courts of law. }. Additional normal forms up to \emph{6NF} and the \acrfull{bcnf}, a slightly stronger version of \acrshort{3nf}, have been defined. For the sake of brevity, we will ommit those since they are not relevant for the further discussion.
 
 \subsection{Relational Algebra}
 \label{section:rel_algebra}
 
-Having introduced the aspect of data representation, we can now move to that of operations that can be performed on the data. For the sake of brevity, we will limit ourselves to query operations. For expressing queries, \cite{Codd:1970Relational} proposed the idea of a \emph{relational algebra}, which follows a simple yet powerfule idea: All query operations performed on relations are expressed by a set of \emph{relational operations} that take one or multiple relations as input and output a new relation as expressed by \Cref{equation:rel_op}.
+Having introduced the aspect of data representation, we can now move to that of operations that can be performed on the data when querying the data. For that purpose, \cite{Codd:1970Relational} proposed the idea of a \emph{relational algebra}, which follows a simple yet powerfule idea: All query operations performed on relations are expressed by a set of \emph{relational operations} that take one or multiple relations as input and output a new relation as expressed by \Cref{equation:rel_op}.
 
 \begin{equation}
     \label{equation:rel_op}
@@ -208,7 +221,7 @@ The difference $\relation_L \setminus \relation_R$ generates a new relation of a
     \relation_L \cup \relation_R = \{ t \colon t \in \relation_L \symand t \notin \relation_R \}
 \end{equation}
 
-Set operations simply combine two input relations using set semantics whithout changing the structure of the relation, i.e., $\schema(R_{I}) = \schema(R_{O})$. Due to relations being sets, duplicates resulting from the application of a union operation are \emph{implictly} eliminated.
+Set operations simply combine two input relations without changing the structure of the relation, i.e., $\schema(R_{I}) = \schema(R_{O})$. Due to relations being sets, duplicates resulting from a union operation are \emph{implictly} eliminated.
 
 \subsubsection{Cartesian Product}
 The binary, \emph{cartesian product} or \emph{cross product} $\relation_L \times \relation_R$ of two input relations $\relation_L,\relation_R$ concatenates every tuple $t_{L} \in \relation_L$ with every tuple $t_{R} \in \relation_R$ to form a new output tuple, as expressed by \Cref{equation:rel_op_cartesian}.
@@ -244,7 +257,7 @@ Conseqeuently, $\schema(\projection_{\chi}(\relation)) = \chi$. All the tuples i
 
 \subsubsection{Natural Join}
 
-The binary, \emph{natural join} operator $\relation_L \Join \relation_R$ on two input relations $\relation_L$, $\relation_R$ concatenates every tuple $t_{L} \in \relation_L$ with every tuple $t_{R} \in \relation_R$ to form a new output tuple, if the attribute values of $t_{L}$ and $t_{R}$ are the same for the shared attribues $\xi = \{ \attribute : \attribute \in \schema(\relation_L) \symand \attribute \in \schema(\relation_R) \}$ in $\relation_L$ and $\relation_R$ as expressed by \Cref{equation:rel_op_join}
+The binary, \emph{natural join} operator $\relation_L \Join \relation_R$ on two input relations $\relation_L$, $\relation_R$ concatenates every tuple $t_{L} \in \relation_L$ with every tuple $t_{R} \in \relation_R$ to form a new output tuple, if the attribute values of $t_{L}$ and $t_{R}$ are the same for the shared attribues $\xi = \{ \attribute : \attribute \in \schema(\relation_L) \symand \attribute \in \schema(\relation_R) \}$ as expressed by \Cref{equation:rel_op_join}
 
 \begin{equation}
     \label{equation:rel_op_join}
@@ -255,15 +268,15 @@ The result is a relation that contains all the attributes of $\relation_L$ and $
 
 \subsubsection{Expressing Queries}
 
-The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries using a simple toy example.
+The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries. Since expressing queries in such a way is quite inconvenient, in practice, queries are usually expressed through an intermediate query languagew hich is then translated to the relational operators. A very famous example of such a language in the domain of relational databases is \acrfull{sql}~\cite{Chamberlin:2012Early}.
 
-\begin{example}[label=example:rel_alg_query]{Query on $\relation_{\mathtt{paintings}}$ Expressed in Relational Algebra}{}
-    
-    The following table lists the content of the ternary relation $\relation_{\mathtt{paintings}}$. 
-        
+\begin{example}[label=example:rel_alg_query]{Searching for Painings Using Relational Algebra}{}
+
+    The following tables lists the schema and extent of $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$ (slightly altered version than used in \Cref{example:relational_table_pkfk}).
+
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{\mathtt{paintings}}$ & $\attributep_{\mathtt{title}}$  & $\attribute_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -275,14 +288,34 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
         \end{tabular}
     \end{center}
 
-    The query ``return the names of all paintings that have been painted after 1600'' can be expressed by a selection on $\relation_{\mathtt{paintings}}$ followed by projection as follows: $\projection_{A_{\mathtt{title}}} ( \selection_{A_{\mathtt{painted} > 1600}} ( \relation_{\mathtt{paintings}}))$ which results in: 
+    \begin{center}
+        \begin{tabular}{ l || l | l | l |}
+            $\relation_{\mathtt{artist}}$ & $\attributep_{\mathtt{artist}}$ & $\attribute_{\mathtt{birth}}$ & $\attribute_{\mathtt{death}}$\\ 
+            \hline
+            \hline
+            $t_1$ & Leonardo da Vinci & 1452 & 1519 \\
+            \hline
+            $t_2$ & Vincent van Gogh & 1853 & 1890 \\
+            \hline
+            $t_3$ & Diego Velázquez & 1599 & 1660 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    Using relational algebra, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed by joining $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$, followed by a selection and projection:
+
+    \begin{equation*}
+        \relation_{\mathtt{result}} = \projection_{A_{\mathtt{title}}} (\selection_{A_{\mathtt{death}} \geq 1800}(\relation_{\mathtt{paintings}} \Join \relation_{\mathtt{artists}}))
+    \end{equation*}
+
+    Execution of this query leads to the following relation $\relation_{\mathtt{result}}$.
 
     \begin{center}
         \begin{tabular}{ l || l |}
             $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  \\ 
             \hline
             \hline
-            $t_3$ & Las Meninas \\
+            $t_2$ & The Starry Night \\
             \hline
         \end{tabular}
     \end{center}
@@ -291,7 +324,7 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
 \subsection{Extensions}
 \label{section:rel_extensions}
 
-While the relational model and the relational algebra introduced in the previous section forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd is too limited to accomodate the functionality described by the SQL standard. For example, many databases actually need to store duplicate data and therefore, the notion of a relation -- which is a set of tuples, i.e., does not allow for duplicates -- is inadequate. 
+While the relational model and the relational algebra forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd has often truned out to be too limited to accomodate certain functionality as required, for example, by the \acrshort{sql} standard~\cite{Chamberlin:2012Early,Garcia:2009Database}. For example, many applications require storage of duplicate data and therefore, the notion of a relation -- which is a set of tuples and thus does not allow for duplicates -- is inadequate. Over the years, this has led to a growing list of proposals for extensions, some of which have seen adoption while other's have remained theoretical in nature until now.
 
 \subsubsection{Relations vs. Bag vs. Sequences}
 
@@ -306,14 +339,14 @@ Using the relationship between (diss-)similarity and distance, it has been shown
 While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it comes with limitations that become apparent upon disection of its structure. In its postulated form, $\tau$ addresses several functions at once:
 
 \begin{enumerate}
-    \item It specifies the distance function that should be evaluated and the provided arguments.
+    \item It specifies the distance function that should be evaluated.
     \item It generates an implicit distance attribute on the underlying relation $\relation$.
     \item It imposes an ascending ordering and limits the cardinality of $\relation$ based on a predicate or a specified limit.
 \end{enumerate}
 
 While being very specific and thus straightforward to implement, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general proximity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
 
-Another important issue with the definition of $\tau$ in its current form is that despite the two opreations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
+Another important issue with the definition of $\tau$ in its current form is that despite the two operations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
 
 \begin{equation}
     \label{equation:commutation_of_tau}
