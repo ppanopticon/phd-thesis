@@ -37,11 +37,11 @@ It is important to note, that the relational model itself does not dictate what 
 
 In addition to the original definition, we will use the identities \ref{definition:rel_attribute} to \ref{definition:rel_domains} throughout this Thesis when working with relations.
 
-\begin{definition}[label=definition:rel_attribute]{Attribute}{}
+\begin{definition}[label=definition:rel_attribute]{Attributes of a Relation}{}
     Let $\relation$ be a $N$-ary relation over the data domains $\domain_i, \: i \in \left[1, N \right]$ and corresponding names or indexes $l_i$. We call the combination of a data domain with a human readable label \emph{attribute}, that is, $\attribute_{i} = (\domain_i, l_i)$. To simplify notation, we sometimes use the label of an attribute in the subscript instead of the index.
 \end{definition}
 
-\begin{definition}[label=definition:rel_schema]{Schema of a relation}{}
+\begin{definition}[label=definition:rel_schema]{Schema of a Relation}{}
     Let $\relation$ be a $N$-ary relation over the attributes $\attribute_i, \: i \in \left[1, N \right]$. We call the tuple of all attributes over which $\relation$ was constructed the \emph{heading} or \emph{schema} $\schema (\relation)$ of $\relation$.
 
     \begin{equation*}
@@ -49,7 +49,7 @@ In addition to the original definition, we will use the identities \ref{definiti
     \end{equation*}   
 \end{definition}
 
-\begin{definition}[label=definition:rel_attribute_value]{Attribute Value Accessor}{}
+\begin{definition}[label=definition:rel_attribute_value]{Accessing Attribute Values}{}
     Let $\relation$ be a $N$-ary relation over attributes $\attribute_i, \: i \in \left[1, N \right]$ and let further $t \in \relation$. To address the attribute value $a_i \in t$ that belongs to attribute $\attribute_i \in \schema(\relation) $, we use the \emph{attribute value accessor} $t\left[ \attribute_i \right]$.
 
     \begin{equation*}
@@ -83,7 +83,7 @@ Given the idea of a relation, the sum of all data contained in a \acrshort{dbms}
         
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{\mathtt{paintings}}$ & $\attributep_{\mathtt{title}}$  & $\overline{\attributef_{\mathtt{artist}}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation_{\mathtt{paintings}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -150,7 +150,7 @@ Given the notion of primary and foreign keys, Codd proposed a series of \emph{no
     \item[\acrfull{3nf}] requires, that every non-prime attribute is functionally determined solely by the primary key and that they do not depend on any other attribute. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk}, this means that all of the non-prime attributes must be determined by $\attributep_{\mathtt{fname}}, \attributep_{\mathtt{lname}}$ alone.
 \end{description}
 
-All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{3nf} is also required to satisfy \acrshort{2nf}  and \acrshort{1nf}\footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similar sentence used as a vow in courts of law. }. Additional normal forms up to \emph{6NF} and the \acrfull{bcnf}, a slightly stronger version of \acrshort{3nf}, have been defined. For the sake of brevity, we will ommit those since they are not relevant for the further discussion.
+All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{3nf} is also required to satisfy \acrshort{2nf}  and \acrshort{1nf}\footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.}. Additional normal forms up to \emph{6NF} and the \acrfull{bcnf}, a slightly stronger version of \acrshort{3nf}, have been defined. For the sake of brevity, we will ommit those since they are not relevant for the further discussion.
 
 \subsection{Relational Algebra}
 \label{section:rel_algebra}
