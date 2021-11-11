@@ -183,7 +183,7 @@ We can now use the example presented in \cref{example:rel_painting_w_features} t
 
 \end{example}
 
-\subsubsection{Algebraic Properties of $\pi$, $\tau_{\mathcal{O}}$, $\lambda_k$}
+\subsubsection{Algebraic Properties of  \texorpdfstring{$\pi$}{Pi}, \texorpdfstring{$\tau_{\mathcal{O}}$}{Tau}, \texorpdfstring{$\lambda_k$}{Lambda}}
 
 During the logical optimization phase of query planning, a \acrshort{dbms} leverages the algebraic properties of the operators it employs in an attempt to generate a more efficient execution plan. Most importantly, these properties determine the types of operations that can be permuted or even exchanged. As opposed to classical relational algebra, we must consider:
 \begin{enumerate*}[label=(\roman*)]
@@ -196,7 +196,7 @@ During the logical optimization phase of query planning, a \acrshort{dbms} lever
 
 \todo[inline]{Elaborate on how $\pi$, $\tau_{\mathcal{O}}$, $\lambda_k$ can be combined with other relational extensions}
 
-\subsection{\acrshort{dfc}s and Query Planning}
+\subsection{\texorpdfstring{\acrshort{dfc}s}{DFCs} and Query Planning}
 \label{section:dfc_and_planning}
 
 The requirements imposed on the structure of a \acrshort{dfc} can be leveraged to enable a \acrshort{dbms} to plan and optimize the execution of a proximity based query by not just altering the execution plan in terms of (relational) operators but also in terms of \acrshort{dfc} implementations that should be employed. To illustrate this, we proposed the notion of the \emph{function hierarchy} depicted in \ref{figure:function_hierarchy}.

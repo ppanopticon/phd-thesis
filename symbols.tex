@@ -11,22 +11,22 @@
 %% A group (the group is specified in the sort field)
 \newcommand*{\Agroupname}{Basics}
 
-\newglossaryentry{symnatural}{sort={Asymnatural},name=\ensuremath{\mathbb{N}},symbol=\ensuremath{\mathbb{N}},type={symbols},description={Set of natural numbers.}}
+\newglossaryentry{symnatural}{sort={AAsymnatural},name=\ensuremath{\mathbb{N}},symbol=\ensuremath{\mathbb{N}},type={symbols},description={Set of natural numbers.}}
 \newcommand{\symnatural}{{\glssymbol{symnatural}}}
 
-\newglossaryentry{symreal}{sort={Asymreal},name=\ensuremath{\mathbb{R}},symbol=\ensuremath{\mathbb{R}},type={symbols},description={Set of real numbers.}}
+\newglossaryentry{symreal}{sort={ABsymreal},name=\ensuremath{\mathbb{R}},symbol=\ensuremath{\mathbb{R}},type={symbols},description={Set of real numbers.}}
 \newcommand{\symreal}{{\glssymbol{symreal}}}
 
-\newglossaryentry{symcomplex}{sort={Asymcomplex},name=\ensuremath{\mathbb{C}},symbol=\ensuremath{\mathbb{C}},type={symbols},description={Set of all complex numbers.}}
+\newglossaryentry{symcomplex}{sort={ACsymcomplex},name=\ensuremath{\mathbb{C}},symbol=\ensuremath{\mathbb{C}},type={symbols},description={Set of all complex numbers.}}
 \newcommand{\symcomplex}{{\glssymbol{symcomplex}}}
 
-\newglossaryentry{symor}{sort={Asymor},name=\ensuremath{\vee},symbol=\ensuremath{\vee},type={symbols},description={The logical, inclusive disjunction.}}
-\newcommand{\symor}{{\glssymbol{symor}}}
-
-\newglossaryentry{symand}{sort={Asymand},name=\ensuremath{\wedge},symbol=\ensuremath{\wedge},type={symbols},description={The logical conjunction.}}
+\newglossaryentry{symand}{sort={ADsymand},name=\ensuremath{\wedge},symbol=\ensuremath{\wedge},type={symbols},description={The logical conjunction.}}
 \newcommand{\symand}{{\glssymbol{symand}}}
 
-\newglossaryentry{symnot}{sort={Asymnot},name=\ensuremath{\neg},symbol=\ensuremath{\neg},type={symbols},description={The logical negation.}}
+\newglossaryentry{symor}{sort={AEsymor},name=\ensuremath{\vee},symbol=\ensuremath{\vee},type={symbols},description={The logical, inclusive disjunction.}}
+\newcommand{\symor}{{\glssymbol{symor}}}
+
+\newglossaryentry{symnot}{sort={AFsymnot},name=\ensuremath{\neg},symbol=\ensuremath{\neg},type={symbols},description={The logical negation.}}
 \newcommand{\symnot}{{\glssymbol{symnot}}}
 
 %% B group (the group is specified in the sort field)
@@ -34,43 +34,37 @@
 
 % this is the definition of a symbol entry, note that glossaryentry is defined; for convenience using a newcommand, glssymbol is printed
 % see also the use of \ensuremath
-\newglossaryentry{relation}{sort={Barelation},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newglossaryentry{relation}{sort={BArelation},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
 \newcommand{\relation}{\glssymbol{relation}}
 
-\newglossaryentry{rankedrel}{sort={Barankedrelation},name=\ensuremath{\relation^{\mathcal{O}}},symbol=\ensuremath{\relation^{\mathcal{O}}},type={symbols},description={A ranked, relation that exhibits an ordering of elements induced my \( \mathcal{O} \) . Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newglossaryentry{rankedrel}{sort={BBrankedrelation},name=\ensuremath{\relation^{\mathcal{O}}},symbol=\ensuremath{\relation^{\mathcal{O}}},type={symbols},description={A ranked, relation that exhibits an ordering of elements induced my \( \mathcal{O} \) . Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
 \newcommand{\rankedrel}{\glssymbol{rankedrel}}
 
-\newglossaryentry{domain}{sort={Bbdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes used with subscript, e.g., \(\domain_{\mathtt{name}}\), to specify name or index.}}
+\newglossaryentry{domain}{sort={BCdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes with subscript, e.g., \(\domain_{\mathtt{name}}\), to specify name or index.}}
 \newcommand{\domain}{\glssymbol{domain}}
 
-\newglossaryentry{attribute}{sort={Bcattribute},name=\ensuremath{\mathcal{A}},symbol=\ensuremath{\mathcal{A}},type={symbols},description={An attribute of a relation, i.e., a tuple \((\mathtt{name}, \domain)\). Sometimes used with subscript to specify name or index.}}
+\newglossaryentry{attribute}{sort={BDattribute},name=\ensuremath{\mathcal{A}},symbol=\ensuremath{\mathcal{A}},type={symbols},description={An attribute of a relation, i.e., a tuple \((\mathtt{name}, \domain)\). Sometimes with subscript to specify name or index.}}
 \newcommand{\attribute}{\glssymbol{attribute}}
 
-\newglossaryentry{tuple}{sort={Bdtuple},name=\ensuremath{t},symbol=\ensuremath{t},type={symbols},description={A tuple \( \tuple \in \relation \) of attribute values \( a_i \in \attribute_i \). Sometimes used with subscript, e.g., \( \tuple_i \)  to specify the i-th tuple in \(  \relation \).}}
-\newcommand{\tuple}{\glssymbol{tuple}}
-
-\newglossaryentry{domainset}{sort={Bedomainset},name=\ensuremath{\mathbb{D}},symbol=\ensuremath{\mathbb{D}},type={symbols},description={The set of all data domains \(\domain_{i}\) supported by a database.}}
-\newcommand{\domainset}{\glssymbol{domainset}}
-
-\newglossaryentry{attributep}{sort={Bfattributep},name=\ensuremath{\mathcal{A}^{*}},symbol=\ensuremath{\mathcal{A}^{*}},type={symbols},description={An attribute that acts as a primary key.}}
+\newglossaryentry{attributep}{sort={BEattributep},name=\ensuremath{\mathcal{A}^{*}},symbol=\ensuremath{\mathcal{A}^{*}},type={symbols},description={An attribute that acts as a primary key.}}
 \newcommand{\attributep}{\glssymbol{attributep}}
 
-\newglossaryentry{attributef}{sort={Bfattributef},name=\ensuremath{\overline{\mathcal{A}}},symbol=\ensuremath{\overline{\mathcal{A}}},type={symbols},description={An attribute that acts as a foreign key.}}
+\newglossaryentry{attributef}{sort={BFfattributef},name=\ensuremath{\overline{\mathcal{A}}},symbol=\ensuremath{\overline{\mathcal{A}}},type={symbols},description={An attribute that acts as a foreign key.}}
 \newcommand{\attributef}{\glssymbol{attributef}}
 
-\newglossaryentry{schema}{sort={Bgschema},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \( \relation \), i.e., all attributes \(\schema (\relation) = (\attribute_1, \attribute_2, \ldots, \attribute_N)\) that make up \(\relation \).}}
+\newglossaryentry{tuple}{sort={BGtuple},name=\ensuremath{t},symbol=\ensuremath{t},type={symbols},description={A tuple \( \tuple \in \relation \) of attribute values \( a_i \in \domain_i \). Sometimes with subscript to specify the index of the tuple in \(  \relation \).}}
+\newcommand{\tuple}{\glssymbol{tuple}}
+
+\newglossaryentry{domainset}{sort={BHdomainset},name=\ensuremath{\mathbb{D}},symbol=\ensuremath{\mathbb{D}},type={symbols},description={The set system of all data domains \( \domain \) supported by a \acrshort{dbms}.}}
+\newcommand{\domainset}{\glssymbol{domainset}}
+
+\newglossaryentry{schema}{sort={BIschema},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \( \relation \), i.e., all attributes \(\schema (\relation) = (\attribute_1, \attribute_2, \ldots, \attribute_N)\) that make up \(\relation \).}}
 \newcommand{\schema}{\glssymbol{schema}}
 
-\newglossaryentry{extent}{sort={Bhextent},name=\ensuremath{\mathtt{EXT}},symbol=\ensuremath{\mathtt{EXT}},type={symbols},description={The extent of a relation \( \relation \), i.e., the tuples \(t_i\) it contains.}}
-\newcommand{\extent}{\glssymbol{extent}}
-
-\newglossaryentry{cardinality}{sort={Bcardinality},name=\ensuremath{\mathtt{CARD}},symbol=\ensuremath{\mathtt{CARD}},type={symbols},description={The cardinality of a relation \( \relation \), i.e., the number tuples \(t_i\).}}
-\newcommand{\cardinality}{\glssymbol{cardinality}}
-
-\newglossaryentry{selection}{sort={Bselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate, e.g. \( \selection_{\mathcal{P}} \).}}
+\newglossaryentry{selection}{sort={BJselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate, e.g. \( \selection_{\mathcal{P}} \).}}
 \newcommand{\selection}{\glssymbol{selection}}
 
-\newglossaryentry{projection}{sort={Bprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes , e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
+\newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes , e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
 \newcommand{\projection}{\glssymbol{projection}}
 
 %% C group (the group is specified in the sort field)
@@ -79,7 +73,7 @@
 \newglossaryentry{symdfc}{sort={Csymdfc},name=\ensuremath{\hat{\delta}},symbol=\ensuremath{\hat{\delta}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
 \newcommand{\symdfc}{\glssymbol{symdfc}}
 
-\newglossaryentry{distance}{sort={Cdistance},name=\ensuremath{\delta},symbol=\ensuremath{\delta},type={symbols},description={A relation. Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newglossaryentry{distance}{sort={Cdistance},name=\ensuremath{\delta},symbol=\ensuremath{\delta},type={symbols},description={A relation. Sometimes with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
 \newcommand{\distance}{\glssymbol{distance}}
 
 
