@@ -13,7 +13,7 @@ An entity can then host multiple \emph{records}, which correspond to rows or tup
 
 Furthermore, \emph{Cottontail DB} allows for multiple entities to be grouped into \emph{schemata}, which currently serves an organisational purpose only. Every entity can also host one or multiple secondary \emph{indexes} that index a single or multiple \emph{columns} for more efficient data access.
 
-To address database objects, \emph{Cottontail DB} uses a hierarchical namespace, i.e., every schema, entity, column and index must be uniquely named by a \emph{fully qualified name}. All the information about the database objects is tracked in an internal catalogue, which is usually backed by the main storage engine.
+To address database objects, \emph{Cottontail DB} uses a hierarchical namespace, i.e., every schema, entity, column and index must be uniquely named by a \emph{fully qualified name}. All the information about the database objects is tracked in an internal \emph{catalogue}, which is backed by the main storage engine.
 
 \begin{table}
 
@@ -118,7 +118,7 @@ Operators in \emph{Cottontail DB} are implemented as \emph{coroutines}, i.e., ev
 \begin{figure}[bt]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/execution-model-simple}
-    \caption{Operator pipeline for a simple boolean query that filters the entity \emph{people} for entries with the firstname ``Hazel'' and sorts the output by column \emph{people}. Pipeline breaking operators are indicated by the red dot.}
+    \caption{Operator pipeline for a boolean query that filters the entity \emph{people} for entries with the \emph{firstname} ``Hazel'' and sorts the output by column \emph{lastname}. Pipeline breaking operators are indicated by the red dot.}
     \label{figure:cottontail_execution_model_simple}
 \end{figure}
 
@@ -126,7 +126,7 @@ Inter-query parallelism is achieved, by collecting different operator pipelines 
 
 However, this execution model also allows for intra-query parallelism, which is used for queries that incur high CPU cost. This is realised in a \emph{data parallel} fashion by partitioning on the input. The decision whether or not to allow for parallelism is made upon implementation of a query -- i.e., the last step after the final plan has been selected -- since it requires structural changes to the operator pipeline. The degree of parallelism depends on the expected CPU cost of the plan and the available CPUs on the machine \emph{Cottontail DB} is running on.
 
-To prepare for intra-query parallelism, part of the operator pipeline is partitioned wherein every partition operates on a fraction of the input data. Since not all steps in a pipeline can be parallelised effectively, usually only parts of the pipeline are partitioned. Whether or not parallelisation is possible at a given point in the pipeline depends on whether the operator itself as well as all upstream operators allow for parallelisation, which is queried upon implementation. An additional \emph{merge} operator is introduced after such an operator, that merges all the incoming strands before resuming. An example for this is given in \Cref{figure:cottontail_execution_model_parallel}.
+To prepare for intra-query parallelism, part of the operator pipeline is partitioned wherein every partition operates on a fraction of the input data. Since not all steps in a pipeline can be parallelised effectively, usually only parts of the pipeline are partitioned. Whether parallelisation is possible at a given point in the pipeline depends on whether the operator itself as well as all upstream operators allow for parallelisation, which is queried upon implementation. An additional \emph{merge} operator is introduced after such an operator, which synchronizes and merges all the incoming strands using a \acrshort{fifo} scheme. Therefore, sort operations must take place after a merge, since any order established before the merge will be lost. An example for this is given in \Cref{figure:cottontail_execution_model_parallel}.
 
 \begin{figure}[bt]
     \centering
@@ -135,21 +135,21 @@ To prepare for intra-query parallelism, part of the operator pipeline is partiti
     \label{figure:cottontail_execution_model_parallel}
 \end{figure}
 
-Having prepared an operation pipeline in this fashion, it again remains up to the dispatcher to allocate parts of the pipeline to concrete threads. Consequently, the level of partitioning is merely an upper bound on parallelism without any guarantee, that every strand will be processed by a dedicated thread. Currently, \emph{Cottontail DB} only declares how allocation should take place by chosing the appropriate type of dispatcher.
+With an operation pipeline prepared in this fashion, it again remains up to the dispatcher to allocate parts of the pipeline to concrete threads. \emph{Cottontail DB} only declares how allocation should take place by chosing the appropriate type of dispatcher. Consequently, the level of partitioning is merely an upper bound on parallelism without any guarantee, that every strand will be processed by a dedicated thread. 
 
 \subsection{Query Planner}
 
-The goal of \emph{query planning} is to find a cost-optimal execution plan for a query given any \emph{policy} valid for the current query context and \emph{Cottontail DB}'s cost model. The input into the query planner a logical representation of the operators that should be executed as part of the operator pipeline, which we call the \emph{canonical operator node tree}. It is resulting directly from the \emph{query binding} stage.
+The goal of \emph{query planning} is to find a cost-optimal execution plan for a query given any \emph{policy} valid for the current query context and \emph{Cottontail DB}'s cost model. The input into the query planner a logical representation of the operators that should be executed as part of the operator pipeline, which we call the \emph{canonical operator node tree}. It results directly from the \emph{query binding} stage.
 
 Query planning in \emph{Cottontail DB} takes place in three steps: First, and optionally, the canonical operator node tree is compared to the \emph{plan cache}. If the cache contains a hit for that tree, the already optimized plan in the cache can be re-used and all the subsequent steps can be skipped. Second, if there is no hit in the cache or the cache is bypassed, the canonical operator node tree undergoes \emph{optimization}. The optimization step generates different versions of the input plan by applying optimization rules that act on and manipulate the tree to generate new, equivalent plans. Finally, once optimization has concluded, the plan that minimizes the expected cost is selected and \emph{implemented}, that is, converted to a concrete sequence of executable operators.
 
 \subsubsection{Basic Optimization Algorithm}
 
-The query planner used by \emph{Cottontail DB} is rather naive and can be categorized as a rule-based query planner. As the name implies, it generates new plans by enumerating and applying a set of rules to the input plan(s) in a recursive fashion. These rules are transformations that recognize patterns in the structure of the (canoncial) operator node tree and try to re-arange and/or replace nodes in the tree to generate a more optimal but equivalent version of the plan.
+The query planner used by \emph{Cottontail DB} is rather naive and can be categorized as a rule-based query planner\todo{Find reference on Volcano Planner paper.}. As the name implies, it generates new plans by enumerating and applying a set of rules to the input plan(s) in a recursive fashion. These rules are transformations that recognize patterns in the structure of the (canoncial) operator node tree and try to re-arange and/or replace nodes in the tree to generate a more optimal but equivalent version of the plan.
 
-The optimization follows the same, basic algorithm: The available list of rules is enumerated and every rule is applied to every node starting from the base of the tree. The application of rules takes place recursively, i.e., every node propagates a rule up the tree to its inputs. At every node, the rule first checks if it can be applied to the current node. This check usually incurs little cost and simply considers the type of node and other, available properties. If the check is successful, the actual application of the rule follows. This application may or may not yield a new version of the query plan, depending on more complex and more costly factors, such as the availability of an index, which requires a catalogue lookup. If a new plan results from applying the rule, that new query plan is stored in a \emph{memoization table} along with the input plan for future reference. 
+The optimization follows the same, basic algorithm: The available list of rules is enumerated and every rule is applied to every node starting from the base of the tree. The application of rules takes place recursively, i.e., every node propagates a rule up the tree to its inputs. At every node, the rule first checks if it can be applied to the current node. This check usually incurs little cost and simply considers the type of node and other, available properties. If the check is successful, the actual application of the rule follows. This application may or may not yield a new version of the query plan, depending on more complex and more costly factors, such as the availability of an index, which requires a catalogue lookup. If a new plan results from the application of a rule, that new query plan is stored in a \emph{memoization table} along with the input plan for future reference. 
 
-Every planning stage involves a defined number of passes, and the sum of all plans generated by one pass act as the input for the next. Consequently, all the intermediate plans are run through the same algorithm and all the rules are applied again. Consequently, the search space grows exponentially with the complexity of the input plan, the number of rules to apply and the number of passes. To address this, \emph{Cottontail DB}'s query planner employs certain heuristics to keep the search space manageable:
+Every planning stage involves a defined number of passes, and the sum of all plans generated by one pass act as the input for the next. All the intermediate plans are therefore run through the same algorithm and all the rules are applied again. Consequently, the search space grows exponentially with the complexity of the input plan, the number of rules to apply and the number of passes. To address this, \emph{Cottontail DB}'s query planner employs certain heuristics to keep the search space manageable:
 
 \begin{itemize}
     \item Very large, complex plans (e.g., stemming from sub-selects or JOINs) are broken into groups and every group is optimized and treated as an isolated plan. The assumption being that the combination of smaller, near-optimal plans must be close to optimal as well.
@@ -158,22 +158,22 @@ Every planning stage involves a defined number of passes, and the sum of all pla
     \item Physical execution plans generated in the second stage are actively pruned by the planner between the different passes based on the cost estimate for the plan.
 \end{itemize}
 
-Between the logical and the physical planning, there is a step that maps every logical operator node to its naive, physical counterpart. The number of passes per stage and active pruning of plans during the physical phase are used to steer the high-level behaviour of the query planner. During the logical phase, the goal is to generate as many, equivalent, logical query representations as possible to have a corpus of plans to optimize on(expansion phase). In contrast, during the physical phase, the planner tries to limit the number of intermediate plans to prevent the search space from exploding.
+Between the logical and the physical planning, there is a step that maps every logical operator node to its naive, physical counterpart. The number of passes per stage and active pruning of plans during the physical phase are used to steer the high-level behaviour of the query planner. During the logical phase, the goal is to generate as many, equivalent, logical query representations as possible to have a corpus of plans to optimize on (expansion phase). In contrast, during the physical phase, the planner tries to limit the number of intermediate plans to prevent the search space from exploding.
 
 \subsubsection{Plan Caching}
 
-The plan cache is an optimization mechanism that amortizes the cost of the expensive query planning if a certain type of query is encountered multiple times. Basically, it assigns a unique hash code to every incoming canonical operator node tree and maps the resulting, optimized physical plan to that hash in memory. If the same query is encountered again, that plan can be re-used directly and another round of planning can be avoided.
+The plan cache is an optimization mechanism that amortizes the cost of the potentially expensive query planning if a certain type of query is encountered multiple times. At its core, the cache maps the hash code of every incoming canonical operator tree to the resulting, optimized physical plan. If the same query is encountered again, that plan can be looked-up and re-used directly, hence, avoiding another round of planning.
 
 Currently, there are certain limitations to the plan cache mechanism in \emph{Cottontail DB}, which is why it is disabled by default. Firstly, the actual execution performance of a plan is not being evaluated against the cost model, i.e., the level of optimality of an execution plan is not assessed. And secondly, there is no mechanism that invalidates cached entries as changes to the data occur. 
 
 \subsubsection{Logical Optimization}
 
-The logical optimization step acts on structural properties of the operator node tree and aims at expanding the list of query plans in a way that increases the chance of finding the optimal plan during the physical phase. The logical optimizaton stage currently involves the following type of rules:
+The logical optimization step acts on structural properties of the operator node tree and aims at expanding the list of query plans in a way that increases the chance of finding the optimal plan during the physical phase. The logical optimization stage currently involves the following type of rules:
 
 \begin{description}
-    \item[Defer Fetch On Scan Rewrite Rule] This rules tries to defer access to columns upon scanning the data. It makes sure, that only columns are accessed during a table scan, that are required by the first operator following the scan that acts onspecific columns. All remaining columns are pushed down in the tree into a dedicated \emph{fetch} operation following that node.
+    \item[Defer Fetch On Scan Rewrite Rule] This rules tries to defer access to columns upon scanning the data. It makes sure, that only columns are accessed during a table scan, that are required by the first operator following the scan that requires the presence of specific columns. All remaining columns are pushed down in the tree into a dedicated \emph{fetch} operation following that node.
  
-    \item[Defer Fetch On Fetch Rewrite Rule] This rule tries to defer access to columns upon fetching data. Similarly to the \emph{Defer Fetch on Scan Rewrite Rule}, it pushes the fetching of columns that are not required by any of the subsequent operators into a dedicated fetch operation following such an operator.
+    \item[Defer Fetch On Fetch Rewrite Rule] This rule tries to defer access to columns upon fetching data. Similarly to the \emph{Defer Fetch on Scan Rewrite Rule}, it pushes the fetching of columns not required by any of the downstream operators that express a specific requirement, into a dedicated fetch operation following such an operator.
     
     \item[Conjunction Rewrite Rule] This rule refactors a filter operator evaluating a conjunctive predicate into two consecutive \emph{filter} operators, one for each side of the conjunction. There are two versions of this rule, one that applies the left side first and one that applies the right side first.
 \end{description}
@@ -192,7 +192,7 @@ The conjunction rewrite rule decomposes filtering predicates that contain conjuc
 \begin{figure}[bt]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/logical-rule-conjunction}
-    \caption{Illustration of decomposing conjunctive predicates. In this example, the filter on the column first name may be pushed down to an index during physical optimization, if such an index is available.}
+    \caption{Illustration of decomposing conjunctive predicates. In this example, the filter on the column \emph{firstname} may be pushed down to an index during physical optimization, if such an index is available.}
     \label{figure:cottontail_logical_rule_conjunction}
 \end{figure}
 
