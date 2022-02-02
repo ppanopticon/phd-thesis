@@ -1,6 +1,17 @@
 \chapter{Modelling a Database for Dynamic Multimedia Data}
 \label{chapter:system_model}
 
+As we have described in \Cref{chapter:applications}, multimedia retrieval and analytics workloads pose specific requirements on any data management system. These requirements can be summarised as follows:
+
+\begin{description}
+    \item[Support for non-scalar data] Multimedia workloads work with features, which are usually real-valued vectors but can theoretically be any mathematical object (e.g., complex numbers, matrices etc.). A \acrshort{dbms} with multimedia support must support these objects as first-class citizens.
+    \item[Support for efficient distance computation] The notion of distance or proximity between features plays a crucial role in these multimedia workloads, be it for simple nearest neighbor search or clustering. While certain workloads rely on raw speed for simple computations and data structures that allow for this type of lookup, other workloads may require the ability to compose more complex computations and execute them efficiently without the use of an index. Both aspects must be covered by a \acrshort{dbms} with multimedia support.
+    \item[Dynamically changing data] Data these days is changing constantly, and a \acrshort{dbms} for multimedia data must be able to cope with and propagate these changes to all the relevant structures that are required to satisfy the aforementioned requirements.
+    \item[Ability to express user-need] Multimedia queries often trade retrieval accuracy against speed, e.g., when using a high-dimensional index for lookup. The \acrshort{dbms} must allow the user to express their perference at different levels of the system, which is highly use-case dependent.
+\end{description}
+
+To address these requirements, we propose a set of functionality wich will be specified in the next sections. Firstly, we define \emph{generalized, proximity based operations} and explicitly specify their relationships to high-dimensional index structures currently in existence. Secondly, we propose a general-purpose mechanism to enable high-dimensional indexes to cope with changing data regardless of how they work internally. And finally, we describe a \emph{cost-model} that can be used by a query planner that takes the notion of accuracy of results into acount.
+
 \section{Generalized Distance Based Operations}
 
 Starting with the metric space model for similarity search~\cite{Zezula:2006similarity} presented in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we propose to extend the notion of proximity-based similarity search to that of a more general \emph{proximity based query} following \cref{definition:pbq}.
