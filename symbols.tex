@@ -37,7 +37,7 @@
 \newglossaryentry{relation}{sort={BArelation},name=\ensuremath{\mathcal{R}},symbol=\ensuremath{\mathcal{R}},type={symbols},description={A relation. Sometimes with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
 \newcommand{\relation}{\glssymbol{relation}}
 
-\newglossaryentry{rankedrel}{sort={BBrankedrelation},name=\ensuremath{\relation^{\mathcal{O}}},symbol=\ensuremath{\relation^{\mathcal{O}}},type={symbols},description={A ranked, relation that exhibits an ordering of elements induced my \( \mathcal{O} \) . Sometimes used with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
+\newglossaryentry{rankedrel}{sort={BBrankedrelation},name=\ensuremath{\relation^{\mathcal{O}}},symbol=\ensuremath{\relation^{\mathcal{O}}},type={symbols},description={A ranked, relation that exhibits a partial ordering of elements induced by \( \mathcal{O} \) . Sometimes used with subscript, e.g., \( \rankedrel_{\mathtt{name}} \) to specify name or index.}}
 \newcommand{\rankedrel}{\glssymbol{rankedrel}}
 
 \newglossaryentry{domain}{sort={BCdomain},name=\ensuremath{\mathcal{D}},symbol=\ensuremath{\mathcal{D}},type={symbols},description={A data domain of a relation. Sometimes with subscript, e.g., \(\domain_{\mathtt{name}}\), to specify name or index.}}
@@ -66,6 +66,12 @@
 
 \newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes , e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
 \newcommand{\projection}{\glssymbol{projection}}
+
+\newglossaryentry{order}{sort={BLorder},name=\ensuremath{\tau},symbol=\ensuremath{\tau},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \).}}
+\newcommand{\order}{\glssymbol{order}}
+
+\newglossaryentry{limit}{sort={BMlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples.}}
+\newcommand{\limit}{\glssymbol{limit}}
 
 %% C group (the group is specified in the sort field)
 \newcommand*{\Cgroupname}{Multimedia Retrieval}
