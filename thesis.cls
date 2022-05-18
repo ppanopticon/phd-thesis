@@ -595,7 +595,6 @@
   runcolor = refcolor,
   urlcolor = refcolor,
   plainpages = false,
-  pdfpagelabels,
   bookmarks,                          % write Acrobat bookmarks to PDF
   bookmarksopen = true,               % open all bookmarks in viewer
   bookmarksopenlevel = 3,             % open up to section
@@ -606,8 +605,7 @@
   pdftitle = \thesistitle,
   pdfauthor = \thesisauthor,
   pdfsubject = {PhD\ Thesis},
-  pdfstartview = Fit,
-  pdfpagelabels
+  pdfstartview = Fit
 ]{hyperref}
 
 \RequirePackage[all]{hypcap} % fixes jumping to figure, not to caption
