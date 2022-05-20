@@ -78,7 +78,7 @@ We will use the proposed model from \Cref{figure:erm_mediadata} throughout this 
     \label{figure:erm_mediadata}
 \end{figure}
 
-\subsubsection{Descriptive Metadata}
+\subsection{Descriptive Metadata}
 Descriptive metadata in the sense of the proposed data model comprises of textual descriptions (e.g, title, summary), technical information (e.g., duration, location, frame rate) and annotations (e.g., category labels). Such information has always played an important role in multimedia retrieval and analysis, because it provides (indirect) access to the media's content and can be leveraged in a structured way, e.g., in database queries or for data organisation.
 
 Over the years, many different metadata standards have emerged. For example, ID3\footnote{See https://id3.org/} tags allow for organisation of large music libraries and classification of songs based on information about artists or albums. Similarily, the Dublin Core Metadata Element Set (DCMES or just Dublin Core)\footnote{See https://www.dublincore.org/} comprises of 15 basic properties that can be used to describe any type of media, e.g., videos or images. And last but not least, EXIF\footnote{See https://www.loc.gov/preservation/digital/formats/fdd/fdd000146.shtml/} can be used to describe images and also includes technical metadata, such as the camera model, the exposure time or the f-number. These well established standards are complemented by umpteenth domain specific, standardised and non-standardised metadata frameworks.
@@ -105,44 +105,70 @@ Similarily, there is a wide range of features applied in audio analysis and retr
 
 So far, we have mostly considered features that were engineered through the careful application of signal processing and/or statistical analysis of the raw media data. However, advances in machine learning and deep neural neutwork architectures have enabled the feature extraction process to be automated to some extend, leading to shift from  \emph{engineered} to \emph{learned} features \cite{Hamel:2010Learning,Gordo:2016Deep}. There is also research that deals with the comparison of the two paradigms in multimedia retrieval and analysis \cite{Budnik:2017learned} as well as other domains, such as chemical structure analysis \cite{Gallegos:2021importance}. Preliminary results show, that while learned features often outperform the engineered ones, best results are attained by a combination of the two.
 
-Given the plethora of features and feature extraction techniques for the different types of media, there are two important aspects that we would like to highlight with respect to data modeling and data management:
+Given the plethora of features and feature extraction techniques for the different types of media, there are two important aspects that ought to be considered with respect to data modeling and data management: First, and despite the vast range of feature extraction techniques, the resulting features often exhibit a comparatively simple mathematical structure. Fir example, we will show in \Cref{section:multimedia_retrieval} that in multimeda retrieval, we very often deal with vectors in a high-dimensional, real-valued vector space \cite{Zezula:2006similarity}. Second, when considering a complex enough use-case, usually no single feature can satisfy all the different types of applications we may encounter because, as we as have pointed out, a specific feature usually focuses on a specific aspect of the content. Consequently, a combination of features often yields the best results \cite{Deselaers:2008Features}.
 
-\begin{enumerate}
-    \item Despite the vast range of feature extraction techniques, the resulting features often exhibit a comparatively simple mathematical structure. In fact, very often, we deal with vectors in a high-dimensional, real-valued vector space, i.e., $\mathcal{F} \subset \symreal^d$ \cite{Zezula:2006similarity}. 
-    \item When considering a complex enough use-case, usually no single feature can satisfy all the different types of applications we may encounter and often, a combination of features yields the best results\cite{Deselaers:2008Features}.
-\end{enumerate}
-
-Both these aspect have important implications for the the requirements on a data management system for multimedia data, especially, if such a system should be able support different use-cases that are not necessarily known in advance. It is also important to note, that both data models introduced in \Cref{section:media_data_model} can deal with these two aspects in.
+Both these aspect have important implications for the the requirements on a data management and processing system for multimedia data, especially, if such a system should be able support different use-cases that are not necessarily known in advance. We would also like to point out, that both data models introduced in \Cref{section:media_data_model} can deal with these two aspects.
 
 \section{Multimedia Retrieval}
+\label{section:multimedia_retrieval}
 
-The domain of \emph{multimedia retrieval} deals with algorithms, methods and systems that allow for searching and obtaining items of interest from large (multi-)media collections using user-defined queries. Many different subdomains for the different types of media have emerged over the years, including but not limited to image retrieval, \acrfull{mir} \cite{Simonetta:2019Multimodal}, video retrieval or 3D model retrieval.
+\emph{Multimedia retrieval} deals with algorithms, methods and systems that allow for content-based searching and obtaining items of interest from large (multi-)media collections using user-defined queries. Many different research domains for the different types of media have emerged over the years, including but not limited to image retrieval \cite{Dharani:2013Survey}, audio retrieval \cite{Lu:2001Indexing}, video retrieval \cite{Hu:2011Survey}, 3D model retrieval \cite{Yang:2007Content} and various, specialised subdomains \cite{Murthy:2018Content}.
 
-The basic flow of information typically encountered in modern multimedia retrieval systems is illustrated in \Cref{figure:multimedia_retrieval_flow}. As described in \Cref{section:media_data_model}, such a system operates upon features derived from the original media objects. This is done twice: Once when indexing a media object in the collection -- often a step that is thought as taking place offline -- and once when deriving the same feature from the query input provided by the user -- often referred to as the online phase.
+A bit more formal, given an \emph{information need} expressed by a user and transformed into a query $q$, a multimedia retrieval systems aims at finding all media objects $o_j$ contained in the media collection $\mathcal{C}$ that may be relevant to the given information need. This is achieved by obtaining some form of \emph{(dis-)similarity} $s_{q,j}$ between $q$ and $o_j$ and ranking results based on it. This is therefore referred to as \emph{similarity search} and as opposed to Boolean search, the result is not binary in the sense that an object $o_j$ either does or does not match the query. Instead, it matches to a certain degree which is expressed by $s_{q,j}$.
 
-During query execution, the system then generates a measure of \emph{dissimilarity} based on the two features, which is subsequently converted to a \emph{similarity score} by a correspondence function. In some cases, the similarity score can also be obtained directly from the features.
+Since usually, direct comparison of media object to a query is not feasible in practice -- for reasons described in \Cref{section:multmedia_data} -- features are used as a proxy instead. This is a manifestation of this concept where derivative representations, i.e., features, are considered in lieu of the actual object itself. The basic flow of information that results from this is illustrated in \Cref{figure:multimedia_retrieval_flow}. 
 
-\begin{figure}[bt]
+As described in \Cref{section:media_data_model}, a multimedia retrieval system operates upon features derived from the original media objects. This is done twice: Once when indexing a media object in the collection -- often a step that is thought as taking place offline -- and once when deriving the same feature from the query input provided by the user. Subsequently, the system generates the (dis-)similarity measure for $q$ and $o_j$, which is sometimes converted to a \emph{similarity score} by a correspondence function\footnote{In some cases, the similarity score can also be obtained directly from the features.}. The main advantage of a similarity score is its normalisation to $\left[ 0, 1 \right]$, which makes it more convenient for combining scores when multiple features are considered jointly using, e.g., \emph{score-based late fusion} \cite{Depeursinge:2010Fusion,Rossetto:2018thesis}. 
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figures/multimedia-retrieval-pipeline}
-    \caption{.}
+    \caption{Flow of information in similarity search at ingest- and query time.}
     \label{figure:multimedia_retrieval_flow}
 \end{figure}
 
 \subsection{Similarity Search and the Vector Space Model}
 
-Very often in multimedai
+The \emph{vector space model} of similarity search assumes that the domain of the feature vectors $\mathcal{F}$ is a subset of a $d$-dimensional, real-valued vector space, i.e., $\mathcal{F} \subset \symreal^d$. The dimensionality of the vector space is determined by the feature transformation process and may vary between features.
 
-In multimedia retrieval, there are two important assumptions for similiarity search. These assumptions can be summarized as follows:
+Under this premise, the distance $\delta(f,q)$ between two features $f,q \in \mathcal{F} \subset \symnatural^d$ acts as a proxy for their (dis-)similarity. Typically, the farther two vectors lie apart given a distance function, the more dissimilar they are. Prominent examples of distance functions used in similarity search are listed in \Cref{table:similarity_measures}. 
 
-\begin{itemize}
-    \item For every object $c_{i}$ in a (multimedia) collection $\mathcal{C}$, there exists a feature transformation $\phi \colon \mathcal{C} \to \mathcal{F}$, that maps the object $o_{i} \in \mathcal{C}$ to a feature space $\mathcal{F}$.
-    \item The feature space $\mathcal{F}$ and a to be defined distance function $\delta \colon \mathcal{F} \times \mathcal{F} \to \mathbb{R}_{\geq 0}$, constitute a metric space $(\mathcal{F},\delta)$, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity condition.
-\end{itemize}
+\begin{table}[hb]
+    \begin{tabular}{ | c | c | c | c |}
+        \hline
+        \textbf{Name} & \textbf{Symbol} & $\mathbf{\delta(f,q)}$ & \textbf{Metric} \\
+        \hline
+        \hline 
+        Manhattan & $L^1$ & $\sum_{i=1}^{d} | f_i - q_i |$ & Yes \\ 
+        \hline
+        Euclidean & $L^2$ & $\sqrt{\sum_{i=1}^{d} (f_i - q_i)^2}$ & Yes \\  
+        \hline
+        Minkowski & $L^p$ & $\sqrt[p]{\sum_{i=1}^{d} (f_i - q_i)^p}$ & Yes \\ 
+        \hline
+        Cosine & - & $1 - \frac{\sum_{i=1}^{d} f_{i}q_{i}}{\sqrt{\sum_{i=1}^{d} f_i^2} \sqrt{\sum_{i=1}^{d} q_i^2}}$ & Yes \\  
+        \hline
+        Chi-Square & $\chi^2$ & $\sum_{i=1}^{d} \frac{(f_i - q_i)^2}{f_i + q_i}$ & No \\ 
+        \hline
+        Hamming & - & $1 - \frac{\sum_{i=1}^{d} \min (f_{i},q_{i})}{\sum_{i=1}^{d}  \max (f_{i},q_{i})}$ & No \\
+        \hline
+    \end{tabular}
+    \caption{List of distance functions often used in similarity search for $f, q \in \symreal^d$.}
+    \label{table:similarity_measures}
+\end{table}
 
-The output of $\delta$ -- i.e., the calculated distance $d$ -- acts as a proxy for (dis-)similiarty between two objects $o_{i}$, $o_{j} \in \mathcal{C}$ given the feature transformation $\phi$. Hence, the closer two objects $o_{i}$, $o_{j}$ appear under the transformation, the more (dis-)similar they are. For the sake of completeness, it must be pointed out, that whether similarity is directly or inversely proportional to the distance is a matter of definition and depends on the concrete application. Also, in practice, multiple feature transformations $\phi_m$ may exist for a given media collection, leading to different feature spaces $\mathcal{F}_m$ for a collection $\mathcal{C}$ that must be considered jointly. Both aspects are usually addressed by additional \emph{correspondence} and \emph{scoring} functions.
+There choice of (dis-)similarity measure mainly depends on the application. All the Minkowski distances, (i.e., $L^1$, $L^2$, $L^p$) are pretty general purpose for any type of real-valued vector and in practice, there it often makes no difference which one is employed \cite{Rossetto:2018thesis}. They all have the advantage, that they induces a \emph{metric} on the underlying vector space, which gives rise to mathematical properties that can be leveraged to optimise query executon. Of all the Minkowski distances, the Euclidean distance ($L^2$) is probably the most common. The Chi-sqaured distance is particularily well suited, if the feature vectors represent histgrams, However, it does no longer induce a metric. The Jaccard- and Hamming-distance when comparing signatures that involve integer numbers or even but patterns, but again with the downside, that they no longer induce a metric.
 
-\todo[inline]{Correspondence and score functions, score fusion}
+Regardless of what (dis-)similarity measure is selected, the similarity search problem always looks the same: All features $f_j \in \symreal^d$ are traversed and compared to the query $q \in \symreal^d$ and $\delta(f_j, q)$ is obtained. It then depends on the type of query performed, but generally, we can distinguish between the following three:
+
+\begin{description}
+    \item[kNN] The $k$ features $f_j$ for which $\delta(f_j, q)$ is the smallest are retained.
+    \item[kFN] The $k$ features $f_j$ for which $\delta(f_j, q)$ is the largest are retained.
+    \item[\textepsilon NN] The features $f_j$ for which $\delta(f_j, q) \leq \epsilon$ are retained.
+\end{description}
+
+To make the score more practically usable 
+
+Then, depending on the type of similarity search, 
 
 \subsection{Approximate Nearest Neighbor Search}
 The nearest neighbor search problem 
