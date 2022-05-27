@@ -1,6 +1,23 @@
 
+@article{10.1145/93605.98741,
+  title = {The {{R}}*-{{Tree}}: {{An}} Efficient and Robust Access Method for Points and Rectangles},
+  author = {Beckmann, Norbert and Kriegel, Hans-Peter and Schneider, Ralf and Seeger, Bernhard},
+  year = {1990},
+  month = may,
+  journal = {Sigmod Record},
+  volume = {19},
+  number = {2},
+  pages = {322--331},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  issn = {0163-5808},
+  doi = {10.1145/93605.98741},
+  abstract = {The R-tree, one of the most popular access methods for rectangles, is based on the heuristic optimization of the area of the enclosing rectangle in each inner node. By running numerous experiments in a standardized testbed under highly varying data, queries and operations, we were able to design the R*-tree which incorporates a combined optimization of area, margin and overlap of each enclosing rectangle in the directory. Using our standardized testbed in an exhaustive performance comparison, it turned out that the R*-tree clearly outperforms the existing R-tree variants. Guttman's linear and quadratic R-tree and Greene's variant of the R-tree. This superiority of the R*-tree holds for different types of queries and operations, such as map overlay, for both rectangles and multidimensional points in all experiments. From a practical point of view the R*-tree is very attractive because of the following two reasons 1 it efficiently supports point and spatial data at the same time and 2 its implementation cost is only slightly higher than that of other R-trees.},
+  issue_date = {Jun. 1990}
+}
+
 @article{Astrahan:1976Systemr,
-  title = {System r: {{Relational}} Approach to Database Management},
+  title = {System {{R}}: {{Relational Approach}} to {{Database Management}}},
   author = {Astrahan, M. M. and Blasgen, M. W. and Chamberlin, D. D. and Eswaran, K. P. and Gray, J. N. and Griffiths, P. P. and King, W. F. and Lorie, R. A. and McJones, P. R. and Mehl, J. W. and Putzolu, G. R. and Traiger, I. L. and Wade, B. W. and Watson, V.},
   year = {1976},
   month = jun,
@@ -21,6 +38,19 @@
   pages = {404--417}
 }
 
+@inproceedings{Beckmann:1990RTree,
+  title = {The {{R}}*-{{Tree}}: {{An Efficient}} and {{Robust Access Method}} for {{Points}} and {{Rectangles}}},
+  booktitle = {Proceedings of the 1990 {{ACM SIGMOD International Conference}} on {{Management}} of {{Data}}},
+  author = {Beckmann, Norbert and Kriegel, Hans-Peter and Schneider, Ralf and Seeger, Bernhard},
+  year = {1990},
+  series = {{{SIGMOD}} '90},
+  pages = {322--331},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/93597.98741},
+  isbn = {0-89791-365-5}
+}
+
 @inproceedings{Belohlavek:2007relational,
   title = {Relational Algebra for Ranked Tables with Similarities: {{Properties}} and Implementation},
   booktitle = {Advances in Intelligent Data Analysis {{VII}}},
@@ -32,6 +62,23 @@
   address = {{Berlin, Heidelberg}},
   abstract = {The paper presents new developments in an extension of Codd's relational model of data. The extension consists in equipping domains of attribute values with a similarity relation and adding ranks to rows of a database table. This way, the concept of a table over domains (i.e., relation over a relation scheme) of the classical Codd's model extends to the concept of a ranked table over domains with similarities. When all similarities are ordinary identity relations and all ranks are set to 1, our extension becomes the ordinary Codd's model. The main contribution of our paper is twofold. First, we present an outline of a relational algebra for our extension. Second, we deal with implementation issues of our extension. In addition to that, we also comment on related approaches presented in the literature.},
   isbn = {978-3-540-74825-0}
+}
+
+@article{Bentley:1975Multidimensional,
+  title = {Multidimensional {{Binary Search Trees Used}} for {{Associative Searching}}},
+  author = {Bentley, Jon Louis},
+  year = {1975},
+  month = sep,
+  journal = {Communications of the ACM},
+  volume = {18},
+  number = {9},
+  pages = {509--517},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  issn = {0001-0782},
+  doi = {10.1145/361002.361007},
+  issue_date = {Sept. 1975},
+  keywords = {associative retrieval,attribute,binary search trees,binary tree insertion,information retrieval system,intersection queries,key,nearest neighbor queries,partial match queries}
 }
 
 @inproceedings{Bernhauer:2019Nonmetric,
@@ -51,7 +98,7 @@
   author = {Blanken, Henk M and {de Vries}, Arjen P and Blok, Henk Ernst and Feng, Ling},
   year = {2007},
   publisher = {{Springer}},
-  file = {/Users/gassra02/Zotero/storage/VZQJVIYH/Blanken et al. - 2007 - Multimedia retrieval.pdf}
+  file = {/Users/rgasser/Zotero/storage/VZQJVIYH/Blanken et al. - 2007 - Multimedia retrieval.pdf}
 }
 
 @inproceedings{Boerlin:20203d,
@@ -75,7 +122,7 @@
   address = {{Berlin, Heidelberg}},
   abstract = {For complex data types such as multimedia, traditional data management methods are no longer suitable. Instead of attribute matching approaches, access methods based on object similarity are becoming popular in many applications. Nowadays, efficient methods for similarity search are already available, but using them to build an actual search system still requires specialists that tune the methods and build the system. In this paper, we propose a novel query language that generalizes existing solutions and allows to formulate content-based queries in a flexible way, supporting various advanced query operations such as similarity joins, reverse nearest neighbor queries, or distinct kNN queries, as well as multi-object and multi-modal queries. The language is primarily designed to be used with the MESSIF \textendash{} a framework for content-based searching \textendash{} but can be employed by other retrieval systems as well.},
   isbn = {978-3-642-33074-2},
-  file = {/Users/gassra02/Zotero/storage/E48ZDERG/Budikova et al. - 2012 - Query language for complex similarity queries.pdf}
+  file = {/Users/rgasser/Zotero/storage/E48ZDERG/Budikova et al. - 2012 - Query language for complex similarity queries.pdf}
 }
 
 @article{Budnik:2017learned,
@@ -112,7 +159,7 @@
   number = {4},
   pages = {78--82},
   doi = {10.1109/MAHC.2012.61},
-  file = {/Users/gassra02/Zotero/storage/4W4V6EF8/Chamberlin - 2012 - Early History of SQL.pdf}
+  file = {/Users/rgasser/Zotero/storage/4W4V6EF8/Chamberlin - 2012 - Early History of SQL.pdf}
 }
 
 @article{Chen:1976The,
@@ -143,7 +190,7 @@
   address = {{New York, NY, USA}},
   doi = {10.1145/1066157.1066173},
   isbn = {1-59593-060-4},
-  file = {/Users/gassra02/Zotero/storage/B9KYNVVF/Li et al. - 2005 - RankSQL Query algebra and optimization for relati.pdf}
+  file = {/Users/rgasser/Zotero/storage/B9KYNVVF/Li et al. - 2005 - RankSQL Query algebra and optimization for relati.pdf}
 }
 
 @article{Chinchor:2010multimedia,
@@ -157,6 +204,15 @@
   doi = {10.1109/MCG.2010.92}
 }
 
+@inproceedings{Ciaccia:1997Mtree,
+  title = {M-Tree: {{An Efficient Access Method}} for {{Similarity Search}} in {{Metric Spaces}}},
+  booktitle = {Proceedings of the 1997 {{International Conference}} on {{Very Large Data Bases}} ({{VLDB}})},
+  author = {Ciaccia, Paolo and Patella, Marco and Zezula, Pavel},
+  year = {1997},
+  volume = {97},
+  pages = {426--435}
+}
+
 @article{Codd:1970Relational,
   title = {Relational {{Model}} of {{Data}} for {{Large Shared Data Banks}}},
   author = {Codd, E. F.},
@@ -166,7 +222,7 @@
   volume = {13},
   number = {6},
   pages = {377--387},
-  file = {/Users/gassra02/Zotero/storage/3QLGN5L5/Codd - 1970 - Relational Model of Data for Large Shared Data Ban.pdf}
+  file = {/Users/rgasser/Zotero/storage/3QLGN5L5/Codd - 1970 - Relational Model of Data for Large Shared Data Ban.pdf}
 }
 
 @book{Codd:1990Relational,
@@ -235,7 +291,7 @@
   doi = {10.1007/s10791-007-9039-3}
 }
 
-@inproceedings{Dharani2013survey,
+@inproceedings{Dharani:2013Survey,
   title = {A {{Survey}} on {{Content Based Image Retrieval}}},
   booktitle = {Proceedings of the 2013 {{International Conference}} on {{Pattern Recognition}}, {{Informatics}} and {{Mobile Engineering}}},
   author = {Dharani, T and Aroquiaraj, I Laurence},
@@ -257,6 +313,15 @@
   doi = {10.1007/s10462-011-9225-y}
 }
 
+@inproceedings{Echihabi:2021High,
+  title = {High-{{Dimensional Similarity Search}} for {{Scalable Data Science}}},
+  booktitle = {Proceeding of the 37th {{IEEE International Conference}} on {{Data Engineering}} ({{ICDE}})},
+  author = {Echihabi, Karima and Zoumpatianos, Kostas and Palpanas, Themis},
+  year = {2021},
+  pages = {2369--2372},
+  doi = {10.1109/ICDE51399.2021.00268}
+}
+
 @inproceedings{Farooq:2016Object,
   title = {Object {{Detection}} and {{Identification}} Using {{SURF}} and {{BoW Model}}},
   booktitle = {Proceedings of the 2016 {{International Conference}} on {{Computing}}, {{Electronic}} and {{Electrical Engineering}} ({{ICE Cube}})},
@@ -264,6 +329,14 @@
   year = {2016},
   pages = {318--323},
   organization = {{IEEE}}
+}
+
+@inproceedings{Ferhatosmanoglu:2000Vector,
+  title = {Vector {{Approximation Based Indexing}} for {{Non-Uniform High Dimensional Data Sets}}},
+  booktitle = {Proceedings of the Oth {{International Conference}} on {{Information}} and {{Knowledge Management}}},
+  author = {Ferhatosmanoglu, Hakan and Tuncel, Ertem and Agrawal, Divyakant and El Abbadi, Amr},
+  year = {2000},
+  pages = {202--209}
 }
 
 @article{Ferreira:2011Algebraic,
@@ -274,7 +347,18 @@
   volume = {2},
   number = {3},
   pages = {385--400},
-  file = {/Users/gassra02/Zotero/storage/9PRZY5YS/Ferreira et al. - 2011 - Algebraic Properties to Optimize kNN Queries.pdf}
+  file = {/Users/rgasser/Zotero/storage/9PRZY5YS/Ferreira et al. - 2011 - Algebraic Properties to Optimize kNN Queries.pdf}
+}
+
+@article{Finkel:1974Quad,
+  title = {Quad-{{Trees}} a {{Data Structure}} for {{Retrieval}} on {{Composite Keys}}},
+  author = {Finkel, Raphael A and Bentley, Jon Louis},
+  year = {1974},
+  journal = {Acta Informatica},
+  volume = {4},
+  number = {1},
+  pages = {1--9},
+  publisher = {{Springer}}
 }
 
 @inproceedings{Foote:2000Automatic,
@@ -304,7 +388,7 @@
   year = {2009},
   edition = {Second},
   isbn = {l},
-  file = {/Users/gassra02/Zotero/storage/JHPNX7GX/Garcia-Molina et al. - 2009 - DATABASE SYSTEMS The Complete Book, 2nd Edition.pdf}
+  file = {/Users/rgasser/Zotero/storage/JHPNX7GX/Garcia-Molina et al. - 2009 - DATABASE SYSTEMS The Complete Book, 2nd Edition.pdf}
 }
 
 @inproceedings{Gasser:2019Multimodal,
@@ -366,7 +450,7 @@
   year = {2018},
   month = aug,
   school = {University of Basel, Switzerland},
-  file = {/Users/gassra02/Zotero/storage/5I42KM85/Giangreco - 2018 - Database support for large-scale multimedia retrie.pdf}
+  file = {/Users/rgasser/Zotero/storage/5I42KM85/Giangreco - 2018 - Database support for large-scale multimedia retrie.pdf}
 }
 
 @book{Goodfellow:2016deep,
@@ -398,7 +482,20 @@
   title = {Generalized {{Projections}}: {{A Powerful Approach}} to {{Aggregation}}},
   author = {Gupta, Ashish Kumar and Harinarayan, Venky and Quass, Dallan},
   year = {1995},
-  file = {/Users/gassra02/Zotero/storage/VZ4CAW44/Gupta et al. - 1995 - Generalized Projections A Powerful Approach to Ag.pdf}
+  file = {/Users/rgasser/Zotero/storage/VZ4CAW44/Gupta et al. - 1995 - Generalized Projections A Powerful Approach to Ag.pdf}
+}
+
+@inproceedings{10.1145/602259.602266,
+  title = {R-{{Trees}}: {{A Dynamic Index Structure}} for {{Spatial Searching}}},
+  booktitle = {Proceedings of the 1984 {{ACM SIGMOD}} International Conference on Management of Data},
+  author = {Guttman, Antonin},
+  year = {1984},
+  series = {{{SIGMOD}} '84},
+  pages = {47--57},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/602259.602266},
+  isbn = {0-89791-128-8}
 }
 
 @article{Haerder:1983principles,
@@ -458,8 +555,8 @@
 }
 
 @inproceedings{Hojsgaard:2019Index,
-  title = {Index Maintenance Strategy and Cost Model for Extended Cluster Pruning},
-  booktitle = {Similarity Search and Applications},
+  title = {Index {{Maintenance Strategy}} and {{Cost Model}} for {{Extended Custer Pruning}}},
+  booktitle = {Similarity {{Search}} and {{Applications}}},
   author = {H{\o}jsgaard, Anders Munck and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Bonnet, Philippe},
   editor = {Amato, Giuseppe and Gennaro, Claudio and Oria, Vincent and Radovanovi{\'c}, Milo{\v s}},
   year = {2019},
@@ -467,7 +564,7 @@
   publisher = {{Springer International Publishing}},
   address = {{Cham}},
   isbn = {978-3-030-32047-8},
-  file = {/Users/gassra02/Zotero/storage/XFI77Y3V/Højsgaard et al. - 2019 - Index maintenance strategy and cost model for exte.pdf}
+  file = {/Users/rgasser/Zotero/storage/XFI77Y3V/Højsgaard et al. - 2019 - Index maintenance strategy and cost model for exte.pdf}
 }
 
 @article{Hossain:2019Comprehensive,
@@ -481,7 +578,7 @@
   publisher = {{ACM New York, NY, USA}}
 }
 
-@article{hu2011survey,
+@article{Hu:2011Survey,
   title = {A {{Survey}} on {{Visual Content-based Video Indexing}} and {{Retrieval}}},
   author = {Hu, Weiming and Xie, Nianhua and Li, Li and Zeng, Xianglin and Maybank, Stephen},
   year = {2011},
@@ -492,9 +589,9 @@
   publisher = {{IEEE}}
 }
 
-@inproceedings{Indyk:1998lsh,
+@inproceedings{Indyk1998:Approximate,
   title = {Approximate {{Nearest Neighbors}}: {{Towards Removing}} the {{Curse}} of {{Dimensionality}}},
-  booktitle = {Proceedings of the {{Thirtieth Annual ACM Symposium}} on {{Theory}} of {{Computing}}},
+  booktitle = {Proceedings of the 30th {{Annual ACM Symposium}} on {{Theory}} of {{Computing}}},
   author = {Indyk, Piotr and Motwani, Rajeev},
   year = {1998},
   pages = {604--613}
@@ -504,22 +601,10 @@
   title = {Product {{Quantization}} for {{Nearest Neighbor Search}}},
   author = {Jegou, Herve and Douze, Matthijs and Schmid, Cordelia},
   year = {2010},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)},
   volume = {33},
   number = {1},
   pages = {117--128}
-}
-
-@article{Jegou:2011pq,
-  title = {Product {{Quantization}} for {{Nearest Neighbor Search}}},
-  author = {J{\'e}gou, Herv{\'e} and Douze, Matthijs and Schmid, Cordelia},
-  year = {2011},
-  month = jan,
-  journal = {Transactions on Pattern Analysis and Machine Intelligence (TPAMI)},
-  volume = {33},
-  number = {1},
-  pages = {117--128},
-  doi = {10.1109/TPAMI.2010.57}
 }
 
 @inproceedings{Jonson:2016,
@@ -528,7 +613,7 @@
   author = {J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Worring, Marcel and Zah{\'a}lka, Jan and Rudinac, Stevan and Amsaleg, Laurent},
   year = {2016},
   pages = {290--302},
-  file = {/Users/gassra02/Zotero/storage/JH8BNXCW/Jónsson et al. - 2016 - Ten research questions for scalable multimedia ana.pdf}
+  file = {/Users/rgasser/Zotero/storage/JH8BNXCW/Jónsson et al. - 2016 - Ten research questions for scalable multimedia ana.pdf}
 }
 
 @inproceedings{Jonsson1998:Interaction,
@@ -549,7 +634,7 @@
   title = {Mastering the Information Age: {{Solving}} Problems with Visual Analytics},
   author = {Keim, Daniel and Kohlhammer, J{\"o}rn and Ellis, Geoffrey and Mansmann, Florian},
   year = {2010},
-  file = {/Users/gassra02/Zotero/storage/IYUA4SQ3/Keim et al. - 2010 - Mastering the information age Solving problems wi.pdf}
+  file = {/Users/rgasser/Zotero/storage/IYUA4SQ3/Keim et al. - 2010 - Mastering the information age Solving problems wi.pdf}
 }
 
 @inproceedings{Kim:2010Comparison,
@@ -598,7 +683,7 @@
   number = {5},
   pages = {869--883},
   doi = {10.1109/TPAMI.2008.130},
-  file = {/Users/gassra02/Zotero/storage/X8P6Y3CZ/Lejsek et al. - 2009 - NV-Tree An efficient disk-based index for approxi.pdf}
+  file = {/Users/rgasser/Zotero/storage/X8P6Y3CZ/Lejsek et al. - 2009 - NV-Tree An efficient disk-based index for approxi.pdf}
 }
 
 @inproceedings{Lejsek:2011NVTree,
@@ -612,7 +697,7 @@
   doi = {10.1145/1991996.1992050},
   abstract = {This paper presents the NV-Tree (Nearest Vector Tree). It addresses the specific, yet important, problem of efficiently and effectively finding the approximate k-nearest neighbors within a collection of a few billion high-dimensional data points. The NV-Tree is a very compact index, as only six bytes are kept in the index for each high-dimensional descriptor. It thus scales extremely well when indexing large collections of high-dimensional descriptors. The NV-Tree efficiently produces results of good quality, even at such a large scale that the indices cannot be kept entirely in main memory any more. We demonstrate this with extensive experiments using a collection of 2.5 billion SIFT (Scale Invariant Feature Transform) descriptors.},
   isbn = {978-1-4503-0336-1},
-  file = {/Users/gassra02/Zotero/storage/HKIJ2TQT/Lejsek et al. - 2011 - NV-Tree Nearest neighbors at the billion scale.pdf}
+  file = {/Users/rgasser/Zotero/storage/HKIJ2TQT/Lejsek et al. - 2011 - NV-Tree Nearest neighbors at the billion scale.pdf}
 }
 
 @inproceedings{Lejsek:2018Transactional,
@@ -626,14 +711,14 @@
   address = {{Cham}},
   abstract = {This article addresses the issue of dynamicity and durability for scalable indexing of very large and rapidly growing collections of local features for visual instance retrieval. By extending the NV-tree, a scalable disk-based high-dimensional index, we show how to implement the ACID properties of transactions which ensure both dynamicity and durability. We present a detailed performance evaluation of the transactional NV-tree, showing that the insertion throughput is excellent despite the effort to enforce the ACID properties.},
   isbn = {978-3-030-02224-2},
-  file = {/Users/gassra02/Zotero/storage/S38GTJAT/Lejsek et al. - 2018 - Transactional support for visual instance search.pdf}
+  file = {/Users/rgasser/Zotero/storage/S38GTJAT/Lejsek et al. - 2018 - Transactional support for visual instance search.pdf}
 }
 
 @article{Levensthtein:1965Binary,
-  title = {Binary Codes Capable of Correcting Deletions, Insertions, and Reversals},
+  title = {Binary {{Codes Capable}} of {{Correcting Deletions}}, {{Insertions}}, and {{Reversals}}},
   author = {Levenshtein, Vladimir I.},
   year = {1965},
-  journal = {Soviet physics. Doklady},
+  journal = {Soviet Physics Doklady},
   volume = {10},
   pages = {707--710}
 }
@@ -704,7 +789,25 @@
   issn = {1432-1882},
   doi = {10.1007/s00530-010-0199-4},
   abstract = {In recent years, some approximate high-dimensional indexing techniques have shown promising results by trading off quality guarantees for improved query performance. While the query performance and quality of these methods has been well studied, however, the performance of index maintenance has not yet been reported in any detail. Here, we focus on the dynamic behavior of the balanced NV-tree, which is a disk-based approximate index for very large collections. We report on an initial study of the effects of several implementation choices for the balanced NV-tree, and show that with appropriate implementation, significant performance improvements are possible. Overall, the proposed techniques not only reduce maintenance cost, but can also improve search performance significantly with minimal loss of search quality.},
-  file = {/Users/gassra02/Zotero/storage/XUUZIIAR/Ólafsson et al. - 2011 - Dynamic behavior of balanced NV-trees.pdf}
+  file = {/Users/rgasser/Zotero/storage/XUUZIIAR/Ólafsson et al. - 2011 - Dynamic behavior of balanced NV-trees.pdf}
+}
+
+@inproceedings{Pagh:2015Approximate,
+  title = {Approximate {{Furthest Neighbor}} in {{High Dimensions}}},
+  booktitle = {International {{Conference}} on {{Similarity Search}} and {{Applications}}},
+  author = {Pagh, Rasmus and Silvestri, Francesco and Sivertsen, Johan and Skala, Matthew},
+  year = {2015},
+  pages = {3--14},
+  organization = {{Springer}}
+}
+
+@inproceedings{Pele:2010Quadratic,
+  title = {The {{Quadratic-Chi Histogram Distance Family}}},
+  booktitle = {European {{Conference}} on {{Computer Vision}}},
+  author = {Pele, Ofir and Werman, Michael},
+  year = {2010},
+  pages = {749--762},
+  organization = {{Springer}}
 }
 
 @book{Petrov:2019Database,
@@ -714,7 +817,7 @@
   publisher = {{O'Reilly Media, Inc.}},
   isbn = {978-1-4920-4034-7},
   langid = {english},
-  file = {/Users/gassra02/Zotero/storage/HWLFQ478/Petrov - Database Internals.pdf}
+  file = {/Users/rgasser/Zotero/storage/HWLFQ478/Petrov - Database Internals.pdf}
 }
 
 @article{Pouyanfar:2018,
@@ -738,6 +841,19 @@
   number = {6},
   pages = {725--729},
   doi = {10.1109/76.927430}
+}
+
+@inproceedings{Robinson:1981KDB,
+  title = {The {{K-D-B-tree}}: {{A Search Structure}} for {{Large Multidimensional Dynamic Indexes}}},
+  booktitle = {Proceedings of the 1981 {{ACM SIGMOD International Conference}} on {{Management}} of {{Data}}},
+  author = {Robinson, John T.},
+  year = {1981},
+  series = {{{SIGMOD}} '81},
+  pages = {10--18},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/582318.582321},
+  isbn = {0-89791-040-0}
 }
 
 @inproceedings{Rossetto:2016vitrivr,
@@ -767,7 +883,7 @@
   year = {2018},
   month = sep,
   school = {University of Basel, Switzerland},
-  file = {/Users/gassra02/Zotero/storage/QG75RMQN/Rossetto - 2018 - Multi-modal video retrieval.pdf}
+  file = {/Users/rgasser/Zotero/storage/QG75RMQN/Rossetto - 2018 - Multi-modal video retrieval.pdf}
 }
 
 @inproceedings{Rossetto:2019deep,
@@ -822,14 +938,31 @@
   doi = {10.1109/ICSC45622.2019.8938371}
 }
 
+@article{Shaft:2006Theory,
+  title = {Theory of {{Nearest Neighbors Indexability}}},
+  author = {Shaft, Uri and Ramakrishnan, Raghu},
+  year = {2006},
+  month = sep,
+  journal = {ACM Transactions on Database Systems},
+  volume = {31},
+  number = {3},
+  pages = {814--838},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  issn = {0362-5915},
+  doi = {10.1145/1166074.1166077},
+  issue_date = {September 2006},
+  keywords = {Multidimensional indexing,nearest neighbors}
+}
+
 @inproceedings{Siguroardottir:2005Quality,
-  title = {The Quality vs. {{Time}} Trade-off for Approximate Image Descriptor Search},
-  booktitle = {21st International Conference on Data Engineering Workshops ({{ICDEW}}'05)},
+  title = {The {{Quality}} vs. {{Time}} Trade-off for {{Approximate Image Descriptor Search}}},
+  booktitle = {Proceedings of the 21st {{International Conference}} on {{Data Engineering Workshops}} ({{ICDEW}}'05)},
   author = {Siguroardottir, R. and Jonsson, B.P. and Hauksson, H. and Amsaleg, L.},
   year = {2005},
   pages = {1175--1175},
   doi = {10.1109/ICDE.2005.294},
-  file = {/Users/gassra02/Zotero/storage/SIYBBUWP/Siguroardottir et al. - 2005 - The quality vs. Time trade-off for approximate ima.pdf}
+  file = {/Users/rgasser/Zotero/storage/SIYBBUWP/Siguroardottir et al. - 2005 - The quality vs. Time trade-off for approximate ima.pdf}
 }
 
 @inproceedings{Simonetta:2019Multimodal,
@@ -881,7 +1014,27 @@
   pages = {3899--3908}
 }
 
-@inproceedings{Weber:1998va,
+@article{Wang:2017ASurvey,
+  title = {A {{Survey}} on {{Learning}} to {{Hash}}},
+  author = {Wang, Jingdong and Zhang, Ting and {song}, jingkuan and Sebe, Nicu and Shen, Heng Tao},
+  year = {2018},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume = {40},
+  number = {4},
+  pages = {769--790},
+  doi = {10.1109/TPAMI.2017.2699960}
+}
+
+@inproceedings{Wang:2021Milvus,
+  title = {Milvus: {{A Purpose-Built Vector Data Management System}}},
+  booktitle = {Proceedings of the 2021 {{International Conference}} on {{Management}} of {{Data}}},
+  author = {Wang, Jianguo and Yi, Xiaomeng and Guo, Rentong and Jin, Hai and Xu, Peng and Li, Shengjun and Wang, Xiangyu and Guo, Xiangzhou and Li, Chengming and Xu, Xiaohai and others},
+  year = {2021},
+  pages = {2614--2627},
+  file = {/Users/rgasser/Zotero/storage/FP6SVTIT/Wang et al. - 2021 - Milvus A Purpose-Built Vector Data Management Sys.pdf}
+}
+
+@inproceedings{Weber:1998Va,
   title = {A {{Quantitative Analysis}} and {{Performance Study}} for {{Similarity-Search Methods}} in {{High-Dimensional Spaces}}},
   booktitle = {{{VLDB}}},
   author = {Weber, Roger and Schek, Hans-J{\"o}rg and Blott, Stephen},
@@ -921,13 +1074,13 @@
   doi = {10.1109/VAST.2014.7042476}
 }
 
-@book{Zezula:2006similarity,
+@book{Zezula:2006Similarity,
   title = {Similarity {{Search The Metric Space Approach}}},
   author = {Zezula, Pavel and Amato, Giuseppe and Dohnal, Vlastislav and Batko, Michal},
   year = {2006},
   publisher = {{Springer Science + Business Media, Inc.}},
   isbn = {978-0-387-29146-8},
-  file = {/Users/gassra02/Zotero/storage/LNITFDNS/Zezula et al. - 2006 - Similarity Search The Metric Space Approach.pdf}
+  file = {/Users/rgasser/Zotero/storage/LNITFDNS/Zezula et al. - 2006 - Similarity Search The Metric Space Approach.pdf}
 }
 
 @article{Zhang:2020Combining,
