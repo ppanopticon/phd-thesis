@@ -8,7 +8,7 @@ A key development in this regard was the broad adoption of the smartphone in the
 
 This extreme growth as well as the increasing \emph{velocity} at which data is being produced, poses an enormous challenge for information processing, analysis and retrieval systems that deal with multimedia. Therefore, over the past few decades, many researchers have tackled the questions surrounding the efficient and effective analysis and retrieval of multimedia data.
 
-Since the contributions of this Thesis rely on a large research corpus of multimedia research, we use this chapter to provide an overview over the relevant fundamentals and related work. Two major sources are the books \emph{Multimedia Retrieval} by H. Blanken et al. \cite{Blanken:2007multimedia} and \emph{Similarity Search -- The Metric Space Approach} by P. Zezula et al. \cite{Zezula:2006Similarity}, which provide excellent introductions.
+Since the contributions of this Thesis rely on a large corpus of multimedia research, we use this chapter to introduce the relevant fundamentals, survey related work and establish a common terminology. Two major sources are the books \emph{Multimedia Retrieval} \cite{Blanken:2007multimedia} and \emph{Similarity Search -- The Metric Space Approach} \cite{Zezula:2006Similarity}.
 
 \section{Multimedia Data and Multimedia Collections}
 \label{section:multmedia_data}
@@ -51,7 +51,7 @@ In \Cref{chapter:theory_databases}, we have introduced the notion of a data mode
 
 To account for the temporal development found in dynamic media types, \emph{vitrivr}'s data model has a notion of a \emph{media segment}, which represents a clearly defined, temporal slice of the object and stands in a one-to-many relationship with it. However, the model does not make any assumption as to how segments are formed. For static media types, such as images, there is a trivial one-to-one relationship between an object and a segment. For more complex media types, such as audio or video, \emph{media segmentation} is a dedicated area of research \cite{Koprinska:2001temporal} and can be approached in many different ways, e.g., at a fixed rate, based on changes in the content \cite{Foote:2000Automatic,Tsai:2016video} or using self-adaptive, deep neural networks~\cite{Souvcek:2019transnet}. Obiviously, different strategies for segmentation yield different degrees of summarization of information over time. Additionally, the proposed distinction also allows for very application specific media types and segmentation strategies, such as \emph{image sequences} -- introduced for \acrshort{lsc} 2020 \cite{Heller:2020Interactive} -- which group related images per day for the purpose of lifelog analysis.
 
-To model the different derivative representations that are used to describe a media object and its segments, the model foresees \emph{features}, which again stand in a one-to-many relationship to the segments. That is, every segment can have an arbitrary number of such features that describe different aspects of the segment's content. In practice, different types of features are obtained and stored in dedicated entities. Additionally, \emph{descriptive metadata} allows for a description of the media both at the document and segment level by means of simple key-value pairs containing descriptions or labels.
+To model the different derivative representations that are used to describe a media object and its segments, the model foresees \emph{features}, which again stand in a one-to-many relationship with the segments. That is, every segment can have an arbitrary number of such features that describe different aspects of the segment's content. In practice, different types of features are obtained and stored in dedicated entities. Additionally, \emph{descriptive metadata} allows for a description of the media both at the document and segment level by means of simple key-value pairs containing descriptions or labels.
 
 \begin{figure}[bt]
     \centering
@@ -64,9 +64,9 @@ While proven to be useful, the proposed model is only one possible approach to m
 
 For the purpose of this Thesis, we consider a slightly altered version of the aforementioned data model, which is more in line with \cite{Blanken:2007multimedia} and is illustrated in \Cref{figure:erm_mediadata}. This model also considers media objects to be an abbstraction of individual files. However, this model foregoes the indirection introduced by the media segment and treats \emph{features}, \emph{annotations} and \emph{descriptions} as different types of a more general \emph{metadata} type that describes the media object directly. To model the temporal aspect in dynamic media types, the metadata itself exhibits information about the part of the object that is being described, denoted by an optional \emph{start} and an \emph{end} marker. In practice, this could be a frame number or a timestamp.
 
-While the difference between the two models may seem marginal, we argue, that the latter offers several advantages over the former: Firstly, it eliminates a level of indirection introduced by the media segment and thus simplifies handling of static media types, which are simply described by different types of metadata that lack a start and end marker. Secondly, it does not assume segmentation to be statically defined and instead makes this a property of the metadata itself. This is reasonable, because the optimal segmentation strategy may depend on a particular feature, especially when multiple media types are involved, e.g., aural and visual information in a video. And finally, the model could be extended to also support spatial aspects as basis for segmentation, e.g., in images, which would enable description of spatio-temporal aspects of any media type. However, such ideas are beyond the scope of this Thesis. 
+While the difference between the two models may seem marginal, we argue, that the latter offers several advantages over the former: Firstly, it eliminates a level of indirection introduced by the media segment and thus simplifies handling of static media types, which are simply described by different types of metadata that lack a start and end marker. Secondly, it does not assume segmentation to be statically defined and instead makes this a property of the metadata itself. This is reasonable, because the optimal segmentation strategy may depend on a particular feature, especially when multiple media types are involved, e.g., aural and visual information in a video. And finally, the model could be extended to also support spatial information as basis for segmentation, e.g., in images, which would enable description of spatio-temporal aspects of any media type. However, such ideas are beyond the scope of this Thesis. 
 
-Neverthelsse, we will use the proposed model from \Cref{figure:erm_mediadata} throughout this Thesis and whenever we refer to terms like collection, media object, feature or descriptive metadata, we refer to the concepts introduced in this model.
+We will use the proposed, conceptual data model from \Cref{figure:erm_mediadata} throughout this Thesis and whenever we refer to terms like collection, media object, feature or descriptive metadata, we refer to the concepts introduced in this model.
 
 \begin{figure}[bt]
     \centering
@@ -85,20 +85,26 @@ However, while useful and important for the problem of analysis and retrieval, t
 Regardless of these challenges, however, experience shows that annotations -- be they assigned manually or automatically -- play an important role, especially when it comes to information retrieval. A contributing factor here is that of query formulation, which is very low-effort and familiar for textual input and becomes more challenging for other types of queries \todo{Source}.
 
 \subsection{Features}
-Simply put, a \emph{feature} is a mathematical object that describes ``derived characteristics''~\cite{Blanken:2007multimedia} of a media object or a part thereof. Therefore, they are sometimes also referred to as \emph{descriptors}. A bit more formally, given a media collection $\symmediacol = \lbrace o_1, o_2, \ldots, o_N \rbrace$ of media objects, a \emph{feature} $f \in \symfeatures$ describes a temporal interval $[ \texttt{start}, \texttt{end} ]$ with $\texttt{start},\texttt{end} \in \symnatural_0$ of a media object $o \in \mathcal{C}$ under the feature transformation $\symfeaturetransform$, as indicated by \Cref{eq:feature_transformation}.
+Simply put, a \emph{feature} is a mathematical object that describes ``derived characteristics''~\cite{Blanken:2007multimedia} of a media object or a part thereof. Therefore, they are sometimes also referred to as \emph{descriptors}. A formal definition is given in \Cref{definition:feature}.
 
-\begin{equation}
-    \label{eq:feature_transformation}
-    \symfeaturetransform \colon \mathcal{C} \times \symnatural_0 \times \symnatural_0 \longrightarrow \mathcal{F}
-\end{equation}
+\begin{definition}[label=definition:feature]{Definition of a Feature in Multimedia Analysis}{}
+    Let $\symmediacol = \lbrace o_1, o_2, \ldots, o_N \rbrace$ be a media collection of media objects $o$ (i.e., files). A \emph{feature} $f_{i,\texttt{start},\texttt{end}} \in \symfeatures$ describes a temporal interval $[ \texttt{start}, \texttt{end} ]$ with $\texttt{start},\texttt{end} \in \symnatural_0, \texttt{start} \leq \texttt{end}$ of the media object $o_i \in \mathcal{C}$ under the feature transformation $\symfeaturetransform$, with 
 
-\cite{Blanken:2007multimedia} distinguishes between low-level and high-level features, which is a qualitative assesment of how far removed the derived characteristic of a particular feature is from a concept that has a semantic meaning to a human user. For example, a histogram of colours would be considered a low-level feature, whereas a feature capturing salient keypoints or even objects in an image would be classified as high-level. In practice, high-level features are often derived from low-level features, and again these conversions are subject to the semantic gap.
+    \begin{equation}
+        \label{eq:feature_transformation}
+        \symfeaturetransform \colon \mathcal{C} \times \symnatural_0 \times \symnatural_0 \longrightarrow \mathcal{F}
+    \end{equation}
 
-The process of generating features from media objects is called \emph{feature extraction} \cite{Blanken:2007multimedia} and there is an entire corpus of research that deals with the engineering of features that describe the relevant aspects of given media type's content dating back to the early 60s with first attempts in computer vision and image understanding. Various surveys, such as \cite{McKinney:2003Features,Ding:2012ASurvey,Salau:2019Feature}, cover the topic of feature extraction and we simply name and describe a few selected examples to provide an (unrepresentative) overview. 
+    We call $\symmediacol$ the media object domain and $\symfeatures$ the feature domain. The structure of  $\symfeatures$ is fully determined by $\symfeaturetransform$.
+\end{definition}
+
+Features play a central role in many different domains, ranging from mere (multi-)media analysis to retrieval. \cite{Blanken:2007multimedia} distinguishes between low-level and high-level features, which is a qualitative assesment of how far removed the derived characteristic of a particular feature is from a concept that has a semantic meaning to a human user. For example, a histogram of the colours found in an image would be considered a low-level feature, whereas a feature capturing salient keypoints or even objects in the same image would be classified as high-level. In practice, high-level features are often derived from low-level features, and again these conversions are subject to the semantic gap.
+
+The process of generating features from media objects is called \emph{feature extraction} \cite{Blanken:2007multimedia} and there is an entire corpus of research that deals with the engineering of features that describe the relevant aspects of a given media type's content, with first attempts in computer vision and image understanding dating back to the early 60s. Various surveys, such as \cite{McKinney:2003Features,Ding:2012ASurvey,Salau:2019Feature}, cover the topic of feature extraction and we simply name and describe a few selected examples to provide an (unrepresentative) overview. Obviously, every type of media has their own analysis technqiues that can be used to generate features.
 
 For images, one can roughly distinguish between low-level colour, texture and shape features \cite{Salau:2019Feature}, as well as higher-level local keypoint-based features. An example of a colour feature could be a simple colour histogram or a statistical moment that captures colour distribution, e.g., the average colour in a defined area of the image. Prominent examples for keypoint detection features include algorithms such as \acrfull{sift}~\cite{Lowe:1999object}, \acrfull{surf}~\cite{Bay:2006surf} or \acrfull{hog}~\cite{Dalal:2005Histograms}. All these features are employed in many different applications ranging from retrieval and similarity search to the detection of higher-level concepts, such as, objects or faces \cite{Deniz:2011Face, Farooq:2016Object}.
 
-Similarily, there is a wide range of features applied in audio analysis and retrieval. \acrfull{mfcc} -- a representation of a short-term power spectrum on the perceptual \emph{mel scale} -- play an important role in speaker recognition, sound and music classification as well as audio segmentation \cite{Kim:2010Comparison} and were shown to outperform audio descriptors outlined in the MPEG-7 standard~\cite{Quackenbush:2001Overview}, which is a collection of standardised feature descriptors for images, audio and video. Other types of features include \acrfull{pcp} for music retrieval and classification~\cite{Lee:2006Automatic,Demirel:2019Automatic} or features based on rhythm, timbre or speed.
+Similarily, there is a wide range of features applied in audio analysis and retrieval. \acrfull{mfcc} -- a representation of a short-term power spectrum on the perceptual \emph{mel scale} -- play an important role in speaker recognition, sound and music classification as well as audio segmentation \cite{Kim:2010Comparison} and were shown to outperform audio descriptors outlined in the MPEG-7 standard~\cite{Quackenbush:2001Overview}, which is a collection of standardised feature descriptors for images, audio and video. Other types of features include \acrfull{pcp} for music retrieval and classification~\cite{Lee:2006Automatic,Demirel:2019Automatic} or features based on rhythm, timbre or speed. 
 
 So far, we have mostly considered features that were engineered through the careful application of signal processing and/or statistical analysis of the raw media data. However, advances in machine learning and deep neural neutwork architectures have enabled the feature extraction process to be automated to some extend, leading to a shift from  \emph{engineered} to \emph{learned} features \cite{Hamel:2010Learning,Gordo:2016Deep}. There is also research that deals with the comparison of the two paradigms in multimedia retrieval and analysis \cite{Budnik:2017learned} as well as other domains, such as chemical structure analysis \cite{Gallegos:2021importance}. Preliminary results show, that while learned features often outperform the engineered ones, best results are attained by a combination of the two.
 
@@ -109,11 +115,27 @@ Both these aspect have important implications for the the requirements on a data
 \section{Multimedia Retrieval}
 \label{section:multimedia_retrieval}
 
-\emph{Multimedia retrieval} deals with algorithms, methods and systems that allow for content-based search and obtaining items of interest from large (multi-)media collections based on user-defined queries. In addition to text-based search, such queries may also involve new modes of query formulation such as \emph{Query-by-Example}, \emph{Query-by-Sketch} \cite{Cao:2010mind}, \emph{Query-by-Humming} \cite{Ghias:1995query} or \emph{Query-by-Sculpting} \cite{Boerlin:20203d}. Many different research domains for the different types of media have emerged over the years, including but not limited to image retrieval \cite{Dharani:2013Survey}, audio retrieval \cite{Lu:2001Indexing}, video retrieval \cite{Hu:2011Survey}, 3D model retrieval \cite{Yang:2007Content} and various, specialised subdomains \cite{Murthy:2018Content}.
+\emph{Multimedia retrieval} deals with algorithms, methods and systems that allow for content-based search and obtaining items of interest from large (multi-)media collections based on user-defined queries. In addition to text-based search, such queries may also involve new modes of query formulation such as \emph{Query-by-Example} \cite{Kelly:1995Query}, \emph{Query-by-Sketch} \cite{Cao:2010mind}, \emph{Query-by-Humming} \cite{Ghias:1995query} or \emph{Query-by-Sculpting} \cite{Boerlin:20203d}. Many different research domains for the different types of media have emerged over the years, including but not limited to image retrieval \cite{Dharani:2013Survey}, audio retrieval \cite{Lu:2001Indexing}, video retrieval \cite{Hu:2011Survey}, 3D model retrieval \cite{Yang:2007Content} and various, specialised subdomains \cite{Murthy:2018Content}.
 
-Formally, the multimedia retrieval problem can be charactersied finding all media objects $o$ in a media collection $\symmediacol$ that may be relevant to a given \emph{information need} expressed by a user and transformed into a query $q$. This is achieved by obtaining some form of \emph{(dis-)similarity} $s_{q,o}$ between $q$ and $o$ and ranking results based on it. This is therefore referred to as \emph{similarity search} and as opposed to Boolean search, the result is non-binary in the sense that an object $o$ may match a query to a certain degree, which is indicated by $s_{q,r}$.
+Formally, the multimedia retrieval problem can be charactersied finding all media objects $o \in \symmediacol$ that may be relevant to a given \emph{information need} expressed by a user as query $Q$. This is achieved by obtaining some form of \emph{(dis-)similarity}\footnote{Depending on the context, the similarity of an object to a query may be directly or inversely proportional to the obtained score, which is what makes the difference.} between $Q$ and $o$ and ranking results based on it, which is why the method is also referred to as \emph{similarity search}. In contrast to Boolean search, the results of similarity search are non-binary in the sense that an object $o$ may match a query $Q$ only to a certain degree but still be considered part of the resultset, as opposed to a strict match / no-match decision.
 
-Since usually, a direct comparison of a media object to a query is not feasible in practice -- for reasons described in \Cref{section:multmedia_data} -- features are used as a proxy instead. This is a manifestation of the idea that derivative representations are considered in lieu of the actual object itself. Consequently, a multimedia retrieval system operates upon features $f \in \symfeatures$ derived from the original media objects by means of a feature transformation, i.e., $f = \symfeaturetransform (o), o \in \symmediacol$. This transformation is applied twice: Once when indexing a media object in the collection -- often a step that is thought as taking place offline -- and once when deriving the same feature from the query input provided by the user. Subsequently, the system generates the (dis-)similarity measure for $q$ and $f$, which is sometimes converted to a \emph{similarity score} by a correspondence function\footnote{In some cases, the similarity score can also be obtained directly from the features.}. The basic flow of information that results from this approach is illustrated in \Cref{figure:multimedia_retrieval_flow}. 
+Since a direct comparison of a media object to a query is often not feasible -- for reasons described in \Cref{section:multmedia_data} -- features are used as a proxy instead. This is a manifestation of the idea that derivative representations are considered in lieu of the actual object, leading to the formal \Cref{definition:similarity_search} of similarity search.
+
+\begin{definition}[label=definition:similarity_search]{Definition of the General Similarity Search Problem}{}
+    Let $\symmediacol = \lbrace o_1, o_2, \ldots, o_N \rbrace$ be a media collection of media objects $o$ and let further $\symfeatures$ be a feature domain of $\symmediacol$ under the feature transformation $\symfeaturetransform$. Furthermore, we assume a query $Q$ that can be mapped to $\symfeatures$, i.e., $\symfeaturetransform(Q) = q \in \symfeatures$ and the existence of an inverse $\symfeaturetransform^{'}$ with $\symfeaturetransform^{'}(f) = o$ \footnote{While this may seem like a wild assumption at first, this is a given since we explicitly store the relationship between $o$ and $f$, according to the data model in \Cref{section:multmedia_data}.}.
+
+    Similarity search then is the optimisation problem of finding the object $o \in \symmediacol$ that given a query $q$ and a similarity function $\symsim \colon \symfeatures \times \symfeatures \rightarrow [0, 1]$ maximises the following expression.
+
+    \begin{equation}
+       o_r =  \symfeaturetransform^{'} (\argmax_{f \in \symfeatures} \symsim(f,q))
+    \end{equation}
+ 
+    We call the resulting item $o_r$ most similar w.r.t. to $Q$, which is indicated by the similarity score $\symsim(f,q)$. In practice, we may be interested in the top $k$ results rather than just a single item.
+\end{definition}
+
+In simple terms, a multimedia retrieval system operates upon features $f \in \symfeatures$ derived from the original media objects by means of a feature transformation. This transformation is applied twice: Once when indexing a media object in the collection -- often a step that is thought as taking place offline -- and once when deriving the same feature from the query input $Q$ provided by the user. Subsequently, the system generates the similarity measure $\symsim(q,f)$ which quantifies the similarity between $q$ and $f$ from low ($0.0$) to alsmost identical ($1.0$). The flow of information that results from this approach is illustrated in \Cref{figure:multimedia_retrieval_flow}. 
+
+In many cases, the function $\symsim$ may not express similarity but dissimilarity between objects, in which case we can simply consider the dual problem. Furthermore, the score may not always be normalized to $[0, 1]$, which makes it difficult to combine scores of multiple features, e.g., in \emph{score-based late fusion} \cite{Depeursinge:2010Fusion,Rossetto:2018thesis} However, a normalised similarity score can always be derived by applying an additional correspondence function $\symcorr \colon \symreal \rightarrow [0, 1]$. Both aspects are of high practical relevance but do not change the fundamental problem definition. 
 
 \begin{figure}[tb]
     \centering
@@ -122,40 +144,42 @@ Since usually, a direct comparison of a media object to a query is not feasible 
     \label{figure:multimedia_retrieval_flow}
 \end{figure}
 
-The main advantage of a similarity score is its normalisation to $\left[ 0, 1 \right]$, which makes it more convenient for combining scores when multiple features are considered jointly using, e.g., \emph{score-based late fusion} \cite{Depeursinge:2010Fusion,Rossetto:2018thesis}. 
-
 \subsection{Similarity Search and the Vector Space Model}
 
 The \emph{vector space model} of similarity search assumes that the domain of the feature vectors $\symfeatures$ is a subset of a mathematical vector space -- that is, a set whose elements may be added and multiplied by a scalar. In practice, we often consider that vector space to be real-valued and high-dimensional, i.e., $\symfeatures \subset \symreal^{d}$ wherein $d$ is the dimension and an inherent property of the feature and the underlying transformation $\symfeaturetransform$. Consequently, every feature $f \in \symreal^{d}$ is simply a point in that high-dimensional vector space.
 
-Under this premise, we consider the \emph{distance function} $\delta(f,q)$ that calculates the distance between a feature and a query $f,q \in \symfeatures$, as defined by \Cref{eq:distance_function}, to be a proxy for their (dis-)similarity. Typically, the farther two vectors lie apart under the distance measure, the more dissimilar they are. Prominent examples of distance functions used in similarity search are listed in \Cref{table:similarity_measures}. 
+Under this premise, we consider the dissimilarity function $\symdist(f,q)$ to be a function that calculates the distance between a feature and a query $f,q \in \symfeatures$, as defined by \Cref{eq:distance_function}. Typically, the farther two vectors lie apart under the distance measure, the more dissimilar they are, which is why we also call this proximity based searching. A list of important distance functions used in similarity search is given in \Cref{table:similarity_measures}. 
 
 \begin{equation}
     \label{eq:distance_function}
-    \delta \colon \symfeatures \times \symfeatures \rightarrow \symreal
+    \symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal
 \end{equation}
 
 \begin{table}[hb]
     \begin{tabular}{ | c | c | c | c | c | c |}
         \hline
-        \textbf{Name} & \textbf{Symbol} &  $\delta \mathbf{(f,q)}$ & \textbf{Domain} & \textbf{Co-Domain} & \textbf{Metric} \\
+        \textbf{Name} & \textbf{Symbol} &  $\symdist \mathbf{(f,q)}$ & \textbf{Domain} & \textbf{Co-Domain} & \textbf{Metric} \\
         \hline
         \hline 
         Manhattan & $L^1$ & $\sum_{i=1}^{d} | f_i - q_i |$ & $\symreal^d$ & $\symreal$ & metric \\ 
         \hline
         Euclidean & $L^2$ & $\sqrt{\sum_{i=1}^{d} (f_i - q_i)^2}$ & $\symreal^d$ & $\symreal$ & metric \\  
         \hline
-        Minkowski & $L^p$ & $\sqrt[p]{\sum_{i=1}^{d} (f_i - q_i)^p}$ & $\symreal^d$ & $\symreal$ & metric \\ 
+        Minkowski & $L^p$ & $\sqrt[p]{\sum_{i=1}^{d} (f_i - q_i)^p}$ & $\symreal^d$ & $\symreal$ & metric if $p \in \symnatural_{\geq 1}$ \\ 
         \hline
         Chi-Square & $\chi^2$ & $\sum_{i=1}^{d} \frac{(f_i - q_i)^2}{f_i + q_i}$ & $\symreal^d$ & $\symreal$ & metric \\ 
         \hline
-        Cosine & - & $1 - \frac{\sum_{i=1}^{d} f_{i}q_{i}}{\sqrt{\sum_{i=1}^{d} f_i^2} \sqrt{\sum_{i=1}^{d} q_i^2}}$ & $\symreal^d$ & [-1, 1] & metric \\  
+        Kullback-Leibler & - & $\sum_{i=1}^{d} q_i \log (\frac{q_i}{f_i})$ & $\symreal^d$ & $\symreal$ & non-metric \\ 
         \hline
-        Jacccard & - & $1 - \frac{A \cap B}{A \cup B}$ & A & $[0, 1]$ & metric \\
+        Cosine & - & $1 - \frac{\sum_{i=1}^{d} f_{i}q_{i}}{\sqrt{\sum_{i=1}^{d} f_i^2} \sqrt{\sum_{i=1}^{d} q_i^2}}$ & $\symreal^d$ & $[-1, 1]$ & semi-metric \\  
         \hline
-        Levenshtein & - & - & \texttt{strings} & $\symnatural$ & metric \\
+        Jacccard & - & $1 - \frac{A \cap B}{A \cup B}$ & $\symfeatures$ & $[0, 1]$ & metric \\
         \hline
-        Hamming & - & - &  \texttt{strings} & $\symnatural$ & quasi-metric \\
+        Levenshtein & - & - & $\mathbb{S}$ & $\symnatural$ & metric \\
+        \hline
+        Hamming & - & - &  $\mathbb{S}$ & $\symnatural$ & quasi-metric \\
+        \hline
+        LCS \cite{Hirschberg:1977Algorithms} & - & - &  $\mathbb{S}$ & $\symnatural$ & non-metric \\
         \hline
     \end{tabular}
     \caption{List of distance functions often used in similarity search.}
@@ -164,22 +188,22 @@ Under this premise, we consider the \emph{distance function} $\delta(f,q)$ that 
 
 At a high level, one can distinguish between \emph{continuous} and \emph{discrete} distance functions \cite{Zezula:2006Similarity}. Continuous functions typically exhibit a very large, potentially infinite co-domain wheras discrete functions map to a limited, often pre-defined set of values. For example, the \emph{Euclidean distance} is a continuous distance function, whereas the \emph{Levenshtein distance} \cite{Levensthtein:1965Binary} is discrete.
 
-Furthermore, we can distinguish between metric distance functions that induce a topology on the underlying vector space -- often denoted as $(\symfeatures, \delta)$ -- as opposed to functions that do not. A metric distance function satisfies the \emph{non-negativity}, \emph{symmetry}, \emph{identity of indiscernables} and \emph{triangle inequality} constraints and $(\symfeatures, \delta)$ is called a \emph{metric space}. 
+Furthermore, we can distinguish between metric distance functions that induce a topology on the underlying vector space -- often denoted as $(\symfeatures, \symdist)$ -- as opposed to functions that do not. A metric distance function satisfies the \emph{non-negativity}, \emph{symmetry}, \emph{identity of indiscernables} and \emph{triangle inequality} constraints and $(\symfeatures, \symdist)$ is called a \emph{metric space}. 
 
 \begin{align}
   \label{eq:metric}
-   \delta(f,q) &\geq 0                           \tag{non-negativity} \\
-   \delta(f,q) &= \delta(q,f)                    \tag{symmetry}\\
-   \delta(f,q) &= 0 \Longleftrightarrow f = q    \tag{identity of indiscernables}\\
-   \delta(f,q) &\leq \delta(f,g) + \delta(g,q)   \tag{triange inequality}\\
-   \forall f,g,q \in \symfeatures \wedge (\symfeatures, \delta) \nonumber
+   \symdist(f,q) &\geq 0                           \tag{non-negativity} \\
+   \symdist(f,q) &= \symdist(q,f)                    \tag{symmetry}\\
+   \symdist(f,q) &= 0 \Longleftrightarrow f = q    \tag{identity of indiscernables}\\
+   \symdist(f,q) &\leq  \symdist(f,g) +  \symdist(g,q)   \tag{triange inequality}\\
+   \forall f,g,q \in \symfeatures \wedge (\symfeatures, \symdist) \nonumber
 \end{align}
 
-The constraints imposed on a metric give rise to mathematical properties, that can be exploited for efficient execution of similarity search and specialised indexing techniques \cite{Zezula:2006Similarity}. However, despite their mathematical convenience, some applications involve distances that do not necessarily exhibit all the aforementioned properties of a metric, e.g., quasi-metrics (symmetry), semi-metrics (triangle inequality), meta-metrics (identity) \cite{Zezula:2006Similarity}.
+The constraints imposed on a metric space give rise to mathematical properties, that can be exploited for efficient execution of similarity search and specialised indexing techniques \cite{Zezula:2006Similarity}. However, despite their mathematical convenience, some applications involve distances that do not necessarily exhibit all the aforementioned properties of a metric, e.g., quasi-metrics (symmetry), semi-metrics (triangle inequality), meta-metrics (identity) \cite{Zezula:2006Similarity} or even necessitate the use of non-metric functions \cite{Skopal:2011Nonmetric}.
 
-The choice of (dis-)similarity measure mainly depends on the application. All the Minkowski distances, (i.e., $L^1$, $L^2$, $L^p$) can be used for any type of real-valued vector and in practice, it often makes little difference which one is employed \cite{Rossetto:2018thesis}. Of all the Minkowski distances, the Euclidean distance ($L^2$) is the most common. The Chi-squared distance is well suited, if the feature vectors represent histgrams \cite{Pele:2010Quadratic}. The Hamming- and Levenshtein distances belong to the class of \emph{Edit distances} and can be used to compare strings.
+The choice of (dis-)similarity measure mainly depends on the application. All the Minkowski distances, (i.e., $L^1$, $L^2$, $L^p$) can be used for any type of real-valued vector and in practice, it often makes little difference which one is employed \cite{Rossetto:2018thesis}. Of all the Minkowski distances, the Euclidean distance ($L^2$) is the most common. The Chi-squared distance is well suited, if the feature vectors represent histgrams \cite{Pele:2010Quadratic}. The Hamming- and Levenshtein distances belong to the class of \emph{edit distances} and can be used to compare strings.
 
-Regardless of what (dis-)similarity measure is selected, the similarity search problem always looks the same: Given a query object $q \in \symfeatures$, the search algorithm should return all features $f \in \symfeatures$ that lie within a given proximity or distance to the query object $q$ and that satisfy the selection condition. Depending on this selection condition, we distinguish between different types of similarity search problems \cite{Zezula:2006Similarity}. Those are illustrated in \Cref{fig:sim_search_algorithm} and \Cref{example:similarity_search}
+Regardless of what (dis-)similarity measure is selected, the similarity search problem always looks as defined in \Cref{definition:similarity_search}: Given a query $q \in \symfeatures$, the search algorithm should return all features $o \in \symmediacol$ whose features $f = \symfeaturetransform(o)$ lie within a given proximity or distance to the query object $q$ and that further satisfy the selection condition. Depending on this selection condition, we distinguish between different types of similarity search problems \cite{Zezula:2006Similarity}. Those are illustrated in \Cref{fig:sim_search_algorithm} and \Cref{example:similarity_search}
 
 \subsubsection{\acrfull{nns}}
 
@@ -187,7 +211,7 @@ Regardless of what (dis-)similarity measure is selected, the similarity search p
 
 \begin{equation}
     \label{eq:knn}
-    \lbrace R \subset \symfeatures \colon \forall f_r \in R, f \in \symfeatures \setminus R, \delta(q,f_r) \leq \delta(q,f) \wedge |R| = k \rbrace
+    \lbrace R \subset \symfeatures \colon \forall f_r \in R, f \in \symfeatures \setminus R, \symdist(q,f_r) \leq \symdist(q,f) \wedge |R| = k \rbrace
 \end{equation}
 
 Algorithmically, the distance between all $f \in \symfeatures$ and $q$ must be evaluated exhaustively and the top $k$ results must be retained by ranking and ordering the results, e.g., in a \emph{bound priority queue}. This is sometimes referred to as \emph{brute-force} approach to \acrshort{nns}. For $\symfeatures \subset \symreal^d$, its runtime complexity is $\mathcal{O}(dN)$ and thus depends linearly on the cardinaltiy $N = |\symfeatures|$ and the dimension $d$. 
@@ -200,7 +224,7 @@ The range query or $\epsilon$NN is useful for finding objects that lie within a 
 
 \begin{equation}
     \label{eq:epsilonnn}
-    \lbrace R \subset \symfeatures \colon \forall f_r \in R, \delta(q,f_r) \leq \epsilon \rbrace
+    \lbrace R \subset \symfeatures \colon \forall f_r \in R, \symdist(q,f_r) \leq \epsilon \rbrace
 \end{equation}
 
 Algorithmically, this search strategy is similar to \acrshort{nns} in that all features must be evaluated exhaustively and in that its complexity for $\symfeatures \subset \symreal^d$is $\mathcal{O}(dN)$. However, in contrast to \acrshort{nns}, there is no need for intermediate sorting, since the selection is based on a simple, numerical comparison to the constant $\epsilon$.
@@ -250,7 +274,7 @@ Algorithmically, this type of search is more complex than \acrshort{knn} or $\ep
         \caption{RkNN}
         \label{fig:rknn}
     \end{subfigure}
-    \caption{Graphical illustration of the different similarity search algorithms in $\symfeatures \subset \symreal^2$ using the Euclidean distance ($L^2$). Matches are highlighted in red.}
+    \caption{Illustration of the different similarity search algorithms in $\symfeatures \subset \symreal^2$ using the Euclidean distance ($L^2$). Matches are highlighted in red.}
     \label{fig:sim_search_algorithm}
 \end{figure}
 
@@ -258,7 +282,7 @@ Algorithmically, this type of search is more complex than \acrshort{knn} or $\ep
 
 As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrshort{nns} problem in $\symreal^d$ exhibits a non-negligible runtime complexity of $\mathcal{O}(dN)$ for a linear, brute-force scan -- thus being proportional to the cardinality of $N = |\symfeatures|$ and the dimension $d$. Experience from database research shows that linear scans are too slow in terms of time required for query execution if $N$ becomes large enough, especially when interactive query workloads are involved. This necessitates the use of index structures that allow for sub-linear data access.
 
-For search in high-dimensional vector spaces, the dependency on the $d$ has a huge impact on execution performance of any \acrshort{nns} algorithm, due to what is known as the \emph{curse of dimensionality} \cite{Indyk1998:Approximate,Zezula:2006Similarity}. The impact of this ``curse'' is twofold: First, the execution time of a brute-force algorithm is directly proportional to the size of the feature vector. With a tendency towards more complex and thus higher-dimensional vectors, there is a direct, negative effect on runtime. Second, and more importantly, research has shown that the task of indexing high-dimensional vectors for more efficient access is not trivial and that traditional approaches, e.g., based on partitioning or classical tree structures, degenerate as dimensionality increases \cite{Indyk1998:Approximate,Weber:1998Va} with the consequence, that they only yield marginal or no improvement over executing a linear scan. In fact, it was formally proven by \cite{Shaft:2006Theory} in their \emph{Theory of Nearest Neighbor Indexability} that the performance of almost all known index structures at that time deteriorate to that of a linear scan if $d$ becomes large enough.
+For search in high-dimensional vector spaces, the dependency on $d$ has a huge impact on execution performance of any \acrshort{nns} algorithm, due to what is known as the \emph{curse of dimensionality} \cite{Indyk1998:Approximate,Zezula:2006Similarity}. The impact of this ``curse'' is twofold: First, the execution time of a brute-force algorithm is directly proportional to the size of the feature vector. With a tendency towards more complex and thus higher-dimensional vectors, there is a direct, negative effect on runtime. Second, and more importantly, research has shown that the task of indexing high-dimensional vectors for more efficient access is not trivial and that traditional approaches, e.g., based on partitioning or classical tree structures, degenerate as dimensionality increases \cite{Indyk1998:Approximate,Weber:1998Va} with the consequence, that they only yield marginal or no improvement over executing a linear scan. In fact, it was formally proven by \cite{Shaft:2006Theory} in their \emph{Theory of Nearest Neighbor Indexability} that the performance of almost all known index structures at that time deteriorate to that of a linear scan if $d$ becomes large enough.
 
 Nevertheless, the issue of index structures that allow for more efficient and thus sub-linear \acrshort{nns} has been taken on by various researchers over the past few decades with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the accuracy of the results, wherein ``accuracy'' is often measured in terms of precission and recall of a result produced by an index as compared to the the result produced by a linear scan \cite{Echihabi:2021High}. Second, based on their \emph{structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantization}, \emph{hashing} or \emph{partitioning}. An overview of different, prominent algorithms is provided in \Cref{table:index_structures}.
 
@@ -282,10 +306,12 @@ Nevertheless, the issue of index structures that allow for more efficient and th
         \hline
         NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & quantization \\ 
         \hline
-        MRNG \cite{Lejsek:2009NVTree} & approximate & graph & quantization \\ 
+        MRNG \cite{Lejsek:2009NVTree} & approximate & graph & proximity graph \\ 
+        \hline
+        HSNW \cite{Malkov:2018Efficient} & approximate & graph & proximity graph \\ 
         \hline
     \end{tabular}
-    \caption{List of high-dimensional index structures employed in similarity search and retrieval.}
+    \caption{Non-representative and non-exhaustive list of high-dimensional index structures employed in similarity search and retrieval.}
     \label{table:index_structures}
 \end{table}
 
@@ -299,7 +325,7 @@ VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the 
 
 \begin{figure}[bt]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/vaf}
+\includegraphics[width=0.95\textwidth]{figures/vaf}
 \caption{Simplified illustration of basic \acrshort{vaf} indexing scheme in for $\symfeatures \subset \symreal^2$. A vector is assigned to a cell which gives rise to a signature that is stored in a linear list.}
 \label{fig:vaf}
 \end{figure}
@@ -310,46 +336,51 @@ The VA+-files proposed by \cite{Ferhatosmanoglu:2000Vector} introduce a few opti
 
 \subsubsection{\acrfull{lsh}}
 
-\acrshort{lsh} refers to a family of algorithms \cite{Echihabi:2021High,Wang:2017ASurvey} that all share the same, basic idea of \emph{locality preserving hashing} as first proposed by \cite{Indyk1998:Approximate}. The idea is centered around a hash function $h: \symfeatures \rightarrow B$ that maps any two points $f,q \in \symfeatures$ to a bucket $b \in B$ such that Equations \ref{eq:lsh_1} and \ref{eq:lsh_2} hold, wherein $(\symfeatures, \delta)$ must constitute a metric space, $P_1, P_2 \in [0, 1], P_1 > P_2$ denote probabilities, $R > 0$ denotes an arbitrary threshold and $c > 1$ denotes an approximation factor.
+\acrshort{lsh} refers to a family of algorithms \cite{Echihabi:2021High,Wang:2017ASurvey} that all share the same, basic idea of \emph{locality preserving hashing} as first proposed by \cite{Indyk1998:Approximate}. The idea is centered around a hash function $h: \symfeatures \rightarrow B$ that maps any two points $f,q \in \symfeatures$ to a bucket $b \in B$ such that Equations \ref{eq:lsh_1} and \ref{eq:lsh_2} hold, wherein $(\symfeatures, \symdist)$ must constitute a metric space, $P_1, P_2 \in [0, 1], P_1 > P_2$ denote probabilities, $R > 0$ denotes an arbitrary threshold and $c > 1$ denotes an approximation factor.
 
 \begin{eqnarray}
-    \delta (p,q) \leq R \Rightarrow h(f) = h(q) \text{ with a probability of at least } P_1 \label{eq:lsh_1} \\
-    \delta (p,q) \geq cR \Rightarrow h(f) = h(q) \text{ with a probability of at most } P_2 \label{eq:lsh_2}
+    \symdist (p,q) \leq R \Rightarrow h(f) = h(q) \text{ with a probability of at least } P_1 \label{eq:lsh_1} \\
+    \symdist (p,q) \geq cR \Rightarrow h(f) = h(q) \text{ with a probability of at most } P_2 \label{eq:lsh_2}
 \end{eqnarray}
 
-In simple terms, a locality preserving hash function has a high probability for collision (i.e., mapping to the same bucket) if two features $f,q \in \symfeatures$ lie close to one another, i.e., $\delta(q,f) \leq R$, but exhibits a low probability for collision if $\delta(q,f) \geq cR$. Given such a hash function, a feature $f \in \symfeatures$ can be hashed to a bucket and stored in a hash table with other vectors that lie close to it. This is illustrated in \Cref{fig:lsh}. 
+In simple terms, a locality preserving hash function has a high probability for collision (i.e., mapping to the same bucket) if two features $f,q \in \symfeatures$ lie close to one another, i.e., $\symdist(q,f) \leq R$, but exhibits a low probability for collision if $\symdist(q,f) \geq cR$. Given such a hash function, a feature $f \in \symfeatures$ can be hashed to a bucket and stored in a hash table with other vectors that lie close to it. This is illustrated in \Cref{fig:lsh}. 
 
 Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
 
 \begin{figure}[bt]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/lsh}
+    \includegraphics[width=0.95\textwidth]{figures/lsh}
     \caption{A simplified illustration of the basic \acrshort{lsh} indexing scheme. A vector is hashed to a bucket by a locality preserving hash function $h$. The vector is then stored in the assigned bucket in a hash table.}
     \label{fig:lsh}
 \end{figure}
 
 \subsubsection{\acrfull{pq}}
 
-The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and describes a technique for quantizing vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantization of each subpsace. The quantization of a subspace is achieved by learning a codebook for every subspace through k-means clustering on the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. This gives rise to a compact signature that can be stored in an inverted file index, as illustrated in \Cref{fig:pq}.
+The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantizing vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantization of each subspace. The quantization is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an inverted file index, as illustrated in \Cref{fig:pq}.
 
 \begin{figure}[bt]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/pq}
-    \caption{A simplified illustration of the basic \acrshort{pq} indexing scheme. A vector is divided into smaller subvectors and each subvector is assigned to the nearest centroid in its respective codebook. The centroid ID per subspace gives rise to the signature, which can be stored in an inverted file index.}
+    \includegraphics[width=0.95\textwidth]{figures/pq}
+    \caption{A simplified illustration of the basic \acrshort{pq} indexing scheme. A vector is divided into smaller subvectors and each subvector is assigned to the nearest centroid in the codebook of the respective subspace. Concatenating the resulting centroid index per subspace gives rise to the signature, which can be stored in an inverted file index.}
     \label{fig:pq}
 \end{figure}
 
-Speedup of \acrshort{nns} is achieved in two ways: First, the resulting signature is a highly compressed representation of the original vector, which reduces IO by a large margin as is demonstrated in \Cref{example:pq_compression}. Secondly, the signature can be used directly to approximate the distance between a query $q$ and a feature $f$ using a pre-calculated lookup-table, which reduces CPU costs considerably. 
+Speedup of \acrshort{nns} is achieved in two ways: First, the resulting signature is a highly compressed representation of the original vector, which reduces IO by a large margin as is demonstrated in \Cref{example:pq_compression}. Secondly, the signature can be used directly to approximate the distance between a query $q$ and a feature $f$ using a pre-calculated lookup-table and inexpensive operations, which reduces CPU costs. However, this speedup must be bought by a distortion of the approximated distance, which may lead to errors if features lie very close to one another and makes PQ a suboptimal fit if exact distance values are required.
 
-\cite{Jegou:2010Product} also ellaborates on several optimisations that can be employed for very large data collection, e.g., by encoding the \emph{residuals} instead of the actual feature vectors or by using multiple levels of coarse quantizers to introduce an additional partitioning of the data.
+\cite{Jegou:2010Product} also discusses several optimisations that can be employed, e.g., encoding the residuals instead of the actual feature vectors to increase accuracy or to use multiple levels of coarse quantizers to introduce an additional partitioning of the data in very large data collections.
 
-\begin{example}[label=example:pq_compression]{Compression of PQ-Signature}{}
-    Let us assume $\symfeatures \subset \symreal^{256}$, i.e., a $256$-dimensional vector space ($d = 256$). Assuming a \texttt{float} data type, we require \SI{4}{byte} per vector component, i.e., \SI{1024}{byte} to store a single vector.
+\begin{example}[label=example:pq_compression]{Size of PQ-Signature vs. original feature}{}
+    Let us assume $\symfeatures \subset \symreal^{256}$, i.e., a $256$-dimensional vector space ($d = 256$). Assuming a \texttt{float} data type, we require \SI{4}{\byte} per vector component, i.e., \SI{1024}{\byte} to store a single vector.
     
-    Using \acrshort{pq}, this space could now be divided into $16$ subspaces with a dimensionality of $16$ each, i.e., $s = 16 < d$. If now we assume, that create a codebook consisting of $128$ clusters for each subspace, then every subvector will be assigned to one of $128$ centroids, which will result in $16$ numbers (one per subspace) between $0$ and $127$. Each of these numbers can be stored in a single \texttt{byte}, that is, we only need \SI{16}{byte} per vector to store an index entry. This is a factor of $64$.
+    Using \acrshort{pq}, this space could now be divided into $16$ subspaces with a dimensionality of $16$ each, i.e., $s = 16 < d$. If now we assume, that we create a codebook consisting of $128$ clusters for each subspace, then every subvector will be assigned to one of $128$ centroids, which will result in $16$ numbers (one per subspace) between $0$ and $127$. Each of these numbers can be stored in a single \texttt{byte}, that is, we only need \SI{16}{\byte} per vector to store an index entry.
 \end{example}
 
 \subsection{Beyond Similarity Search}
+In real-world multimedia retrieval systems, the query workloads are far more diverse than what we have described so far. In addition to ``simple'', one-shot queries, users find themselves searching, refining, browsing and exploring datasets with the aim to find a particular item. This is exemplified by interactive retrieval competitions such as \acrfull{vbs} \cite{Schoeffmann:2019Video} or \acrfull{lsc} \cite{Gurrin:2021Introduction}, where participants are required to find items of interest in large, standardised data collections within a limited amount of time \cite{Berns:2019V3C1,Rossetto:2021Insights,Gurrin:2021Introduction}.
+
+The various participants have demonstrated interesting techniques that complement and replace mere similarity search. For example, \cite{Kratochvil:2020SOM} have won the 2020 iteration of \acrshort{vbs} with a system that uses \acrfull{som} \cite{Kohonen:1990Self} to generate a visualisation of a clustering of the high-dimensonal data collection. That visualisation can be initialised by search input and can be used to zoom-in on a result from a top-down view. Similarily, the system that won in 2016 used \cite{Barthel:2016Navigating} hierarchical graphs and visually sorted image maps to facilitate exploration without providing any classical search functionality. Generally, it was found that efficient browsing is as important for effective retrieval as an effective similarity search model \cite{Lokovc:2019Interactive}. Similarily, a comparison of systems at the \acrshort{lsc} 2018 has shown, that a combination of functionality that complements similarity search is very common, including functions such as Boolean search on biometric data, facet filters and visual clustering. \cite{Gurrin:2019Invited}.
+
+
 \todo[inline]{Retrieval and analytics techniques that go beyond simple similarity search (e.g. SOM, summarization, clustering)}
 
 \section{Online Multimedia Analysis}

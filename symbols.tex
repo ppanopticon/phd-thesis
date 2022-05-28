@@ -20,13 +20,13 @@
 \newglossaryentry{symcomplex}{sort={ACsymcomplex},name=\ensuremath{\mathbb{C}},symbol=\ensuremath{\mathbb{C}},type={symbols},description={Set of all complex numbers.}}
 \newcommand{\symcomplex}{{\glssymbol{symcomplex}}}
 
-\newglossaryentry{symand}{sort={ADsymand},name=\ensuremath{\wedge},symbol=\ensuremath{\wedge},type={symbols},description={The logical conjunction.}}
+\newglossaryentry{symand}{sort={ADsymand},name=\ensuremath{\wedge},symbol=\ensuremath{\wedge},type={symbols},description={Logical conjunction.}}
 \newcommand{\symand}{{\glssymbol{symand}}}
 
-\newglossaryentry{symor}{sort={AEsymor},name=\ensuremath{\vee},symbol=\ensuremath{\vee},type={symbols},description={The logical, inclusive disjunction.}}
+\newglossaryentry{symor}{sort={AEsymor},name=\ensuremath{\vee},symbol=\ensuremath{\vee},type={symbols},description={Logical, inclusive disjunction.}}
 \newcommand{\symor}{{\glssymbol{symor}}}
 
-\newglossaryentry{symnot}{sort={AFsymnot},name=\ensuremath{\neg},symbol=\ensuremath{\neg},type={symbols},description={The logical negation.}}
+\newglossaryentry{symnot}{sort={AFsymnot},name=\ensuremath{\neg},symbol=\ensuremath{\neg},type={symbols},description={Logical negation.}}
 \newcommand{\symnot}{{\glssymbol{symnot}}}
 
 %% B group (the group is specified in the sort field)
@@ -76,21 +76,26 @@
 %% C group (the group is specified in the sort field)
 \newcommand*{\Cgroupname}{Multimedia Retrieval}
 
-\newglossaryentry{symmediacol}{sort={Csymmediacol},name=\ensuremath{\mathcal{C}},symbol=\ensuremath{\mathcal{C}},type={symbols},description={The media collection domain, which is a set of media objects $\symmediacol = \lbrace o_1, o_2 , \ldots, f_N \rbrace$.}}
+\newglossaryentry{symmediacol}{sort={CAsymmediacol},name=\ensuremath{\mathbb{O}},symbol=\ensuremath{\mathbb{O}},type={symbols},description={The media collection domain $\symmediacol = \lbrace o_1, o_2 , \ldots, o_N \rbrace$.}}
 \newcommand{\symmediacol}{\glssymbol{symmediacol}}
 
-\newglossaryentry{symfeatures}{sort={Csymfeatures},name=\ensuremath{\mathcal{F}},symbol=\ensuremath{\mathcal{F}},type={symbols},description={The feature domain, which is a set of features $\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace$.}}
+\newglossaryentry{symfeatures}{sort={CBsymfeatures},name=\ensuremath{\mathbb{F}},symbol=\ensuremath{\mathbb{F}},type={symbols},description={The feature domain $\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace$.}}
 \newcommand{\symfeatures}{\glssymbol{symfeatures}}
 
-\newglossaryentry{symfeaturetransform}{sort={Csymfeaturetransform},name=\ensuremath{\phi},symbol=\ensuremath{\phi},type={symbols},description={A transformation function that maps from a media collection domain $\symmediacol$ to a feature domain $\symfeatures$.}}
+\newglossaryentry{symfeaturetransform}{sort={CCsymfeaturetransform},name=\ensuremath{\mathfrak{t}},symbol=\ensuremath{\mathfrak{t}},type={symbols},description={Feature transformation function $\symfeaturetransform \colon \symmediacol \rightarrow \symfeatures$}}
 \newcommand{\symfeaturetransform}{\glssymbol{symfeaturetransform}}
+
+\newglossaryentry{symdist}{sort={CDsymdist},name=\ensuremath{\mathfrak{d}},symbol=\ensuremath{\mathfrak{d}},type={symbols},description={Dissimilarity or distance function $\symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal$.}}
+\newcommand{\symdist}{\glssymbol{symdist}}
+
+\newglossaryentry{symsim}{sort={CEsymsim},name=\ensuremath{\mathfrak{s}},symbol=\ensuremath{\mathfrak{s}},type={symbols},description={Similarity function $\symsim \colon \symfeatures \times \symfeatures \rightarrow [0, 1]$.}}
+\newcommand{\symsim}{\glssymbol{symsim}}
+
+\newglossaryentry{symcorr}{sort={CFsymcorr},name=\ensuremath{\mathfrak{c}},symbol=\ensuremath{\mathfrak{c}},type={symbols},description={A correspondence function $\symcorr \colon \symreal \rightarrow [0, 1]$}}
+\newcommand{\symcorr}{\glssymbol{symcorr}}
 
 \newglossaryentry{symdfc}{sort={Csymdfc},name=\ensuremath{\hat{\delta}},symbol=\ensuremath{\hat{\delta}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
 \newcommand{\symdfc}{\glssymbol{symdfc}}
-
-\newglossaryentry{distance}{sort={Cdistance},name=\ensuremath{\delta},symbol=\ensuremath{\delta},type={symbols},description={A relation. Sometimes with subscript, e.g., \( \relation_{\mathtt{name}} \) to specify name or index.}}
-\newcommand{\distance}{\glssymbol{distance}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Math Symbols.
