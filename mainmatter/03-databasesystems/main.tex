@@ -19,7 +19,7 @@ The first commercial \acrshort{dbms} were introduced in the 1960s \cite{Garcia:2
 
 \label{section:data_model}
 
-A data model is a formal framework that describes any type of data or information. It usually involves a formal description of the data's \emph{structure}, the \emph{operations} that can be performed and the \emph{constraints} that should be imposed on the data~\cite{Garcia:2009Database}. The purpose of any data model is to formalize how data governed by it can be accessed, modified and queried and any given \acrshort{dbms} usually adopts a specific type of data model.
+A data model is a formal framework that describes any type of data or information. It usually involves a formal description of the data's \emph{structure}, the \emph{operations} that can be performed and the \emph{constraints} that should be imposed on the data~\cite{Garcia:2009Database}. The purpose of any data model is to formalize how data governed by it can be accessed, modified and queried and any given \acrshort{dbms} usually adopts a specific type of data model (or multiple models, for that matter).
 
 
 \begin{figure}[b]
@@ -182,10 +182,10 @@ Those relational operators can then be composed to express a query of arbitrary 
     \mathtt{QUERY} = \mathtt{OP_{1}} \circ \mathtt{OP_{2}}, \ldots , \circ \mathtt{OP_{m}}
 \end{equation}
 
-In addition to this idea, Codd proposed a minimal set of relational operators listed in \Cref{table:relational_operators} and explained in the following sections. For the sake of completeness, it must be mentioned that notation and operators may slightly differ depending on the literature. We mainly use \cite{Garcia:2009Database} as our reference.
+In addition to this idea, Codd proposed a minimal set of relational operators listed in \Cref{table:relational_operators} and explained in the following sections. For the sake of completeness, it must be mentioned that notation and operators may slightly differ depending on the literature. We mainly use \cite{Garcia:2009Database} as our reference, with a few adjustments of our own for the sake of internal consistency.
 
 \begin{table}
-    \caption{The relational operators proposed by Codd et al \cite{Codd:1970Relational,Garcia:2009Database}.}
+    \caption{The relational operators proposed by Codd et al. \cite{Codd:1970Relational,Garcia:2009Database}.}
     \label{table:relational_operators}
     \begin{tabular}{| l | c | c | p{75mm} |}
         \hline
@@ -215,7 +215,7 @@ In addition to this idea, Codd proposed a minimal set of relational operators li
 
 Since relations are in essence sets of tuples, all basic operations known from set theory can be applied, namely \emph{union}, \emph{intersection} and \emph{difference}, with the only constraint that the two input relations $\relation_L,\relation_R$ must be \emph{union compatible} and thus exhibit the same attributes, i.e., $\schema(\relation_L) = \schema(\relation_R)$.
 
-The set union $\relation_L \cup \relation_R$ generates a new relation of all tuples contained in either $\relation_L$ OR $\relation_R$, as expressed by \Cref{equation:rel_op_union}
+The set union $\relation_L \cup \relation_R$ generates a new relation of all tuples contained in either $\relation_L$ OR $\relation_R$, as expressed by \Cref{equation:rel_op_union}. Due to relations being sets, duplicates resulting from a union operation are \emph{implictly} eliminated.
 
 \begin{equation}
     \label{equation:rel_op_union}
@@ -236,7 +236,7 @@ The difference $\relation_L \setminus \relation_R$ generates a new relation of a
     \relation_L \setminus \relation_R = \{ t \colon t \in \relation_L \symand t \notin \relation_R \}
 \end{equation}
 
-These basic set operations simply combine two input relations without changing its structure, i.e., $\schema(R_{I}) = \schema(R_{O})$. Due to relations being sets, duplicates resulting from a union operation are \emph{implictly} eliminated.
+These basic set operations simply combine two input relations without changing its structure, i.e., $\schema(R_{L}) = \schema(R_{R}) =  \schema(R_{O})$. 
 
 \subsubsection{Cartesian Product}
 The binary, \emph{cartesian product} or \emph{cross product} $\relation_L \times \relation_R$ of two input relations $\relation_L,\relation_R$ concatenates every tuple $t_{L} \in \relation_L$ with every tuple $t_{R} \in \relation_R$ to form a new output tuple, as expressed by \Cref{equation:rel_op_cartesian}.
@@ -249,7 +249,7 @@ The binary, \emph{cartesian product} or \emph{cross product} $\relation_L \times
 The result is a relation that contains all the attributes of $\relation_L$ and $\relation_R$, i.e., $\schema(\relation_L \times \relation_R) = \schema(\relation_L) \cup \schema(\relation_R)$ and every possible permutation of tuples from the input relations.
 
 \subsubsection{Rename}
-The unary \emph{rename} operator $\rho_{\attribute_\mathtt{A} \rightarrow \attribute_\mathtt{B}}(\relation)$ renames the attribute $\attribute_\mathtt{A}$ to $\attribute_\mathtt{B}$ without changing any attribute values. This can be useful to elliminate collisions before applying the cartesian product or to enforce a natural join on differently named attributes.
+The unary \emph{rename} operator $\rho_{\attribute_\mathtt{A} \rightarrow \attribute_\mathtt{B}}(\relation)$ renames the attribute $\attribute_\mathtt{A}$ to $\attribute_\mathtt{B}$ without changing any value. This can be useful to elliminate collisions before applying the cartesian product or to enable a natural join on differently named attributes.
 
 \subsubsection{Selection}
 
@@ -260,7 +260,7 @@ The unary, generalized \emph{selection} operator $\selection_{\phi}(\relation)$ 
     \selection_{\phi}(\relation) = \{ t \in \relation \colon \phi(t) \} \subset \relation
 \end{equation}
 
-The predicate $\phi$ can be any conditional statement consisting of individual atoms that involve attributes of $\relation$ or any constant value and comparison operators $=,\neq,>,<,\geq, \leq$. Individual atoms can also be combined by logical operators $\symand$, $\symor$ or $\symnot$. Examples could be $\attribute_1 \geq 2$ (to express that an attribute should be greater to a constant) or $\attribute_2 = \attribute_3$ (to express that an attribut must be equal to another attribute) or $\attribute_1 \geq 2 \wedge \attribute_2 = \attribute_3$ to combine the two with $A_1,A_2,A_3 \in \schema(\relation)$.
+The predicate $\phi$ can be any conditional statement consisting of individual atoms that involve attributes of $\relation$ or any constant value and comparison operators $=,\neq,>,<,\geq, \leq$. Individual atoms can also be combined by logical operators $\symand$, $\symor$ or $\symnot$. Examples could be $\attribute_1 \geq 2$, $\attribute_2 = \attribute_3$ or $\attribute_1 \geq 2 \wedge \attribute_2 = \attribute_3$ to express that an attribute should be greater than a constant, equal to another attribute or combine the two with $A_1,A_2,A_3 \in \schema(\relation)$.
 
 
 \subsubsection{Projection}
@@ -282,11 +282,11 @@ The binary, \emph{natural join} operator $\relation_L \Join \relation_R$ on two 
     \relation_L \Join \relation_R = \{ t_L \cup t_R : t_L \in \relation_L \symand t_R \in \relation_R \symand t_L\left[ \xi \right] = t_R\left[ \xi \right] \}
 \end{equation}
 
-The result is a relation that contains all the attributes of $\relation_L$ and $\relation_R$, i.e., $\schema(\relation_L \Join \relation_R) = \schema(\relation_L) \cup \schema(\relation_R)$, however, the shared attributes are only retained once.
+The result is a relation that contains all the attributes of $\relation_L$ and $\relation_R$, i.e., $\schema(\relation_L \Join \relation_R) = \schema(\relation_L) \cup \schema(\relation_R)$. Shared attributes are only retained once.
 
 \subsubsection{Expressing Queries}
 
-The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries. Since expressing queries in such a way is quite inconvenient, in practice, queries are usually expressed through an intermediate query language which is then translated to the relational operators. A famous example of such a language in the domain of relational databases is \acrshort{sql}.
+The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries. Since expressing queries in such a way is quite inconvenient, in practice, queries are usually expressed through an intermediate query language which is then translated to the relational operators. A famous example of such a language is \acrshort{sql} \cite{Chamberlin:2012Early} for relational databases.
 
 \begin{example}[label=example:rel_alg_query]{Searching for Paintings Using Relational Algebra}{}
 
@@ -323,78 +323,137 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
     Using relational algebra, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed by joining $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$, followed by a selection and projection:
 
     \begin{equation*}
-        \relation_{\mathtt{result}} = \projection_{A_{\mathtt{title}}} (\selection_{A_{\mathtt{death}} \geq 1800}(\relation_{\mathtt{paintings}} \Join \relation_{\mathtt{artists}}))
+        \relation_{\mathtt{result}} = \projection_{\attribute_{\mathtt{title}}} (\selection_{\attribute_{\mathtt{death}} \geq 1800}(\relation_{\mathtt{paintings}} \Join \relation_{\mathtt{artists}}))
     \end{equation*}
 
-    Execution of this query leads to the following relation $\relation_{\mathtt{result}}$.
-
-    \begin{center}
-        \begin{tabular}{ l || l |}
-            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  \\ 
-            \hline
-            \hline
-            $t_2$ & The Starry Night \\
-            \hline
-        \end{tabular}
-    \end{center}
+ This query produces the relation $\relation_{\mathtt{result}}$ that contains $t_2$ of $\relation_{\mathtt{paintings}}$.
 \end{example}
 
 \subsection{Extensions}
 \label{section:rel_extensions}
 
-While the relational model and the relational algebra forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd has often turned out to be too limited to accomodate certain functionality as required, e.g., by the \acrshort{sql} standard~\cite{Chamberlin:2012Early,Garcia:2009Database}. For example, many applications require storage of duplicate data and therefore, the notion of a relation -- which is a set of tuples and thus does not allow for duplicates -- is inadequate. Over the years, this has led to a growing list of proposals for extensions, some of which have seen adoption while other's have remained theoretical in nature.
+While the relational model and the relational algebra forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd has often turned out to be too limited to accomodate certain functionality as required, e.g., by the ANSI \acrshort{sql} standard \cite{Libkin:2003Expressive,XOpen:1996SQL}. For example, many applications require storage of duplicate data and therefore, the notion of a relation -- which is a set of tuples and thus does not allow for duplicates -- is inadequate. Another example could be the support for sorting or aggregation (\texttt{ORDER BY} and \texttt{GROUP BY} in \acrshort{sql}), which also isn't covered by the original algebra.
 
-\subsubsection{Relations vs. Bag vs. Sequences}
+Over the years, this has led to a growing list of proposals for extensions, some of which have seen adoption while other's have remained theoretical in nature and in the following sections, we will introduce a few examples. While at a first glance, these adaptions seem to be an elegant way of extending the expressiveness of the relational data model, there are important implications: Most importantly, some operators may not behave in the way specified in \Cref{section:rel_algebra} or we may require additional or different operators to accomodate all the functionality needed. This adds complexity to the \acrshort{dbms}, especially when considering aspects such as query planning.
 
-The motivation for considering other mathematical structures than sets as an algebraic foundation for relations are twofold: Firstly, relations are unable to provide functionality that may be desirable in a \acrshort{dbms}, such as duplicate entries or ordering. Secondly, some of the mathematical convenience of the relational model, e.g., prohibiting duplicates, may not be too efficient to actually implement~\cite{Garcia:2009Database}.
+\subsubsection{Relations vs. Bags vs. Sequences}
 
-It is therefore not surprising, that \acrshort{sql} formally operates on \emph{bags} rather than sets, which allow for duplicate entries \cite{Garcia:2009Database,Chamberlin:2012Early} 
+The motivation for considering other mathematical structures than sets as an algebraic foundation for a data model are twofold: Firstly, relations are unable to provide functionality that may be desirable in a \acrshort{dbms}, such as duplicate entries or explicit ordering of tuples. Secondly, some of the mathematical convenience of the relational model, e.g., prohibiting duplicates, may be inefficient to actually implement~\cite{Garcia:2009Database}. It is therefore not surprising that ANSI \acrshort{sql}  \cite{XOpen:1996SQL} formally operates on \emph{bags} rather than sets, which allow for duplicate entries \cite{Garcia:2009Database,Chamberlin:2012Early}. If one would want to express explicit ordering of tuples, we could even have to move to sequences, in which every tuple occupies a specific position.
 
-It is therefore not surpri
+We will not elaborate on all the consequences such a transition may have and refer to \cite{Garcia:2009Database}, which discusses this issue in great detail. However, for illustrative  purposes, we still provide the \Cref{example:bag_vs_set} inspired by \cite{Garcia:2009Database}. It demonstrates that even minor changes to the properties of the purely relational data model must be taken into account when implementing systems, e.g., during algebraic query optimisation.
+
+\begin{example}[label=example:bag_vs_set]{Searching for Paintings Using SQL}{}
+
+    The following tables list the schema and extent of $\relation_{\mathtt{p1}}$ and $\relation_{\mathtt{p2}}$, which are union compatible and have one tuple in common ($t_1$).
+
+    \begin{center}
+        \begin{tabular}{ l || l | l | l |}
+            $\relation_{\mathtt{p1}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            \hline
+            \hline
+            $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
+            \hline
+            $t_2$ & The Starry Night & Vincent van Gogh & 1889 \\
+            \hline
+            $t_3$ & Las Meninas & Diego Velázquez & 1665 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \begin{center}
+        \begin{tabular}{ l || l | l | l |}
+            $\relation_{\mathtt{p2}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            \hline
+            \hline
+            $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
+            \hline
+            $t_2$ & The Birth of Venus & Sandro Botticelli & 1485 \\
+            \hline
+            $t_3$ & The Night Watch & Rembrandt Harmenszoon van Rijn & 1642 \\
+            \hline
+        \end{tabular}
+    \end{center}
+    
+    If now we look at the union operator, i.e., $\relation_{p} = \relation_{\mathtt{p1}} \cup \relation_{\mathtt{p2}}$, we will see, that if we consider these to be normal relations, then $|\relation_{p}| = 5$, whereas for bags, $|\relation_{p}| = 6$, since since the common tuple will appear twice.
+
+    Now let us further consider the set difference and the distributive law with union, i.e., $(\relation_{\mathtt{p1}} \cup \relation_{\mathtt{p2}}) \setminus \relation_{\mathtt{p1}} = (\relation_{\mathtt{p1}} \setminus \relation_{\mathtt{p1}}) \cup (\relation_{\mathtt{p2}} \setminus \relation_{\mathtt{p1}})$. We can easily see, that this identity holds for sets but not for bags, since $|(\relation_{\mathtt{p1}} \setminus \relation_{\mathtt{p1}}) \cup (\relation_{\mathtt{p2}} \setminus \relation_{\mathtt{p1}})| = 2$ wheras $|(\relation_{\mathtt{p1}} \cup \relation_{\mathtt{p2}}) \setminus \relation_{\mathtt{p1}}| = 3$, since one of the duplicates will be retained.
+\end{example}
 
 \subsubsection{Extended Projection}
 
-\subsubsection{Ranked Relational Algebra}
+The extended project as described by \cite{Garcia:2009Database} is an addition to the projection operator $\projection_{\chi}$ specified in the relational data model and necessitated by the ANSI SQL standard \cite[]{XOpen:1996SQL}. It involves a more general definition of $\chi$, that can now contain any of the following elements for a relation $\relation$ \footnote{We deliberately deviate from \cite{Garcia:2009Database} in that we don't limit ourselves to algebraic expressions and special functions.}:
+\begin{enumerate*}[label=(\roman*)]
+    \item any attribute $\attribute \in \schema(\relation)$,
+    \item any literal value $\mathcal{L} \in \domain_{\mathcal{L}}, \text{ with } \domain_{\mathcal{L}} \in \domainset$ or,
+    \item any N-ary function expression $\mathcal{E} \colon \mathcal{G}_1 \times, \ldots, \times \mathcal{G}_A \rightarrow \mathcal{A}_{\text{out}}$ with $\mathcal{G}_j$ being either an attribute $\attribute_i \in \schema(\relation)$ or a literal $\mathcal{L}_j \in \domain_{\mathcal{L}}$.
+\end{enumerate*}
 
-\subsubsection{Similarity Search and the Relational Model}
+Therefore, in addition to projecting on existing attributes, the extended projection can be used to project onto literal values and arbitrary function expressions, thus appending new attributes to a relation. This is a very powerful extension, because it enables the generation of new values based on existing ones. A lot of \acrshort{dbms} also allow users to define their own \acrfull{udf}.
 
-Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set system of allowed data domains $\mathbb{D}$ by $\domain \subset \symreal^{dim}, dim \in \symnatural_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\relation$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
+\subsubsection{Aggregation}
 
-While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it comes with limitations that become apparent upon disection of its structure. In its postulated form, $\tau$ addresses several functions at once:
+\cite{Garcia:2009Database} also describes the grouping operator $\group_{G}$, which can be used to aggregate on attributes in $\relation$. $G$ is a list of elements, which can either be:
+\begin{enumerate*}[label=(\roman*)]
+    \item any attribute $\attribute \in \schema(\relation)$, the attribute(s) that the operator aggregates by or,
+    \item any aggregation or set function $\texttt{AGR} \colon \mathcal{A} \rightarrow \mathcal{A}_{\text{out}}$
+\end{enumerate*}
 
-\begin{enumerate}
-    \item It specifies the distance function that should be evaluated.
-    \item It generates an implicit distance attribute on the underlying relation $\relation$.
-    \item It imposes an ascending ordering and limits the cardinality of $\relation$ based on a predicate or a specified limit.
-\end{enumerate}
+The output relation $\group_G (\relation)$ is then constructed as follows: First, the tuples in the input relation  $\relation$ are grouped into $N$ groups $\mathcal{G}_1, \ldots,\mathcal{G}_N \subset \relation$ based on the values in the specified grouping attribute(s). Subsequently, the aggregation function is executed for all tuples in each group, giving rise to an output relation that contains $N$ tuples --  one per group -- each bearing the grouping attributes as well as the ouput of the set functions.
 
-While being very specific and thus straightforward to implement, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general proximity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
+The ANSI \acrshort{sql} standard \cite{XOpen:1996SQL} defines a list of supported set functions including but not limited to functions such as \texttt{COUNT}, \texttt{MIN}, \texttt{MAX}, \texttt{SUM} and \texttt{MEAN}.
 
-Another important issue with the definition of $\tau$ in its current form is that despite the two operations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
+\subsubsection{Sorting and Ranked Relational Algebra}
 
-\begin{equation}
-    \label{equation:commutation_of_tau}
-    \sigma(\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)) \neq \tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))
-\end{equation}
+Sorting is an important aspect 
 
-The left-hand side of \cref{equation:commutation_of_tau} filters the results of a kNN-search on $\relation$, thus returning $n \leq k$ results, wherein $n = k$ only if $\sigma$ matches all tuples. The right-hand side of \cref{equation:commutation_of_tau} performs a kNN-search on a pre-filtered relation $\relation$, also returning $n \leq k$ entries. However, $n$ will only be smaller than $k$ if $\sigma$ selects fewer than $k$ tuples.
+\section{\acrfull{dbms}}
+Irrespective of the concrete system and data model, \acrshort{dbms} generally exhibit an internal structure that is very similar \cite{Petrov:2019Database,Hellerstein:2007Architecture} even though, specifics may vary between implemention. This overall structure of a \acrshort{dbms} is depicted in \Cref{figure:dbms-architecture} and in this section we use the path a query takes within such a system, as indicated by the directed arrows, to illustrate the components involved in its execution.
 
-The same isn't true for $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$, due to the limitation of the cardinality being facilitated by an \emph{implicit} selection $\sigma_{\delta \leq \epsilon}$.
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/dbms-architecture.eps}
+    \caption{The general architecture of a \acrshort{dbms} and its individual components.}
+    \label{figure:dbms-architecture}
+\end{figure}
 
-\begin{equation}
-    \sigma(\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)) = \tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))
-\end{equation}
+\subsection{Query Interface}
 
-Hence, $\sigma$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ commute and yield equivalent results as long as $\sigma$ does not rely on the distance attribute introduced by $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))$
+The query interface is the \acrshort{dbms}'s channel to the outside world and enables its use by other systems. The query interface takes care of client connections, accepts and forwards queries into the database and returns results to the caller. Since in modern systems, communication usually takes place over network connections, the query interface must also handle the low-level details of this communication.
 
-\section{Queries: From Expression to Execution}
+Queries accepted by the query interface are usually expressed in a specific query language -- which are often designed for human user's and therefore human-readable. We have already mentioned \acrshort{sql} \cite{Chamberlin:2012Early} as the most prominent example of such a query language, which can be used to express queries using a declarative, textual syntax (see \Cref{example:sql_query}). In addition to SQL, there also exist other, domain-specific languages such as SPARQL \cite{Perez:2009Semantics} to query \acrfull{rdf} data, \emph{Cypher} to query labeled property graphs \cite{Francis:2018Cypher} found in graph databases such as \emph{Neo4j} \footnote{https://neo4j.com/} or the document-oriented query language exhibited by \emph{MongoDB} \footnote{https://www.mongodb.com/}.
 
-\subsection{Structured Query Language (SQL)}
+\begin{example}[label=example:sql_query]{Searching for Paintings Using SQL}{}
 
-\subsection{Query Planning}
+    Again using the relations $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$ from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
 
-\subsection{Query Execution}
+    \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=left, numberstyle=\tiny]
+        select * from paintings natural join artists where artist.death > 1800
+    \end{lstlisting}
 
-\section{Storage, Indexes and Caching}
+    The \texttt{select} clause expresses the projection $\projection$ to all attributes (*), the \texttt{natural join} clause expresses the natural join $\Join$ between \texttt{paintings} \& \texttt{artist} and the \texttt{where} clause expresses the selection $\selection$ to tuples whose \texttt{artist.death} attribute is greater than 1800.
+\end{example}
 
-\section{Architectual Considerations}
+Early attempts at a client-facing standardisation of the query interface for SQL-based systems led to the inception of the \acrfull{cli} standard \cite{XOpen:1995CLI}, which in its early version enabled embedding of \acrshort{sql} commands into C or Cobol programms. The \acrshort{cli} standard was later complemented by \acrfull{odbc} and \acrfull{jdbc}, which provide database connectivity to a wide range of \acrshort{sql} and NoSQL systems.
+
+
+\subsection{Query Parser}
+
+The query parser's main task is to transform a query provided in a (human-readable) query language to a logical representation that can be processed by a \acrshort{dbms}. This often means a conversion of text to the operators specified by the data model, e.g., a tree of the relational operators that represent an \acrshort{sql} query. If we take the query from \Cref{example:sql_query}, the internal conversion would look as shown in \Cref{figure:query-tree}.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/query-tree.eps}
+    \caption{The query from \Cref{example:sql_query} represented as a tree of relational opertors. By convention, the tree is executed and read from bottom to top.}
+    \label{figure:query-tree}
+\end{figure}
+
+Practically, query parsing involves several steps \cite{Garcia:2009Database}: First, the syntax of the textual query must be analysed and converted to a data structure that can be processed. Very often, \acrfull{ast}'s or \emph{parse trees} based on formal grammars of the language, and libraries such as \emph{ANTLR}\footnote{https://www.antlr.org/} are employed in this step. Subsequently, the nodes in the \acrshort{ast} must be mapped to \acrfull{dbo}'s contained in the \acrshort{dbms} in a step called preprocessig. This involves lookup's in the \acrshort{dbms}'s \emph{catalogue}. For the relational model, this would mean finding tables, columns and indexes. And finally, the \acrshort{ast} must be converted to an internal representation that matches the data model, e.g., a tree of relational operators.
+
+\subsection{Query Planner \& Optimizer}
+
+\subsection{Execution Engine}
+
+\subsection{Storage Manager}
+
+
+\subsection{Common Components}

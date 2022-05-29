@@ -1,2 +1,32 @@
 \chapter{Multimedia Database Systems}
 \label{chapter:theory_multimedia_database}
+\subsection{Similarity Search and the Relational Model}
+
+Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set system of allowed data domains $\mathbb{D}$ by $\domain \subset \symreal^{dim}, dim \in \symnatural_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018thesis}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\relation$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
+
+While postulating a new, relational operation $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ or $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ as proposed by \cite{Giangreco:2018thesis} has a certain elegance to it, it comes with limitations that become apparent upon disection of its structure. In its postulated form, $\tau$ addresses several functions at once:
+
+\begin{enumerate}
+    \item It specifies the distance function that should be evaluated.
+    \item It generates an implicit distance attribute on the underlying relation $\relation$.
+    \item It imposes an ascending ordering and limits the cardinality of $\relation$ based on a predicate or a specified limit.
+\end{enumerate}
+
+While being very specific and thus straightforward to implement, the amalgamation of all this functionality into a single operation is very specifically tailored to the use-case of similarity search and only of limited value when considering more general proximity-based query operations. If one would, for example, want to obtain the $k$ farthest neighbours rather than the $k$ nearest neighbours, as necessary when doing MIPS or obtaining negative examples, we would have to either change the distance function or extend the definition of $\tau$. 
+
+Another important issue with the definition of $\tau$ in its current form is that despite the two operations $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ serving a very similar purpose, they behave very differently with respect to other operations. Generally, $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$ does not commute with any selection $\sigma$ due to the inherent limiting of the cardinality to a constant value, hence:
+
+\begin{equation}
+    \label{equation:commutation_of_tau}
+    \sigma(\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)) \neq \tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))
+\end{equation}
+
+The left-hand side of \cref{equation:commutation_of_tau} filters the results of a kNN-search on $\relation$, thus returning $n \leq k$ results, wherein $n = k$ only if $\sigma$ matches all tuples. The right-hand side of \cref{equation:commutation_of_tau} performs a kNN-search on a pre-filtered relation $\relation$, also returning $n \leq k$ entries. However, $n$ will only be smaller than $k$ if $\sigma$ selects fewer than $k$ tuples.
+
+The same isn't true for $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$, due to the limitation of the cardinality being facilitated by an \emph{implicit} selection $\sigma_{\delta \leq \epsilon}$.
+
+\begin{equation}
+    \sigma(\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)) = \tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))
+\end{equation}
+
+Hence, $\sigma$ and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$ commute and yield equivalent results as long as $\sigma$ does not rely on the distance attribute introduced by $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\sigma(\relation))$
