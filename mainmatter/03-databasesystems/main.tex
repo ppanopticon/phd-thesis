@@ -286,7 +286,7 @@ The result is a relation that contains all the attributes of $\relation_L$ and $
 
 \subsubsection{Expressing Queries}
 
-The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries. Since expressing queries in such a way is quite inconvenient, in practice, queries are usually expressed through an intermediate query language which is then translated to the relational operators. A famous example of such a language is \acrshort{sql} \cite{Chamberlin:2012Early} for relational databases.
+The following \Cref{example:rel_alg_query} illustrates how relational operators can be combined to form complex queries. Since expressing queries in such a way is quite inconvenient, in practice, queries are usually expressed through an intermediate query language, which is then translated to the relational operators. A famous example of such a language is \acrshort{sql} \cite{Chamberlin:2012Early} for relational databases.
 
 \begin{example}[label=example:rel_alg_query]{Searching for Paintings Using Relational Algebra}{}
 
@@ -332,9 +332,9 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
 \subsection{Extensions}
 \label{section:rel_extensions}
 
-While the relational model and the relational algebra forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd has often turned out to be too limited to accomodate certain functionality as required, e.g., by the ANSI \acrshort{sql} standard \cite{Libkin:2003Expressive,XOpen:1996SQL}. For example, many applications require storage of duplicate data and therefore, the notion of a relation -- which is a set of tuples and thus does not allow for duplicates -- is inadequate. Another example could be the support for sorting or aggregation (\texttt{ORDER BY} and \texttt{GROUP BY} in \acrshort{sql}), which also isn't covered by the original algebra.
+While the relational model and its algebra forms the foundation of many modern \glsname{dbms}, the model as originally proposed by Codd has often turned out to be too limited to accomodate certain functionality as required, e.g., by the ANSI \acrshort{sql} standard \cite{Libkin:2003Expressive,XOpen:1996SQL}. For example, many applications require storage of duplicate data and therefore, the notion of a relation -- which is a set of tuples and thus does not allow for duplicates -- is inadequate. Another example could be the support for sorting or aggregation (\texttt{ORDER BY} and \texttt{GROUP BY} in \acrshort{sql}), which also isn't covered by the original algebra.
 
-Over the years, this has led to a growing list of proposals for extensions, some of which have seen adoption while other's have remained theoretical in nature and in the following sections, we will introduce a few examples. While at a first glance, these adaptions seem to be an elegant way of extending the expressiveness of the relational data model, there are important implications: Most importantly, some operators may not behave in the way specified in \Cref{section:rel_algebra} or we may require additional or different operators to accomodate all the functionality needed. This adds complexity to the \acrshort{dbms}, especially when considering aspects such as query planning.
+Over the years, this has led to a growing list of proposals for extensions, some of which have seen adoption while a majority has remained theoretical in nature. In the following sections, we will introduce a few examples. While at a first glance, these adaptions seem to be an elegant way of extending the expressiveness of the relational data model, there are important implications: Most importantly, some operators may not behave in the way specified in \Cref{section:rel_algebra} or we may require additional or different operators to accomodate all the functionality needed. This adds complexity to the \acrshort{dbms}, especially when considering aspects such as query planning.
 
 \subsubsection{Relations vs. Bags vs. Sequences}
 
@@ -392,35 +392,39 @@ Therefore, in addition to projecting on existing attributes, the extended projec
 
 \subsubsection{Aggregation}
 
-\cite{Garcia:2009Database} also describes the grouping operator $\group_{G}$, which can be used to aggregate on attributes in $\relation$. $G$ is a list of elements, which can either be:
+Aggregation is the act of summarizing certain attribute values based on the membership of a tuple in a specific category or group, which is established based on other attribute values. An example could be a customer who would like to see the maximum price of all products per brand. The ANSI \acrshort{sql} standard \cite{XOpen:1996SQL} defines the \texttt{GROUP BY} operator for this purpose.
+
+\cite{Garcia:2009Database} formalises the grouping operator $\group_{G}$, which can be used to aggregate on attributes in $\relation$. $G$ is a list of elements, which can either be:
 \begin{enumerate*}[label=(\roman*)]
     \item any attribute $\attribute \in \schema(\relation)$, the attribute(s) that the operator aggregates by or,
     \item any aggregation or set function $\texttt{AGR} \colon \mathcal{A} \rightarrow \mathcal{A}_{\text{out}}$
 \end{enumerate*}
 
-The output relation $\group_G (\relation)$ is then constructed as follows: First, the tuples in the input relation  $\relation$ are grouped into $N$ groups $\mathcal{G}_1, \ldots,\mathcal{G}_N \subset \relation$ based on the values in the specified grouping attribute(s). Subsequently, the aggregation function is executed for all tuples in each group, giving rise to an output relation that contains $N$ tuples --  one per group -- each bearing the grouping attributes as well as the ouput of the set functions.
+The output relation $\group_G (\relation)$ is then constructed as follows: First, the tuples in the input relation  $\relation$ are grouped into $N$ groups $\mathcal{G}_1, \ldots,\mathcal{G}_N \subset \relation$ based on the values in the specified grouping attribute(s). Subsequently, the aggregation function is executed for all tuples in each group, giving rise to an output relation that contains $N$ tuples --  one per group -- each bearing the grouping attributes as well as the ouput of the set functions. The ANSI \acrshort{sql} standard \cite{XOpen:1996SQL} defines a list of supported set functions including but not limited to functions such as \texttt{COUNT}, \texttt{MIN}, \texttt{MAX}, \texttt{SUM} and \texttt{MEAN}.
 
-The ANSI \acrshort{sql} standard \cite{XOpen:1996SQL} defines a list of supported set functions including but not limited to functions such as \texttt{COUNT}, \texttt{MIN}, \texttt{MAX}, \texttt{SUM} and \texttt{MEAN}.
+\subsubsection{Sorting and Ranking}
 
-\subsubsection{Sorting and Ranked Relational Algebra}
+Sorting is the act of arranging items in a specific order based on their attribute values. Consider, for example, a customer who wants to look at prices of products from lowest to highest. The ANSI \acrshort{sql} standard \cite{XOpen:1996SQL} defines the \texttt{ORDER BY} operator for this purpose.
 
-Sorting is an important aspect 
+However, formally, the act of sorting is difficult in the context of ``pure'' relational algebra because neither sets nor bags exhibit any ordering. \cite{Garcia:2009Database} proposes the $\order_T$ operator to make this operation explicit. Given a relation $\relation$, $T$ is simply a list of attributes to sort on, i.e., $T \subset \schema(\relation)$ and the result $\order_T (\relation)$ is a sorted list of values. The conversion between set, bag and list takes place implicitly through application of the operator and the consequences for the algebra are not addressed.
+
+More formal approaches to sorting were proposed, e.g., by \cite{Ramakrsihnan:1998SRQL} who introduced four additional operators and a \emph{sequence algebra} that can deal with ordered queries Similarly, \cite{Chengkai:2005RankSQL} proposes a more systematik approach to \emph{ranking}, which is sorting based on an external function. They introduce the idea of a \emph{rank relation}, which carries explicit properties w.r.t to the ranking applied.
 
 \section{\acrfull{dbms}}
-Irrespective of the concrete system and data model, \acrshort{dbms} generally exhibit an internal structure that is very similar \cite{Petrov:2019Database,Hellerstein:2007Architecture} even though, specifics may vary between implemention. This overall structure of a \acrshort{dbms} is depicted in \Cref{figure:dbms-architecture} and in this section we use the path a query takes within such a system, as indicated by the directed arrows, to illustrate the components involved in its execution.
+Irrespective of the concrete system and data model, \acrshort{dbms} generally exhibit an internal structure that is very similar \cite{Petrov:2019Database,Hellerstein:2007Architecture} even though, specifics may vary widely between implementions. This overall structure is depicted in \Cref{figure:dbms-architecture} and in this section we use the path a query takes within such a system, as indicated by the directed, red arrows, to illustrate the components involved in its execution.
 
 \begin{figure}[tb]
     \centering
-    \includegraphics[width=\textwidth]{figures/dbms-architecture.eps}
+    \includegraphics[width=0.95\textwidth]{figures/dbms-architecture.eps}
     \caption{The general architecture of a \acrshort{dbms} and its individual components.}
     \label{figure:dbms-architecture}
 \end{figure}
 
 \subsection{Query Interface}
 
-The query interface is the \acrshort{dbms}'s channel to the outside world and enables its use by other systems. The query interface takes care of client connections, accepts and forwards queries into the database and returns results to the caller. Since in modern systems, communication usually takes place over network connections, the query interface must also handle the low-level details of this communication.
+The query interface is the \acrshort{dbms}'s channel to the outside world and enables its use by other systems. The query interface takes care of client connections, accepts and forwards queries into the database and returns results to the caller. Since in modern systems, communication usually takes place over network connections, the query interface must also handle the details of communication.
 
-Queries accepted by the query interface are usually expressed in a specific query language -- which are often designed for human user's and therefore human-readable. We have already mentioned \acrshort{sql} \cite{Chamberlin:2012Early} as the most prominent example of such a query language, which can be used to express queries using a declarative, textual syntax (see \Cref{example:sql_query}). In addition to SQL, there also exist other, domain-specific languages such as SPARQL \cite{Perez:2009Semantics} to query \acrfull{rdf} data, \emph{Cypher} to query labeled property graphs \cite{Francis:2018Cypher} found in graph databases such as \emph{Neo4j} \footnote{https://neo4j.com/} or the document-oriented query language exhibited by \emph{MongoDB} \footnote{https://www.mongodb.com/}.
+Queries accepted by the query interface are usually expressed in a specific query language -- which are often designed for human user's and therefore human-readable. We have already mentioned \acrshort{sql} \cite{Chamberlin:2012Early} as the most prominent example of such a query language, which can be used to express queries using a declarative, textual syntax (see \Cref{example:sql_query}). In addition to SQL, there also exist other, domain-specific languages such as SPARQL \cite{Perez:2009Semantics} to query \acrfull{rdf} data, \emph{Cypher} to query labeled property graphs \cite{Francis:2018Cypher} found in graph databases such as \emph{Neo4j} \footnote{https://neo4j.com/} or the document-oriented query language used by \emph{MongoDB} \footnote{https://www.mongodb.com/}.
 
 \begin{example}[label=example:sql_query]{Searching for Paintings Using SQL}{}
 
@@ -438,19 +442,20 @@ Early attempts at a client-facing standardisation of the query interface for SQL
 
 \subsection{Query Parser}
 
-The query parser's main task is to transform a query provided in a (human-readable) query language to a logical representation that can be processed by a \acrshort{dbms}. This often means a conversion of text to the operators specified by the data model, e.g., a tree of the relational operators that represent an \acrshort{sql} query. If we take the query from \Cref{example:sql_query}, the internal conversion would look as shown in \Cref{figure:query-tree}.
+The query parser's main task is to transform a query provided in a query language to a logical representation that can be processed by a \acrshort{dbms}. This often involves a conversion of text to the operators specified by the data model, e.g., a tree of the relational operators that represent an \acrshort{sql} query. If we take the query from \Cref{example:sql_query}, the internal conversion would look as shown in \Cref{figure:query-tree}.
 
-\begin{figure}[htb]
+\begin{figure}[tb]
     \centering
     \includegraphics[width=0.4\textwidth]{figures/query-tree.eps}
     \caption{The query from \Cref{example:sql_query} represented as a tree of relational opertors. By convention, the tree is executed and read from bottom to top.}
     \label{figure:query-tree}
 \end{figure}
 
-Practically, query parsing involves several steps \cite{Garcia:2009Database}: First, the syntax of the textual query must be analysed and converted to a data structure that can be processed. Very often, \acrfull{ast}'s or \emph{parse trees} based on formal grammars of the language, and libraries such as \emph{ANTLR}\footnote{https://www.antlr.org/} are employed in this step. Subsequently, the nodes in the \acrshort{ast} must be mapped to \acrfull{dbo}'s contained in the \acrshort{dbms} in a step called preprocessig. This involves lookup's in the \acrshort{dbms}'s \emph{catalogue}. For the relational model, this would mean finding tables, columns and indexes. And finally, the \acrshort{ast} must be converted to an internal representation that matches the data model, e.g., a tree of relational operators.
+Practically, query parsing involves several steps \cite{Garcia:2009Database}: First, the syntax of the textual query must be analysed and converted to a data structure that can be processed. Very often, \acrfull{ast}'s or \emph{parse trees} based on formal grammars of the language, and libraries such as \emph{ANTLR}\footnote{https://www.antlr.org/} are employed in this step. Subsequently, the leaf-nodes in the \acrshort{ast} must be mapped to \acrfull{dbo}'s contained in the \acrshort{dbms} in a step called preprocessig. This involves lookup's in the \acrshort{dbms}'s \emph{catalogue}. For the relational model, this would mean finding tables, columns and indexes. And finally, the nodes in the \acrshort{ast} must be converted to an internal representation that matches the data model, e.g., a tree of relational operators. This step may also involve basic sanity checks, e.g., for type compatibility. The result is what is generally called a \emph{logical query plan}, since it outlines all the operations necessary to generate the desired results.
 
 \subsection{Query Planner \& Optimizer}
 
+Query optimization is the act
 \subsection{Execution Engine}
 
 \subsection{Storage Manager}
