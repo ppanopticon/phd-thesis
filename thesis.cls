@@ -732,6 +732,9 @@
 \crefname{tcb@cnt@example}{Example}{Examples}
 \Crefname{tcb@cnt@example}{Example}{Examples}
 
+\crefname{tcb@cnt@requirement}{Requirement}{Requirements}
+\Crefname{tcb@cnt@requirement}{Requirement}{Requirements}
+
 \crefname{tcb@cnt@theorem}{Theorem}{Theorems}
 \Crefname{tcb@cnt@theorem}{Theorem}{Theorems}
 
@@ -775,6 +778,7 @@
   \def\tcb@cnt@definitionautorefname{Definition}%
   \def\tcb@cnt@exampleautorefname{Example}%
   \def\tcb@cnt@theoremautorefname{Theorem}%
+  \def\tcb@cnt@requirementautorefname{Requirement}%
   \def\tcb@cnt@proofautorefname{Proof}%
   \def\tcb@cnt@corollaryautorefname{Corollary}%
   \orgautoref%
@@ -798,6 +802,7 @@
   \def\algorithmautorefname{Algorithms}%
   \def\tcb@cnt@definitionautorefname{Definitions}%
   \def\tcb@cnt@exampleautorefname{Examples}%
+  \def\tcb@cnt@requirementautorefname{Requirements}%
   \def\tcb@cnt@theoremautorefname{Theorems}%
   \def\tcb@cnt@proofautorefname{Proofs}%
   \def\tcb@cnt@corollaryautorefname{Corollaries}%
@@ -822,6 +827,7 @@
   \def\algorithmautorefname{Algorithm}%
   \def\tcb@cnt@definitionautorefname{Definition}%
   \def\tcb@cnt@exampleautorefname{Example}%
+  \def\tcb@cnt@requirementautorefname{Requirement}%
   \def\tcb@cnt@theoremautorefname{Theorem}%
   \def\tcb@cnt@proofautorefname{Proof}%
   \def\tcb@cnt@corollaryautorefname{Corollary}%
@@ -846,6 +852,7 @@
   \def\algorithmautorefname{Algorithms}%
   \def\tcb@cnt@definitionautorefname{Definitions}%
   \def\tcb@cnt@exampleautorefname{Examples}%
+  \def\tcb@cnt@requirementautorefname{Requirements}%
   \def\tcb@cnt@theoremautorefname{Theorems}%
   \def\tcb@cnt@proofautorefname{Proofs}%
   \def\tcb@cnt@corollaryautorefname{Corollaries}%
@@ -964,6 +971,35 @@
   % before upper={\parindent15pt}, % indents the paragraphs, as normally in the text
 }{thm}
 
+%use with (\begin{example}...\end{example})
+\newtcbtheorem[auto counter,number within=chapter,list inside=exs]{requirement}{Requirement}{
+  breakable,%
+  enhanced jigsaw,% <--- jigsaw
+  frame hidden,interior hidden,
+  titlerule = \finerulethickness,%
+  titlerule style={black},%
+  before skip=20pt,%
+  after skip=20pt,%
+  colback=white,%
+  arc=0pt,%
+  outer arc=0pt,%
+  leftrule=0pt,%
+  rightrule=0pt,%
+  toprule=\boldrulethickness,
+  bottomrule=\boldrulethickness,
+  colframe=black,%
+  colbacktitle=white,%
+  fonttitle=\sffamily\small\bfseries,%
+  coltitle=black,%
+  separator sign=\quad,%
+  left=0pt,%
+  right=0pt,%
+  borderline south={\boldrulethickness}{0pt}{black},%---- draw line
+  borderline north={\boldrulethickness}{0pt}{black},%---- draw line
+  % before upper={\parindent15pt}, % indents the paragraphs, as normally in the text
+}{req}
+
+
 \LetLtxMacro{\proof}{\relax}
 \LetLtxMacro{\endproof}{\relax}
 %use with (\begin{proof}...\end{proof})
@@ -1027,6 +1063,7 @@
   \addtocontents{defs}{\protect\addvspace{10\p@}}% 
   \addtocontents{exs}{\protect\addvspace{10\p@}}% 
   \addtocontents{thms}{\protect\addvspace{10\p@}}% 
+  \addtocontents{req}{\protect\addvspace{10\p@}}% 
   \addtocontents{pros}{\protect\addvspace{10\p@}}% 
   \addtocontents{crlrs}{\protect\addvspace{10\p@}}%
   \addtocontents{loa}{\protect\addvspace{10\p@}}% 
@@ -1132,6 +1169,14 @@
   \addcontentsline{toc}{chapter}{List of Examples}
   \markboth{List of Examples}{}
   \tcblistof[\chapter*]{exs}{List of Examples}
+}
+
+% List of Requirements
+\newcommand{\listofrequirements}{%
+  \phantomsection
+  \addcontentsline{toc}{chapter}{List of Requirements}
+  \markboth{List of Requirements}{}
+  \tcblistof[\chapter*]{req}{List of Requirements}
 }
 
 % List of Acronyms
