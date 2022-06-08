@@ -23,6 +23,7 @@ todonotes, % enables the todonotes package
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \usepackage{wrapfig}
 \usepackage{textgreek}
+\usepackage{csquotes}
 \usepackage[binary-units]{siunitx}
 
 \newcommand{\cmark}{\ding{51}}%
@@ -39,12 +40,12 @@ todonotes, % enables the todonotes package
 % specify symbols used
 \input{symbols}
 
-\ifdrft
-  % draft mode
+\ifdrft{}
+% draft mode
 \else
   % only create indexes and glossaries if not in draft mode
   \makeindex
-  \makeglossaries
+  \makeglossaries{}
 \fi
 
 \begin{document}
@@ -61,7 +62,7 @@ todonotes, % enables the todonotes package
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frontmatter
 
-\ifdrft
+\ifdrft{}
   % draft front matter
   \subincludefrom{frontmatter/title/}{draft}
 \else
@@ -69,7 +70,7 @@ todonotes, % enables the todonotes package
   \subincludefrom{frontmatter/title/}{title}
 
   % license, add cclicense option above
-  \ifcclicense
+  \ifcclicense{}
     \subincludefrom{frontmatter/disclaimer/}{disclaimer}
   \fi
 
@@ -90,7 +91,7 @@ todonotes, % enables the todonotes package
 %%  MAINMATTER
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mainmatter
+\mainmatter{}
 
 \part{Introduction}
 \subimport{mainmatter/01-introduction/}{main}
@@ -124,7 +125,7 @@ todonotes, % enables the todonotes package
 % remove appendix figures and tables from table of contents, table of figures, etc.
 \captionsetup{list=no}
 
-\appendixpage %If you are not using parts, comment this!
+\appendixpage{} %If you are not using parts, comment this!
 
 %\subimport{appendices/.../}{main}
 %\subimport{appendices/01-appendix/}{main}
@@ -135,25 +136,25 @@ todonotes, % enables the todonotes package
 %%  BACKMATTER
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cleardoublepage
+\cleardoublepage{}
 \bookmarksetup{startatroot}
 
-\ifdrft %draft mode
+\ifdrft{} %draft mode
   % empty back
-  \printbibliography
+  \printbibliography{}
 
 \else %non draft mode
 
-  \backmatter
+  \backmatter{}
   % back matter
 
-  \ifendnotes
+  \ifendnotes{}
     % endnotes (use \endnote{...})
-    \printendnotes
+    \printendnotes{}
   \fi
 
   % bibliography (use \cite{...})
-  \printbibliography
+  \printbibliography{}
 
   % index (use \index{...})
   \printindex
@@ -165,10 +166,10 @@ todonotes, % enables the todonotes package
 %%  CURRICULUM VITAE
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cleardoublepage
+\cleardoublepage{}
 \bookmarksetup{startatroot}
 
-\ifdrft
+\ifdrft{}
   % No CV
 \else
   \subincludefrom{backmatter/cv/}{cv}
