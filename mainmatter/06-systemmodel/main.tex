@@ -397,6 +397,27 @@ With \Cref{definition:dfc_and_index} and the aforementioned, we have defined the
 
 \section{Cost Model for Retrieval Accuracy}
 \label{section:cost_model}
+
+
+As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} rely on a cost-model for planning and selecting the execution and access path of a user-specified query. In fact, ever since the System R paper \cite{Selinger:1979Access}, cost-based query planning and optimisation is considered a gold standard for database systems.
+
+Must traditional \acrshort{dbms} exhibit comparatively simple cost-models that mainly rely on the cost incurred by accessing (reading / writing) pages from or to disk. Based on what has been discussed thus far, we argue that such a model has several shortcomings and that a cost model from multimedia databases should take the following aspects into account when chosing an execution path:
+
+\begin{description}
+    \item[Disk Access (IO)] Persistent storage and the access to information residing on disk is still the factor that contributes the most to long query execution times and is thus something, that a system should try to minimise \cite{Selinger:1979Access}.
+    \item[CPU] Due to the computational complexity of proximity based operations, especially when high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and must thus be taken into account as well. For example, several index structures achieve speed-up by reducing the computational complexity of the operations involved \cite{Weber:1998Va,Jegou:2010Product}
+    \item[Memory] Some algorithms, e.g., for sorting, can benefit greatly from pure in-memory processing as opposed to writing intermediate results to disk. While memory used to be a scarce resource, some environments allow for complete in-memory process even for very large datasets.
+    \item[Inaccuracy] The inaccuracy of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up but should be transparent to the system.
+\end{description}
+
+These factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, obviously, the cost incurred by data and message exchange must be considered as well. However, this is not in scope for the work presented in this Thesis. The aforementioned factors lead us to \Cref{definition:cost} for the cost incurred by a query execution plan $P$.
+
+\begin{definition}[label=definition:cost]{Cost of a Query Exection Plan.}{}
+    Let $P$ be an execution plan. The we call the 4-tuple $C = (c_{CPU}, c_{IO}, c_{MEM},c_{ACC})$ the \emph{cost} of $P$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and accuracy (ACC).
+\end{definition}
+
+As we have argued in chapter \Cref{chapter:applications}, the requirements to a database system, especially in terms of robustness against inaccuracy is highly use-case dependent. Some use-cases can accept inaccuracy in the results while others cannot. Furthermore, there may be 
+
 Describe cost model for execution plans with following properties:
 
 \begin{itemize}

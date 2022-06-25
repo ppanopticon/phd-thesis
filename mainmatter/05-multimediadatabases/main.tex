@@ -1,10 +1,11 @@
 \chapter{Multimedia Database Systems}
 \label{chapter:theory_multimedia_database}
 
-\section{Combining Database and Multimeda Reserach}
+The insight that special requirements are needed to accomodate multimieda in traditional databases can be traced back to the 1990s \cite{Marcus:1996Foundations,Adjeroh:1997Multimedia}
 
 
 \section{Multimedia Database Sytems}
+
 
 Over the years, different systems have been conceived with the aim to bring data management and multimedia applications closer together. Using the relationship between (diss-)similarity and distance, it has been shown by Giangreco et al., that for a database system to be able to support similarity search given the relational model for databases as described in \cref{section:relational_data_model}, one can extend the set system of allowed data domains $\mathbb{D}$ by $\domain \subset \symreal^{dim}, dim \in \symnatural_{>1}$ and postulate the existence of a relational similarity operator $\tau_{\delta(\cdot,\cdot),a,q}(R)$ that \emph{``performs a similarity query under a distance $\delta(\cdot,\cdot)$ applied on an attribute $a$ of relation $R$ and compared to a query vector $q$.''} (\cite{Giangreco:2018Database}, p. 138). Such an operation introduces an implicit attribute in the underlying relation $\relation$, which in turn induces an ascending ordering of the tuples. Using this operation, one can go on to define two concrete implementations, namely $\tau^{kNN}_{\delta(\cdot,\cdot),a,q}(\relation)$, and $\tau^{\epsilon NN}_{\delta(\cdot,\cdot),a,q}(\relation)$, which limit the number of retrieved results by their cardinality $k$ or a maximum cut-off distance $\epsilon$ respectively.
 

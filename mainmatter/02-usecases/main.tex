@@ -4,7 +4,7 @@
 
 An aspect that has always fascinated me about computer science and information technology is, that it has applications in every conceivable domain. It is this combination of purely technological aspects -- the computational part -- and the domain knowledge, that make this field challenging as well as interesting. Digital transformation -- the act of improving businesses and processing using digital technology \cite{Vial:2019Understanding} -- has been a driving force behind economic activity over the past decades, and while many non-technological factors define digital transformation, optimisation through the application of dispruptive technologiies remains the main incentive behind it.
 
-It is therefore, that we do not want to detach the work presented in this Thesis from its concrete applications and instead aim to motivate it based on real-world scenarios. We do so, by introducing three use-cases, for which we believe that a general-purpose multimedia database system could fulfill an important function. From these use-cases, we then go on to derive a series of requirements fur such a database system.
+It is therefore, that we do not want to detach the work presented in this Thesis from its concrete applications and instead aim to motivate it based on real-world scenarios. We do so, by introducing three use cases, for which we believe that a general-purpose multimedia database system could fulfill an important function. From these use cases, we then go on to derive a series of requirements for such a database system.
 
 \section{Use case 1: Interactive Multimedia Retrieval}
 \label{section:application_retrieval}
@@ -35,11 +35,11 @@ This impedance mismatch between the content being stored and the information req
 
 \begin{description}
     \item[Manual Labeling] The obvious solution is to manually embed the aforementioned labels and descriptions into the multimedia item so that we can use this information to find it at a later point in time. While as of today, this approach is still widely used, it comes with two important disadvantages. Obviously, it remains a subjective task, because as we have argued, the process of forming these labels may yield different results depending on who is assigning them (due to the perceptive, interpretative and semantic gap). Most importantly, though, the task of manual label assignment is laborious and unable to scale with the large volumes and the ever increasing velocity at which multimedia data is produced. This is related to the general challenge of working with Big Data \cite{Khan:2014Seven}.
-    \item[Automatic Labeling] Recent advances in machine learning have provided us with the ability to automatically label \cite{Redmon:2016You} and describe \cite{Radford:2021Learning} different types of multimedia through classification. So instead of annotating the content ourselves, we can leave this to pre-trained models that have, at a high level, a similar mode of operation as a human operator would have, as is illustrated in \Cref{figure:knowledge_formation}. While this solves the problem of scalability, it still remains a subjective task since the process of model training is also prone to the aforementioned gaps found in the data being trained, which can lead to biases \cite{Baer2017:Controlling}. Furthermore, there may be discrepancies between the (mental) model used for classification and the one employed during query formulation, which are typically caried out at times by different people.
-    \item[Content-Based Search] The last approach and the one that ``classical'' multimedia retrieval has concerned itself with for decades is that of \emph{content-based search}. Instead of using the higher-level concepts in the form of textual labels, content-based search works with intermediate representations called \emph{descriptors} that are derived from the data directly using signal processing or statistical analysis. These descriptors -- which are often real-valued vectors \cite{Zezula:2006Similarity} -- can then be used to establish a notion of \emph{similarity} between items in a collection and a query. Instead of a list of exact matches, this type of query returns a ranked list of items that match the query well enough. This is called similarity search \cite{Blanken:2007multimedia} and in this context, the query may refer to more than simply textual input. Given the example in \Cref{figure:mr-ideal}, one could use another image of a rabbit as a query (Query-by-Example, \cite{Kelly:1995Query}) or try to create a sketch to find the item of interest (Query-by-Sketch, \cite{Sciascio:1999Content}). One could even come-up with more sophisticated types of queries, such as, querying for poses held by people in an image or video \cite{Heller:2022Multi} or using visual-text co-embeddings \cite{Radford:2021Learning,Spiess:2022Multi} to map textual descriptions to images and vice-versa.
+    \item[Automatic Labeling] Recent advances in machine learning have provided us with the ability to automatically label \cite{Redmon:2016You} and describe \cite{Radford:2021Learning} different types of multimedia through classification. So instead of annotating the content ourselves, we can leave this to pre-trained models that have, at a high level, a similar mode of operation as a human operator would have, as is illustrated in \Cref{figure:knowledge_formation}. While this solves the problem of scalability, it still remains a subjective task since the process of model training is also prone to the aforementioned gaps found in the data being trained, which can lead to biases \cite{Baer2017:Controlling}. Furthermore, there may be discrepancies between the (mental) model used for classification and the one employed during query formulation, which are typically caried out at different times by different people.
+    \item[Content-Based Search] The last approach and the one that ``classical'' multimedia retrieval has concerned itself with for decades is that of \emph{content-based search}. Instead of using the higher-level concepts in the form of textual labels, content-based search works with intermediate representations called \emph{descriptors} that are derived from the data directly using signal processing or statistical analysis. These descriptors -- which are often real-valued vectors \cite{Zezula:2006Similarity} -- can then be used to establish a notion of \emph{similarity} between items in a collection and a query. Instead of a list of exact matches, this type of query returns a ranked list of items that match the query well enough. This is called similarity search \cite{Blanken:2007multimedia} and in this context, the query may refer to more than simply textual input. Given the example in \Cref{figure:mr-ideal}, one could use another image of a rabbit (Query-by-Example, \cite{Kelly:1995Query}) or try to create a sketch (Query-by-Sketch, \cite{Sciascio:1999Content}). One could even come-up with more sophisticated types of queries, such as, searching for poses held by people in an image or video \cite{Heller:2022Multi} or using visual-text co-embeddings \cite{Radford:2021Learning,Spiess:2022Multi} to map textual descriptions to images and vice-versa.
 \end{description}
 
-Research has shown that while individual methods falling into any of the three categories may yield acceptable or even exceptional results, there is clear indication that ultimately, a combination of the three is the most powerful solution, especially, since the exact type of information need cannot be anticipated \cite{Rossetto:2020Interactive} \todo{Find source}. Furthermore, and partly because different techniques may perform better or worse depending on the information need, we often find that instead of the simple ``issue a query, get a result'' scheme illustrated in \Cref{figure:mr-ideal}, actual multimedia retrieval applications are more interactive and require a back and forth between system and user \cite{Lokovc:2022Task} that involves query formulation, exploration, examination, query refinement and relevance feedback \cite{Lokovc:2019Interactive,Gurrin:2019Invited} as illustrated in \Cref{figure:mr-actual}. These types of interactive multimedia retrieval systems are explicitly tested at evaluation campaigns such as the \acrfull{vbs} \cite{Schoeffmann:2019Video} or the \acrfull{lsc} \cite{Gurrin:2021Introduction}.
+Research has shown that while individual methods falling into any of the three categories may yield acceptable or even exceptional results, there is clear indication that ultimately, a combination of the three is the most powerful solution, especially, since the exact type of information need cannot always be anticipated \cite{Rossetto:2020Interactive}. Furthermore, and partly because different techniques may perform better or worse depending on the information need, we often find that instead of the simple ``issue a query, get a result'' scheme illustrated in \Cref{figure:mr-ideal}, actual multimedia retrieval applications are more interactive and require a back and forth between system and user \cite{Lokovc:2022Task} that involves query (re-)formulation potentially using different descriptors, exploration, examination, query refinement and relevance feedback \cite{Lokovc:2019Interactive,Gurrin:2019Invited} as illustrated in \Cref{figure:mr-actual}. These types of interactive multimedia retrieval systems are explicitly tested at evaluation campaigns such as the \acrfull{vbs} \cite{Schoeffmann:2019Video} or the \acrfull{lsc} \cite{Gurrin:2021Introduction}.
 
 \begin{figure}[tb]
     \centering
@@ -58,7 +58,7 @@ Secondly, any database management system supporting interactive multimedia retri
     \item there is a user in the loop who examines the results and makes the final decisions.
 \end{enumerate*}
 
-A final aspect to consider is the staticity of the data itself. In multimedia retrieval, we often implicitly assume that data collections remain static while they are being queried but it must be emphasized that for most use-cases, this is very likely not to be the case. 
+A final aspect to consider is the staticity of the data itself. In multimedia retrieval, we often implicitly assume that data collections remain static while they are being queried but it must be emphasized that for most use cases, this is very likely not to be the case. 
 
 \section{Use case 2: Analysis of Social Media Streams}
 \label{section:application_online_analysis}
@@ -67,7 +67,7 @@ Social media platforms such as Twitter\footnote{See https://www.twitter.com}, Fa
 
 This brave new world of interaction and interconnection on different platforms, which are the sole source of information for many people, has brought about new challenges in need of solutions. Probably the most important challenge is known under the umbrella term ``fake news'' \cite{Lazer:2018Science}, by which we mean information that comes disguised as authentic but contains fabricated, misleading or even wrong information. The term became highly polarised in the 2016 U.S. elections \cite{Quandt:2019Fake}, when orchestrated campaigns on social media were targeted at voters and may have tipped the scales in favour of the winning party and their president.
 
-While the problem of fake news can arguably not be solved by merely technological means, the issue has brought about many different research questions in the realm of social media analysis and analytics. One focus lies on the direct detection of misinformation on different channels \cite{Zhou:2020Survey} by different means such as content, propagation patterns or sources. Others try to tackle the detection of bots \cite{Cresci:2020Decade}, user-accounts that are not backed by real humans and that are often used to create or spread misinformation. And then there is the topic of sentiment analysis \cite{Yue:2019Survey}, which can yield important clues about how (fake-) news stories are received by their consumers.
+While the problem of fake news can arguably not be solved by mere technological means, the issue has brought about many different research questions in the realm of social media analysis and analytics. One focus lies on the direct detection of misinformation on different channels \cite{Zhou:2020Survey} by different means such as content, propagation patterns or sources. Others try to tackle the detection of bots \cite{Cresci:2020Decade}, user-accounts that are not backed by real humans and that are often used to create or spread misinformation. And then there is the topic of sentiment analysis \cite{Yue:2019Survey}, which can yield important clues about how (fake-) news stories are received by their consumers.
 
 While many of the aforementioned problems mainly deal with textual information, multimedia obviously plays an important role as well. Instagram and TikTok, for example, focus solely on the sharing of images and videos respectively. A very recent and preliminary analysis suggests \cite{Ciuriak:2022Role}, that the sharing of images and videos plays an important role in the international covering of Russia's war on Ukraine. Potential problems in need of solution could, for example, be the automatic detection of image forgeries \cite{Farid:2009Image}.
 
@@ -80,9 +80,9 @@ If we examine what a fictious and generalised pipleine for social media analysis
     \label{figure:social-media}
 \end{figure}
 
-Firstly, for this use-case the multimedia database must be able to deal with non-static data, since the various sources potentially generate a steady flow of new information which are likely to be contributing to future inquiries.
+Firstly, for this use case the multimedia database must be able to deal with non-static data, since the various sources potentially generate a steady flow of new information which are likely to be contributing to future inquiries.
 
-Secondly, and similarly to the multimedia retrieval problem, the pipline is likely to deal with structured, semi-structured and unstructured information that must be stored and processed and the multimedia database must be able to cope with this variety. 
+Secondly, and similarly to the multimedia retrieval problem, the pipline is likely to deal with structured, semi-structured and unstructured information that must be stored and processed jointly and the multimedia database must be able to cope with this variety. 
 
 And finally, with social media being a very classical field for applying multimedia analytics techniques \cite{Pouyanfar:2018,Jonson:2016}, the different tools built upon the multimedia database are likely to rely on a wide range of query workloads, which the database should be able to accomodate.
 
@@ -126,54 +126,60 @@ Secondly, and also similarly to interactive multimedia retrieval, query time is 
 \section{Deriving Requirements}
 In Sections \ref{section:application_retrieval}, \ref{section:application_online_analysis} and \ref{section:application_mrf} we have discussed three applications that, 
 \begin{enumerate*}[label=(\roman*)]
-    \item deal with large amounts of unstructured (multimedia) data that must be stored and managed,
+    \item deal with large amounts of unstructured (multimedia) data that must be stored, managed and queried,
     \item use some mathematical descriptors of that unstructured (multimedia) data to enable analysis, comparison and queries,
     \item and that combine these descriptors with data such as labels, descriptions and other information, that must be accessed and sometimes queried as well.
 \end{enumerate*}
 
-We acknowledge, that while the details may vary, the basic needs outlined in the aforementioned use-cases are overlaping to such an extent that it raises the question whether a dedicated multimedia database management system would make sense. In fact, the argument for such a system has been made by different authors before us \cite{Smeulders:2000Content,Zahalka:2014towards,Jonson:2016} and steps towards such a system have been taken \cite{Giangreco:2018Database,Wang:2021Milvus}. However, all concrete approaches somehow narrow the scope in a way that restricts their generalisability.
+We acknowledge, that while the details may vary, the basic needs outlined in the aforementioned use cases are overlaping to such an extent that it raises the question whether a dedicated multimedia database management system would make sense. In fact, the argument for such a system has been made by different authors before us \cite{Adjeroh:1997Multimedia,Smeulders:2000Content,Zahalka:2014towards,Jonson:2016,Khaleel:2021An} and steps towards such a system have been taken \cite{Giangreco:2018Database,Wang:2021Milvus}. However, all concrete approaches somehow narrow the scope in a way that restricts their generalisability.
 
-In this section, we assume that such a multimedia database is desirable and based on the argument thus far we formalise the requirements imposed on such a system. This is not to claim, that we address all of the listed requirements in this Thesis. We merely raise and formalise them, similarly to \cite{Jonson:2016}.
+In this section, we assume that a general-purpose multimedia database is desirable and based on the argument thus far we formalise the requirements imposed on such a system. We do not claim that we address all of the listed requirements in this Thesis. We merely attempt to raise and formalise them, similarly to \cite{Adjeroh:1997Multimedia,Jonson:2016,Khaleel:2021An}.
+
+\subsection{Traditional Database Capabilities}
+Regardless of application, any multimedia database is very likely to rely on traditional \acrshort{dbms} capabilities at some point. Be it when data changes or is accessed concurrently and guarantees regarding consistency must be provided or when executing traditional Boolean queries on some aspect of the available metadata. This has been pointed out by \cite{Adjeroh:1997Multimedia,Khaleel:2021An} already and we can therefore reiterate, that a multimedia database must bring the same, basic abilities that any traditional \acrshort{dbms} would w.r.t. to data modeling, data management, execution of Boolean queries and the enforcement of guarantees such as \acrshort{acid} or \acrshort{base}.
+
+\begin{requirement}[label=requirement:classical_dbms]{A Multimedia Database is a \acrshort{dbms}}{}
+    At its core, any general-purpose multimedia database is a classical \acrlong{dbms} and should provide the same functionality in terms of data modeling, data management, query execution and guarantees with regards to integrity- and concurrency control, persistence and recovery.
+\end{requirement}
+
+\subsection{Multimedia Query Support}
+Multimedia queries are fundamentally different in that, as opposed to Boolean queries, they do not produce exact results but instead rely on scores and ranking to quantify similarity between a query and an object in a database. Obviously, a multimedia database system must therefore have the ability to support such queries at all levels from query formulation (i.e., query language) to query execution \cite{Adjeroh:1997Multimedia}. Furthermore, the combination of similarity search with Boolean queries should possible and well-defined in terms of outcome.
+
+It is worth noting, that by ``Boolean query'' we merely refer to the ability to produce exact matches based on Boolean predicates without making an assumption about the underlying data model. If a multimedia database system choses to implement the graph model then traditional graph traversal queries fall under the category ``Boolean query'' as well.
+
+\begin{requirement}[label=requirement:multimedia_search]{Multimedia Query Support}{}
+    A multimedia database must be able to support multimedia queries based on similarity and scores in addition to Boolean queries and it must allow the combination of the two search paradigms in a unified framework.
+\end{requirement}
 
 \subsection{Multimedia Data is Big Data}
-At its core, dealing with multimedia data equates to dealing with \emph{Big Data} in that a system deals with large \emph{volumes} of information, that may change at a high \emph{velocity} and exhibit a large \emph{variety}, ranging from highly structured metadata attributes to completely unstructured, raw data\footnote{This is known as the ``3 V's of Big Data''. Over time, more of these V's have been described in literature, for example in \cite{Khan:2014Seven}.}.
-
-A database can, of course, favour one of the three aspects over the others (e.g., assume that velocity at which data changes is zero) but in general, all three aspects must be considered jointly, which results in interesting engineering and research problems, e.g., for high-dimensional indexing \cite{Hojsgaard:2019Index}.
+At its core, dealing with multimedia data equates to dealing with \emph{Big Data} in that a system deals with large \emph{volumes} of information, that may change at a high \emph{velocity} and exhibit a large \emph{variety}, ranging from highly structured metadata attributes to completely unstructured, raw data\footnote{This is known as the ``3 V's of Big Data''. Over time, more of these V's have been described in literature, for example in \cite{Khan:2014Seven}.}. A multimedia database can, of course, favour one of the three aspects over the others (e.g., assume that velocity at which data changes is zero) but in general, all three aspects must be considered jointly, which results in interesting engineering and research problems, e.g., for high-dimensional indexing \cite{Hojsgaard:2019Index} or distribution of data and computation.
 
 \begin{requirement}[label=requirement:big_data]{Multimedia Data is Big Data}{}
     A multimedia database must be able to deal with large volumes of data that exhibit a broad variety and may be subject to change at a high velocity within a single, well-defined framework.
 \end{requirement}
 
-\subsection{Agnosticity from Conceptual Data Model}
-
-Many different, conceptual data models can be imagined for the use cases presented thus far and imposing a single, conceptual model is obiously too limiting if we were to accomodate all of them in a single system. Therefore, while the logical data model of a multimedia database is a design decision left to its creator, we consider the ability to freely shape data within the constraints of that model to be a necessity given a wide range of potential applications.
-
-\begin{requirement}[label=requirement:data_model_agnosticity]{Agnosticity from Conceptual Data Model}{}
-    A multimedia database must not make any assumptions about the conceptual data model employed by a system that uses it. In fact, data modelling and data organisation options known from other databases (within the constraints of their logical data model) should be available.
-\end{requirement}
-
 \subsection{Modelling Retrieval Accuracy}
 
-Classical databases return results that match or don't match a given query, i.e., there is no notion of uncertainty or imprecission in the results. However, the retrieval models used in multimedia retrieval are inherently inaccurate to some extent, in that only the the ``best matching'' entries are obtained, meaning that even bad results may be produced in the absence of better options. This imprecission or inaccuracy in influenced by many factors, not the least of which are the design and choice of the multimedia descriptors themselves.
+Classical databases produce results that match or don't match a given query, i.e., there is no notion of uncertainty or imprecission in the results. In contrast, the models used in multimedia retrieval are inherently inaccurate to some extent, in that the ``best matching'' entries are obtained, meaning that even bad results may be produced in the absence of better options. This imprecission or inaccuracy is influenced by many factors, not the least of which are the design and choice of the multimedia descriptors themselves.
 
-While the inherent (in-)accuracy of any given descriptor is impossible to predict and thus out of scope for the database that holds it, the notion of accuracy still opens a relevant avenue, since some of that accuracy can be deliberately sacrificed in order to gain speed, which is often done in high-dimensional indexing. Since some use-cases are very robust to such decisions while others are not, the choice must be made explicit.
+While the inherent (in-)accuracy of any given descriptor is impossible to predict and thus out of scope for the database that holds it, the notion of accuracy still opens a relevant avenue, since some of that accuracy can be deliberately sacrificed in order to gain speed, which is often done in high-dimensional indexing. Since some use cases are very robust to such decisions while others are not, this aspect must be made explicit at a system level.
 
 \begin{requirement}[label=requirement:accuracy_model]{Model for Retrieval Accuracy}{}
     A multimedia database must employ an internal model of accuracy of results. That model must
     \begin{enumerate*}[label=(\roman*)]
         \item enable a user to specify the desired accuracy of the result
-        \item allow the database system to derive the expected accuracy for a given query execution path
-        \item take both aspects into account when planning and executing a query.
+        \item allow the database system to derive the expected accuracy for a query execution path
+        \item take both aspects into account when planning query execution.
     \end{enumerate*}
 \end{requirement}
 
 \subsection{Complex Data Types as First-class Citizen}
-Due to the reliance of multimedia analysis and analytics workloads on mathematical objects such as vectors, complex numbers or matrices, we argue, that the data model of a multimedia database must be extended to consider those types of data as \emph{first-class citizens} in addition to well-established data types such as numbers or strings. This means, that the structure as well as the mathematical properties of those types must be considered for storage, query planning and execution.
+Since multimedia analysis and analytics workloads rely on mathematical objects such as vectors, complex numbers or matrices, we argue, that the data model of a multimedia database must be extended to consider those types of data as \emph{first-class citizens} in addition to well-established data types such as numbers or strings. This means, that the structure as well as the mathematical properties of those types must be considered for storage, query planning and execution.
 
-This is not a new idea, per-se, and to some extent self-evident since new use-cases obiously require additions to existing data models. Therefore, unsurprisingly, the idea of extensible data models was already discussed as early as 1988 \cite{Linnemann:1988Design} and it was also proposed by \cite{Giangreco:2018Database} that in order to support multimedia retrieval workloads in a relational database, one must (among other things) extend the relational model to support those vectors as basic data types, which are not foreseen by the model. 
+This is not a new idea, per-se, and to some extent self-evident since new use cases obiously require additions to existing data models. Therefore, unsurprisingly, the idea of extensible data models was already discussed as early as 1988 \cite{Linnemann:1988Design} and it was also argued by \cite{Giangreco:2018Database} that to support multimedia retrieval workloads in a relational database, one must extend the relational model to support those vectors as basic data types. 
 
 \begin{requirement}[label=requirement:complex_data_types]{Complex Data Types as First-class Citizen}{}
-    A multimedia database must treat composite data types that serve a mathematical purpose (e.g., vectors, complex numbers, matrices, tensors) as first-class citizens of the data model in addition to primitive types such as numbers or strings.
+    A multimedia database must treat composite data types (e.g., vectors, complex numbers, matrices, tensors) as first-class citizens of the data model in addition to primitive types such as numbers or strings.
 \end{requirement}
 
 \subsection{Functions as First-class Citizen}
@@ -182,15 +188,4 @@ All multimedia retrieval problems considered so far involve the execution of fun
 
 \begin{requirement}{Functions as First-class Citizen}{}
     A multimedia database must treat mathematical functions as first-class citizens and must have the ability to reason about those functions' properties during query planning and execution.
-\end{requirement}
-
-
-\subsection{Query Language for Multimedia Queries}
-
-\subsection{Transactions Support in Multimedia Databases}
-
-We have argued, that many use cases require parallel access to the database by different systems and users, some of which may not only read but also insert, update or delete data. Similarly to a classical database, such data access should be governed by explicit, well-defined rules and properties. We argue that the notion of a transaction used in such databases is a good fit for a multimedia database that properties similart to  ACID\cite{Haerder:1983principles} or BASE \cite{Pritchett:2008Base} will be required for multimedia databsaes.
-
-\begin{requirement}{Transactions Support in Multimedia Databases}{}
-    A multimedia database must encapsulate all interactions with the database in transactions, which are governed by explicit and well-defined guarantees with respect to data consistency, isolation of concurrent access and other relevant properties.
 \end{requirement}
