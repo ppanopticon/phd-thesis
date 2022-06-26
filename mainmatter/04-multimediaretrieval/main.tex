@@ -282,7 +282,7 @@ As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrsh
 
 For search in high-dimensional vector spaces, the dependency on $d$ has a huge impact on execution performance of any \acrshort{nns} algorithm, due to what is known as the \emph{curse of dimensionality} \cite{Indyk1998:Approximate,Zezula:2006Similarity}. The impact of this ``curse'' is twofold: First, the execution time of a brute-force algorithm is directly proportional to the size of the feature vector. With a tendency towards more complex and thus higher-dimensional vectors, there is a direct, negative effect on runtime. Second, and more importantly, research has shown that the task of indexing high-dimensional vectors for more efficient access is not trivial and that traditional approaches, e.g., based on partitioning or classical tree structures, degenerate as dimensionality increases \cite{Indyk1998:Approximate,Weber:1998Va} with the consequence, that they only yield marginal or no improvement over executing a linear scan. In fact, it was formally proven by \cite{Shaft:2006Theory} in their \emph{Theory of Nearest Neighbor Indexability} that the performance of almost all known index structures at that time deteriorate to that of a linear scan if $d$ becomes large enough.
 
-Nevertheless, the issue of index structures that allow for more efficient and thus sub-linear \acrshort{nns} has been taken on by various researchers over the past few decades with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the accuracy of the results, wherein ``accuracy'' is often measured in terms of precission and recall of a result produced by an index as compared to the the result produced by a linear scan \cite{Echihabi:2021High}. Second, based on their \emph{structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantization}, \emph{hashing} or \emph{partitioning}. An overview of different, prominent algorithms is provided in \Cref{table:index_structures}.
+Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers over the past few decades and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the accuracy of the results, wherein accuracy is often measured in terms of precission and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice accuracy for speed, this is also known as \acrfull{anns}. Second, based on their \emph{structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantization}, \emph{hashing} or \emph{partitioning}. An overview of different, prominent algorithms is provided in \Cref{table:index_structures} without any claim to completeness.
 
 \begin{table}
     \begin{tabular}{ | l | c | c | c |}
@@ -306,31 +306,35 @@ Nevertheless, the issue of index structures that allow for more efficient and th
         \hline
         MRNG \cite{Lejsek:2009NVTree} & approximate & graph & proximity graph \\ 
         \hline
-        HSNW \cite{Malkov:2018Efficient} & approximate & graph & proximity graph \\ 
+        HNSW \cite{Malkov:2018Efficient} & approximate & graph & proximity graph \\ 
+        \hline
+        SPANN \cite{Chen:2021SPANN} & approximate & graph & proximity graph \\ 
         \hline
     \end{tabular}
     \caption{Non-representative and non-exhaustive list of high-dimensional index structures employed in similarity search and retrieval.}
     \label{table:index_structures}
 \end{table}
 
-Early examples of high-dimensional indexes used to rely on space or data partitioning methods. Both have in common, that they assign features in the vector space to buckets or data files based on some partitioning of either the vector space or the data. Space partitioning methods include but the KD-Trees \cite{Bentley:1975Multidimensional}, KDB-Trees \cite{Robinson:1981KDB} or Quadtrees \cite{Finkel:1974Quad}. The data partitioning methods involve R-Trees \cite{Guttmann:1984RTrees}, $R^{*}$-Trees \cite{Beckmann:1990RTree} or M-Trees \cite{Ciaccia:1997Mtree}. All of these methods were shown to perform well as long as dimensionality remains small (i.e., 4 to 12 dimensions) but they tend to deteriorate as $d$ increases.
+Early examples of high-dimensional indexes used to rely on space or data partitioning methods. Both have in common, that they assign features in the vector space to buckets or data files based on some partitioning of either the vector space or the data. Space partitioning methods include the KD-Trees \cite{Bentley:1975Multidimensional}, KDB-Trees \cite{Robinson:1981KDB} or Quadtrees \cite{Finkel:1974Quad}. The data partitioning methods involve R-Trees \cite{Guttmann:1984RTrees}, $R^{*}$-Trees \cite{Beckmann:1990RTree} or M-Trees \cite{Ciaccia:1997Mtree}. All of these methods were shown to perform well as long as dimensionality remains small (i.e., 4 to 12 dimensions) but they tend to deteriorate as $d$ increases.
 
-In the next few sections, we will highlight a few more recent examples of high-dimensional indexing methods to provide a non-representative overview.
+More recent research focuses on the use of proximity graphs \cite{Zhao:2022Approximate} and especially \acrfull{hnsw} graphs  \cite{Malkov:2018Efficient,Chen:2021SPANN} to facilitate fast \acrshort{anns}. Another focus lies on the ability to execute \acrshort{nns} indexing and search on a GPU \cite{Johnson:2019Billion,Zhao:2020Song} or specialised hardware \cite{Lee:2022Anna}. Some research also goes in the direction of dynamic indexes, i.e., indexes that allow for update \cite{Olafsson:2011Dynamic,Zhao:2022Approximate} and persistent storage.
+
+In the next few sections, we will highlight a few well-established examples of high-dimensional indexing methods to provide a non-representative overview.
 
 \subsubsection{\acrfull{vaf}}
 
 VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the problem of the dimensionality curse and were later refined by \cite{Ferhatosmanoglu:2000Vector}. The basic idea of a \acrshort{vaf} is the division of the data space into $2^b$ cells, as illustrated in \Cref{fig:vaf}, where $b$ denotes a fixed number of bits. Typically, one choses a specific number of bits per dimension $b_d$ and uniformly partitions the vector space along each dimension, i.e., $b = b_dd$. A feature vector's position in the grid is concatenated into a compact \emph{signature} of size $b$ and the VA-file is a list of those signatures. 
 
-\begin{figure}[bt]
+\begin{figure}[tb]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/vaf}
 \caption{Simplified illustration of basic \acrshort{vaf} indexing scheme in for $\symfeatures \subset \symreal^2$. A vector is assigned to a cell which gives rise to a signature that is stored in a linear list.}
 \label{fig:vaf}
 \end{figure}
 
-\acrshort{nns} is then realised as a linear scan of the file. Speed-up over a linear scan of the original vectors is achieved in two ways: Firstly, the signatures are more compact than the original representation, which reduces IO cost through compression. Secondly, the signatures can be used to obtain approximate bounds that are computationally less expensive than the actual distance calculation. These bounds can be used to filter out a majority of the points in the file, further reducing IO and CPU costs. Experimental results presented in \cite{Weber:1998Va} demonstrate that 90\% of all features can be skipped thus a distance must only be obtained for the remaining 10\%. However, \cite{Echihabi:2021High} determine theoretically that for \acrshort{vaf} degeneration is to be expected nevertheless for high dimensions, depending on how the data is distributed.
+\acrshort{nns} is then realised as a linear scan of the file. Speed-up over a linear scan of the original vectors is achieved in two ways: Firstly, the signatures are more compact than the original representation, which reduces IO cost through compression. Secondly, the signatures can be used to obtain approximate bounds that are computationally less expensive than the actual distance calculation. These bounds can be used to filter out a majority of the points in the file, further reducing IO and CPU costs. Experimental results presented in \cite{Weber:1998Va} demonstrate that 90\% of all features can be skipped thus a distance must only be obtained for the remaining 10\%. However, \cite{Echihabi:2021High} determine theoretically that for \acrshort{vaf} degeneration is to be expected nevertheless for high dimensions.
 
-The VA+-files proposed by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm. They suggest a prior decorellation of the individual dimensions by applying a \emph{Karhunen-Loève Transform} and a dynamic assignment of bit per dimension based on data distribution as opposed to a uniform distribution proposed in the original paper.
+The VA+-files proposed by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm. They suggest a prior decorellation of the individual dimensions by applying a \emph{Karhunen-Loève Transform} and a dynamic assignment of bit per dimension based on data distribution as opposed to a uniform distribution.
 
 \subsubsection{\acrfull{lsh}}
 
@@ -343,20 +347,20 @@ The VA+-files proposed by \cite{Ferhatosmanoglu:2000Vector} introduce a few opti
 
 In simple terms, a locality preserving hash function has a high probability for collision (i.e., mapping to the same bucket) if two features $f,q \in \symfeatures$ lie close to one another, i.e., $\symdist(q,f) \leq R$, but exhibits a low probability for collision if $\symdist(q,f) \geq cR$. Given such a hash function, a feature $f \in \symfeatures$ can be hashed to a bucket and stored in a hash table with other vectors that lie close to it. This is illustrated in \Cref{fig:lsh}. 
 
-Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
-
-\begin{figure}[bt]
+\begin{figure}[tb]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/lsh}
-    \caption{A simplified illustration of the basic \acrshort{lsh} indexing scheme. A vector is hashed to a bucket by a locality preserving hash function $h$. The vector is then stored in the assigned bucket in a hash table.}
+    \includegraphics[width=0.80\textwidth]{figures/lsh}
+    \caption{A simplified illustration of the basic \acrshort{lsh} indexing scheme. A vector is hashed to a bucket by a locality preserving hash function $h$ and stored in a hash table.}
     \label{fig:lsh}
 \end{figure}
+
+Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
 
 \subsubsection{\acrfull{pq}}
 
 The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantizing vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantization of each subspace. The quantization is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an inverted file index, as illustrated in \Cref{fig:pq}.
 
-\begin{figure}[bt]
+\begin{figure}[tb]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/pq}
     \caption{A simplified illustration of the basic \acrshort{pq} indexing scheme. A vector is divided into smaller subvectors and each subvector is assigned to the nearest centroid in the codebook of the respective subspace. Concatenating the resulting centroid index per subspace gives rise to the signature, which can be stored in an inverted file index.}

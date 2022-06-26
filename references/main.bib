@@ -301,6 +301,15 @@
   keywords = {Data Base Task Group,data definition and manipulation,data integrity and consistency,data models,database design,entity set model,entity-relationship model,logigcal view of data,network model,relational model,semantics of data}
 }
 
+@article{Chen:2021Spann,
+  title = {{{SPANN}}: {{Highly-efficient Billion-Scale Approximate Nearest Neighborhood Search}}},
+  author = {Chen, Qi and Zhao, Bing and Wang, Haidong and Li, Mingqin and Liu, Chuanjie and Li, Zengzhong and Yang, Mao and Wang, Jingdong},
+  year = {2021},
+  journal = {Advances in Neural Information Processing Systems},
+  volume = {34},
+  pages = {5199--5212}
+}
+
 @inproceedings{Chengkai:2005RankSQL,
   title = {{{RankSQL}}: {{Query Algebra}} and {{Optimization}} for {{Relational Top-k Queries}}},
   booktitle = {Proceedings of the 2005 {{ACM SIGMOD International Conference}} on {{Management}} of {{Data}}},
@@ -502,7 +511,7 @@
 
 @inproceedings{Ferhatosmanoglu:2000Vector,
   title = {Vector {{Approximation Based Indexing}} for {{Non-Uniform High Dimensional Data Sets}}},
-  booktitle = {Proceedings of the Oth {{International Conference}} on {{Information}} and {{Knowledge Management}}},
+  booktitle = {Proceedings of the 10th {{International Conference}} on {{Information}} and {{Knowledge Management}}},
   author = {Ferhatosmanoglu, Hakan and Tuncel, Ertem and Agrawal, Divyakant and El Abbadi, Amr},
   year = {2000},
   pages = {202--209}
@@ -943,7 +952,7 @@
   title = {Product {{Quantization}} for {{Nearest Neighbor Search}}},
   author = {Jegou, Herve and Douze, Matthijs and Schmid, Cordelia},
   year = {2010},
-  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
   volume = {33},
   number = {1},
   pages = {117--128}
@@ -1081,8 +1090,16 @@
   address = {{New Orleans, USA}}
 }
 
+@inproceedings{Lee:2022Anna,
+  title = {{{ANNA}}: {{Specialized Architecture}} for {{Approximate Nearest Neighbor Search}}},
+  booktitle = {Proceedings of the 2022 {{IEEE International Symposium}} on {{High-Performance Computer Achitecture}}},
+  author = {Lee, Yejin and Choi, Hyunji and Min, Sunhong and Lee, Hyunseung and Beak, Sangwon and Jeong, Dawoon and Lee, Jae W and Ham, Tae Jun},
+  year = {2022},
+  pages = {169--183}
+}
+
 @article{Lejsek:2009NVTree,
-  title = {{{NV-Tree}}: {{An}} Efficient Disk-Based Index for Approximate Search in Very Large High-Dimensional Collections},
+  title = {{{NV-Tree}}: {{An Efficient Disk-based Index}} for {{Approximate Search}} in {{Very Large High-Dimensional Collections}}},
   author = {Lejsek, Herwig and {\'A}smundsson, Fri{\dh}rik Hei{\dh}ar and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Amsaleg, Laurent},
   year = {2009},
   journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
@@ -1094,15 +1111,13 @@
 }
 
 @inproceedings{Lejsek:2011NVTree,
-  title = {{{NV-Tree}}: {{Nearest}} Neighbors at the Billion Scale},
-  booktitle = {Proceedings of the 1st {{ACM}} International Conference on Multimedia Retrieval},
+  title = {{{NV-Tree}}: {{Nearest Neighbors}} at the {{Billion Scale}}},
+  booktitle = {Proceedings of the 1st {{ACM International Conference}} on {{Multimedia Retrieval}}},
   author = {Lejsek, Herwig and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Amsaleg, Laurent},
   year = {2011},
-  series = {{{ICMR}} '11},
   publisher = {{Association for Computing Machinery}},
   address = {{New York, NY, USA}},
   doi = {10.1145/1991996.1992050},
-  abstract = {This paper presents the NV-Tree (Nearest Vector Tree). It addresses the specific, yet important, problem of efficiently and effectively finding the approximate k-nearest neighbors within a collection of a few billion high-dimensional data points. The NV-Tree is a very compact index, as only six bytes are kept in the index for each high-dimensional descriptor. It thus scales extremely well when indexing large collections of high-dimensional descriptors. The NV-Tree efficiently produces results of good quality, even at such a large scale that the indices cannot be kept entirely in main memory any more. We demonstrate this with extensive experiments using a collection of 2.5 billion SIFT (Scale Invariant Feature Transform) descriptors.},
   isbn = {978-1-4503-0336-1},
   file = {/Users/rgasser/Zotero/storage/HKIJ2TQT/Lejsek et al. - 2011 - NV-Tree Nearest neighbors at the billion scale.pdf}
 }
@@ -1333,7 +1348,7 @@
 }
 
 @article{Olafsson:2011Dynamic,
-  title = {Dynamic Behavior of Balanced {{NV-trees}}},
+  title = {Dynamic {{Behavior}} of {{Balanced NV-trees}}},
   author = {{\'O}lafsson, Arnar and {\TH}{\'o}r J{\'o}nsson, Bj{\"o}rn and Amsaleg, Laurent and Lejsek, Herwig},
   year = {2011},
   month = mar,
@@ -1343,7 +1358,6 @@
   pages = {83--100},
   issn = {1432-1882},
   doi = {10.1007/s00530-010-0199-4},
-  abstract = {In recent years, some approximate high-dimensional indexing techniques have shown promising results by trading off quality guarantees for improved query performance. While the query performance and quality of these methods has been well studied, however, the performance of index maintenance has not yet been reported in any detail. Here, we focus on the dynamic behavior of the balanced NV-tree, which is a disk-based approximate index for very large collections. We report on an initial study of the effects of several implementation choices for the balanced NV-tree, and show that with appropriate implementation, significant performance improvements are possible. Overall, the proposed techniques not only reduce maintenance cost, but can also improve search performance significantly with minimal loss of search quality.},
   file = {/Users/rgasser/Zotero/storage/XUUZIIAR/Ólafsson et al. - 2011 - Dynamic behavior of balanced NV-trees.pdf}
 }
 
@@ -1813,6 +1827,17 @@
   pages = {412--418}
 }
 
+@article{Stonebraker:2013SciDB,
+  title = {{{SciDB}}: {{A Database Management System}} for {{Applications}} with {{Complex Analytics}}},
+  author = {Stonebraker, Michael and Brown, Paul and Zhang, Donghui and Becla, Jacek},
+  year = {2013},
+  journal = {Computing in Science \& Engineering},
+  volume = {15},
+  number = {3},
+  pages = {54--62},
+  doi = {10.1109/MCSE.2013.19}
+}
+
 @incollection{Stonebraker:2018One,
   title = {"{{One}} Size Fits All" an {{Idea}} Whose {{Time}} Has {{Come}} and {{Gone}}},
   booktitle = {Making {{Databases Work}}: {{The Pragmatic Wisdom}} of {{Michael Stonebraker}}},
@@ -2026,6 +2051,23 @@
   volume = {20},
   number = {1},
   pages = {1--11}
+}
+
+@inproceedings{Zhao:2020Song,
+  title = {{{SONG}}: {{Approximate Nearest Neighbor Search}} on {{GPU}}},
+  booktitle = {Proceedings of the 36th {{IEEE International Conference}} on {{Data Engineering}}},
+  author = {Zhao, Weijie and Tan, Shulong and Li, Ping},
+  year = {2020},
+  pages = {1033--1044}
+}
+
+@article{Zhao:2022Approximate,
+  title = {Approximate K-{{NN Graph Construction}}: {{A Generic Online Approach}}},
+  author = {Zhao, Wanlei and Wang, Hui and Ngo, Chong-Wah},
+  year = {2022},
+  journal = {IEEE Transactions on Multimedia},
+  volume = {24},
+  pages = {1909--1921}
 }
 
 @article{Zhou:2020Survey,
