@@ -32,6 +32,33 @@ todonotes, % enables the todonotes package
 \newcommand{\vitrivr}{\emph{vitrivr}}%
 \newcommand{\adampro}{ADAM\textsubscript{pro}}
 
+\definecolor{UnibasLightGray}{RGB}{234,234,234}
+\definecolor{UnibasAnthracite}{RGB}{45,55,60}
+\definecolor{UnibasRed}{RGB}{210,5,55}
+\definecolor{UnibasMint}{RGB}{165,215,210}
+\definecolor{UnibasLightMint}{RGB}{192,227,223}
+
+
+\lstdefinestyle{codestyle}{
+    backgroundcolor=\color{UnibasLightGray},   
+    commentstyle=\color{UnibasLightMint},
+    keywordstyle=\color{UnibasRed},
+    numberstyle=\tiny\color{UnibasMint},
+    stringstyle=\color{UnibasMint},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=codestyle}
 
 % add you bibliographic entries
 \addbibresource{references/main.bib}
@@ -118,10 +145,10 @@ todonotes, % enables the todonotes package
 %%  APPENDIX
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cleardoublepage
+\cleardoublepage{}
 \bookmarksetup{startatroot}
 
-\appendix
+\appendix{}
 % appendix
 
 % remove appendix figures and tables from table of contents, table of figures, etc.
