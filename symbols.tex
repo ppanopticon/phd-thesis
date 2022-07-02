@@ -61,25 +61,25 @@
 \newglossaryentry{schema}{sort={BIschema},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \( \relation \), i.e., all attributes \(\schema (\relation) = (\attribute_1, \attribute_2, \ldots, \attribute_N)\) that make up \(\relation \).}}
 \newcommand{\schema}{\glssymbol{schema}}
 
-\newglossaryentry{selection}{sort={BJselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate, e.g. \( \selection_{\mathcal{P}} \).}}
+\newglossaryentry{selection}{sort={BJselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate $S$, e.g. \( \selection_{S} \).}}
 \newcommand{\selection}{\glssymbol{selection}}
 
-\newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes, e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
+\newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the projection attributes $P$, e.g., \( \projection_{\attribute_1,\attribute_2} \).}}
 \newcommand{\projection}{\glssymbol{projection}}
 
-\newglossaryentry{rename}{sort={BLrename},name=\ensuremath{\rho},symbol=\ensuremath{\rho},type={symbols},description={The unary rename operator used to rename the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the desired attributes, e.g. \( \projection_{\attribute_1,\attribute_2} \).}}
+\newglossaryentry{rename}{sort={BLrename},name=\ensuremath{\rho},symbol=\ensuremath{\rho},type={symbols},description={The unary rename operator used to rename the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the rename operations, e.g., \( \rename_{\attribute_1 \rightarrow \attribute_2} \).}}
 \newcommand{\rename}{\glssymbol{rename}}
 
-\newglossaryentry{order}{sort={BMorder},name=\ensuremath{\omega},symbol=\ensuremath{\omega},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \).}}
+\newglossaryentry{order}{sort={BMorder},name=\ensuremath{\omega},symbol=\ensuremath{\omega},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \). Usually printed with a subscript to list order attributes $O$, e.g., \( \order_{\attribute_1 \uparrow,\attribute_2 \downarrow} \).}}
 \newcommand{\order}{\glssymbol{order}}
 
-\newglossaryentry{limit}{sort={BNlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples.}}
+\newglossaryentry{limit}{sort={BNlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples. Usually printed with a subscript to define $k$, e.g., \( \limit_{k} \).}}
 \newcommand{\limit}{\glssymbol{limit}}
 
 \newglossaryentry{aggregation}{sort={BOlimit},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary aggregation operator.}}
 \newcommand{\aggregation}{\glssymbol{aggregation}}
 
-\newglossaryentry{group}{sort={BPgroup},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary group operator aggregates tuples in \( \relation \) to the first \( k \) tuples. Usually printed with a subscript to list the group attributes, e.g. \( \selection_{G} \).}}
+\newglossaryentry{group}{sort={BPgroup},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary group operator aggregates tuples in \( \relation \). Usually printed with a subscript to list the group attributes $G$, e.g., \( \group_{G} \).}}
 \newcommand{\group}{\glssymbol{group}}
 
 %% C group (the group is specified in the sort field)

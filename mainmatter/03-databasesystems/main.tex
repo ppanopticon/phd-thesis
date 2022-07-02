@@ -202,11 +202,11 @@ In addition to this idea, Codd proposed a minimal set of relational operators li
         \hline
         Rename & $\rho_{\attribute_\mathtt{A} \rightarrow \attribute_\mathtt{B}}$ &  1 & Renames attribute $\attribute_\mathtt{A}$ in input relation to $\attribute_\mathtt{B}$. \\
         \hline
-        Selection & $\selection_{\mathcal{P}}$ &  1 & Removes tuples from the input relation that don't match predicate $\mathcal{P}$. \\
+        Selection & $\selection_{S}$ &  1 & Removes tuples from the input relation that don't match predicate $S$. \\
         \hline
-        Projection & $\projection_{\chi}$ &  1 & Removes attributes from the input relation that are not included in $\chi$. \\
+        Projection & $\projection_{P}$ &  1 & Removes attributes from the input relation that are not included in $P$. \\
         \hline
-        Natural join & $\Join_{\mathcal{P}}$ & 2 & Pairs each tuple from the left with every tuple of the right input relation if their shared attributes match and concatenates them. \\
+        Natural join & $\Join$ & 2 & Pairs each tuple from the left with every tuple of the right input relation if their shared attributes match and concatenates them. \\
         \hline
     \end{tabular}
 \end{table}
@@ -253,22 +253,22 @@ The unary \emph{rename} operator $\rho_{\attribute_\mathtt{A} \rightarrow \attri
 
 \subsubsection{Selection}
 
-The unary, generalized \emph{selection} operator $\selection_{\phi}(\relation)$ applied on an input relation $\relation$ creates an output relation that contains a subset of tuples $t \in \relation$ such that only tuples that match the predicate $\phi$ are retained as expressed by \Cref{equation:rel_op_selection}.
+The unary, generalized \emph{selection} operator $\selection_{S}(\relation)$ applied on an input relation $\relation$ creates an output relation that contains a subset of tuples $t \in \relation$ such that only tuples that match the predicate $S$ are retained as expressed by \Cref{equation:rel_op_selection}.
 
 \begin{equation}
     \label{equation:rel_op_selection}
-    \selection_{\phi}(\relation) = \{ t \in \relation \colon \phi(t) \} \subset \relation
+    \selection_{S}(\relation) = \{ t \in \relation \colon S(t) \} \subset \relation
 \end{equation}
 
-The predicate $\phi$ can be any conditional statement consisting of individual atoms that involve attributes of $\relation$ or any constant value and comparison operators $=,\neq,>,<,\geq, \leq$. Individual atoms can also be combined by logical operators $\symand$, $\symor$ or $\symnot$. Examples could be $\attribute_1 \geq 2$, $\attribute_2 = \attribute_3$ or $\attribute_1 \geq 2 \wedge \attribute_2 = \attribute_3$ to express that an attribute should be greater than a constant, equal to another attribute or combine the two with $A_1,A_2,A_3 \in \schema(\relation)$.
+The predicate $S$ can be any conditional statement consisting of individual atoms that involve attributes of $\relation$ or any constant value and comparison operators $=,\neq,>,<,\geq, \leq$. Individual atoms can also be combined by logical operators $\symand$, $\symor$ or $\symnot$. Examples could be $\attribute_1 \geq 2$, $\attribute_2 = \attribute_3$ or $\attribute_1 \geq 2 \wedge \attribute_2 = \attribute_3$ to express that an attribute should be greater than a constant, equal to another attribute or combine the two with $A_1,A_2,A_3 \in \schema(\relation)$.
 
 
 \subsubsection{Projection}
-The unary \emph{projection} operator $\projection_{\chi}(\relation)$ with $\chi \subset \schema(\relation)$ applied on an input relation $\relation$ creates an output relation that only contains the attributes listed in $\chi$, i.e., $\schema(\projection_{\chi}(\relation)) = \chi$, as expressed by \cref{equation:rel_op_projection}.
+The unary \emph{projection} operator $\projection_{P}(\relation)$ with $P \subset \schema(\relation)$ applied on an input relation $\relation$ creates an output relation that only contains the attributes listed in $P$, i.e., $\schema(\projection_{P}(\relation)) = P$, as expressed by \cref{equation:rel_op_projection}.
 
 \begin{equation}
     \label{equation:rel_op_projection}
-    \projection_{\chi}(\relation) = \{ t\left[ \chi \right] : t \in \relation \} \: \textrm{with} \: t\left[ \chi \right] = \{ t[\attribute] \colon \attribute \in \chi \}
+    \projection_{P}(\relation) = \{ t\left[ P \right] : t \in \relation \} \: \textrm{with} \: t\left[ P \right] = \{ t[\attribute] \colon \attribute \in P \}
 \end{equation}
 
 All the tuples in $\relation$ are retained, however, resulting duplicates are removed.
@@ -381,7 +381,7 @@ We will not elaborate on all the consequences such a transition may have and ref
 
 \subsubsection{Extended Projection}
 
-The extended project as described by \cite{Garcia:2009Database} is an addition to the projection operator $\projection_{\chi}$ specified in the relational data model and necessitated by the ANSI SQL standard \cite[]{XOpen:1996SQL}. It involves a more general definition of $\chi$, that can now contain any of the following elements for a relation $\relation$ \footnote{We deliberately deviate from \cite{Garcia:2009Database} in that we don't limit ourselves to algebraic expressions and special functions.}:
+The extended project as described by \cite{Garcia:2009Database} is an addition to the projection operator $\projection_{P}$ specified in the relational data model and necessitated by the ANSI SQL standard \cite[]{XOpen:1996SQL}. It involves a more general definition of $P$, that can now contain any of the following elements for a relation $\relation$ \footnote{We deliberately deviate from \cite{Garcia:2009Database} in that we don't limit ourselves to algebraic expressions and special functions.}:
 \begin{enumerate*}[label=(\roman*)]
     \item any attribute $\attribute \in \schema(\relation)$,
     \item any literal value $\mathcal{L} \in \domain_{\mathcal{L}}, \text{ with } \domain_{\mathcal{L}} \in \domainset$ or,

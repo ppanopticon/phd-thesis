@@ -429,20 +429,20 @@ In addition to the algebraic properties of the extended relational algebra, we c
 
 Assuming these properties, we can distinguish between functions that remain \emph{constant} within the scope of the query context, which can be converted to a literal value, and such that do not. This very basic property allows for early evaluation and caching of function values. Since the extended projection also allows for the nesting of functions, such an optimisation can be relevant.
 
-In addition, we propose the notion of a \emph{function hierarchy} depicted in \Cref{figure:function_hierarchy}. As we move down that hierarchy, more information about the structure of a function, a DFC and the concrete implementation employed in a query plan becomes available to the \acrshort{dbms}. That information can be leveraged when deciding about the best execution path for a query, wherein every level offers certain properties that can be leveraged:
+In addition, we propose the notion of a \emph{function hierarchy} depicted in \Cref{figure:function_hierarchy}. As we move down that hierarchy, more information about the structure of a function employed in a query plan becomes available. That information can be leveraged to decide about the best execution path:
 
 \begin{figure}[bt]
     \centering
     \includegraphics[width=\textwidth]{figures/function_hierarchy.eps}
-    \caption{Function hierarchy of all $f \in \mathcall{F}$. As we go down the hierarchy, the \acrshort{dbms} gains knowledge about a function's structure.}
+    \caption{Function hierarchy of all $f \in \mathcal{F}$. As we go down the hierarchy, the \acrshort{dbms} gains knowledge about a function's structure.}
     \label{figure:function_hierarchy}
 \end{figure}
 
 \begin{description}
     \item[General Function] Every function $f \in \mathcal{F}$ is known with information about its name and domain (i.e., its signature $\mathtt{SIG}(f)$). This enables the \acrshort{dbms} to provide optimised implementations or replacements for composit operations.
-    \item[Distance Function Class] Since DFCs constitute a specific type of function, we can embedd equivalences between a DFC and different types of high-dimensional index structures directly within the function registry. Those equivalences allow a query planner to select one over the other.
+    \item[Distance Function Class] Since DFCs constitute a specific type of function, we can embedd equivalences between a DFC and different types of index structures directly within the function registry. Those equivalences allow a query planner to select one over the other.
     \item[Logical Implementation] As an implementation of a query manifests, the structure of a DFC may change through implementation $\symdist = \mathtt{IMP}(\symdfc)$. For example, certain attributes may turn-out to remain constant, which can be leveraged by the planner to optimise execution.
-    \item[Physical Implementation] As the physical execution plan emerges, a plan can make decisions as to what type of implementation for a DFC should be selected. For example, it may select a vectorised version of a DFC, which leverages \acrfull{simd} instructions of the CPU, over a scalar implementation that calculates the distance in a tight loop.
+    \item[Physical Implementation] As the physical execution plan emerges, a plan can make decisions as to what type of implementation for a DFC should be selected. For example, it may select a vectorised version, which leverages \acrshort{simd} instructions of the CPU, over a scalar implementation that calculates the distance in a tight loop.
 \end{description}
 
 \subsubsection{Functions and Optimised Implementations}
