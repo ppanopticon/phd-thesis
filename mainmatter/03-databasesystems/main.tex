@@ -89,15 +89,15 @@ In its original form, the relational model assumes the following properties to b
 
 Given the idea of a relation, the sum of all data managed by a \acrshort{dbms} can logically be regarded as a collection of different relations $\relation_k, \: k \in \symnatural_{\geq 0}$ of assorted degrees $N_k$ over data domains $\domain \in \mathbb{D}_{\mathtt{dbms}}$ (i.e., a collection of tables). The schema of a database can then be seen as the set system of all $\schema(\relation_k)$. As \cite{Codd:1970Relational} points out, relations are subject to change over time. These changes can take place on the level of any relation's structure, i.e., $\schema(\relation_k)$, the relations $\relation_k$ itself, e.g., by tuples being added to (insert) or removed from (delete) a relation or the level of a tuple $t \in \relation_k$, e.g., by altering one or multiple attribute values.
 
-\cref{example:relational_table} features an example relation $\mathtt{paintings}$ visualized as a table. Each entry in the table represents a painting and the related attribute values.
+\cref{example:relational_table} features an example relation $\mathtt{painting}$ visualized as a table. Each entry in the table represents a painting and the related attribute values.
 
-\begin{example}[label=example:relational_table]{Table Representation of a Relation $\relation_{\mathtt{paintings}}$}{}
+\begin{example}[label=example:relational_table]{Table Representation of a Relation $\relation_{\mathtt{painting}}$}{}
     
-    The following table lists the schema and extent of a ternary relation ($N = 3$) $\relation_{\mathtt{paintings}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{artist}}, \attribute_{\mathtt{painted}}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of painting title, artist and year of conception under \acrshort{cwa} and constitute the rows.
+    The following table lists the schema and extent of a ternary relation ($N = 3$) $\relation_{\mathtt{painting}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{artist}}, \attribute_{\mathtt{painted}}$ correspond to the table's columns. The individual tuples $\tuple_i$ are ``valid'' combinations of painting title, artist and year of conception under \acrshort{cwa} and constitute the rows.
         
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation_{\mathtt{paintings}}$ & $\attribute_\mathtt{title}$  & $\attribute_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation_{\mathtt{painting}}$ & $\attribute_\mathtt{title}$  & $\attribute_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 \\
@@ -125,7 +125,7 @@ An example of relations with primary and foreign key attributes is given in \cre
 
 \begin{example}[label=example:relational_table_pkfk]{Relations with Primary and Foreign Keys}{}
     
-    The following tables lists the schema and extent of $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$.
+    The following tables lists the schema and extent of $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$.
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
             $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{painted}}$ \\ 
@@ -290,7 +290,7 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
 
 \begin{example}[label=example:rel_alg_query]{Searching for Paintings Using Relational Algebra}{}
 
-    The following tables lists the schema and extent of $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$.
+    The following tables lists the schema and extent of $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$.
 
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
@@ -320,13 +320,13 @@ The following \Cref{example:rel_alg_query} illustrates how relational operators 
         \end{tabular}
     \end{center}
 
-    Using relational algebra, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed by joining $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$, followed by a selection and projection:
+    Using relational algebra, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed by joining $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$, followed by a selection and projection:
 
     \begin{equation*}
-        \relation_{\mathtt{result}} = \projection_{\attribute_{\mathtt{title}}} (\selection_{\attribute_{\mathtt{death}} \geq 1800}(\relation_{\mathtt{paintings}} \Join \relation_{\mathtt{artists}}))
+        \relation_{\mathtt{result}} = \projection_{\attribute_{\mathtt{title}}} (\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{painting}} \Join \relation_{\mathtt{artist}}))
     \end{equation*}
 
- This query produces the relation $\relation_{\mathtt{result}}$ that contains $t_2$ of $\relation_{\mathtt{paintings}}$.
+ This query produces the relation $\relation_{\mathtt{result}}$ that contains $t_2$ of $\relation_{\mathtt{painting}}$.
 \end{example}
 
 \subsection{Extensions}
@@ -414,7 +414,7 @@ More formal approaches to sorting were proposed, e.g., by \cite{Ramakrsihnan:199
 
 Recursion is an important concept in in computer programming, e.g., to test for reachability in graph-structured data or to model trees. Yet, neither the relational model nor the original ANSI \acrshort{sql} \cite{XOpen:1996SQL} standard provided support for recursion \cite{Libkin:2003Expressive}. It was not until ANSI SQL-99, that support for recursive queries in the form of \glsentryfirstplural{cte} was added \cite{Przymus:2010Recursive}.
 
-\section{\acrfull{dbms}}
+\section{\texorpdfstring{\acrfull{dbms}}{Database Management System (DBMS)}}
 Irrespective of the concrete system and data model, \acrshort{dbms} generally exhibit a common internal structure \cite{Petrov:2019Database,Hellerstein:2007Architecture} even though, specifics may vary widely between implementions. This overall structure is depicted in \Cref{figure:dbms-architecture} and in this section we use the path a query\footnote{Henceforth, the term ``query'' refers to any \acrshort{ddl}, \acrshort{dml} or \acrshort{dql} expression.} takes within the system, as indicated by the directed, red arrows, to illustrate the components involved.
 
 \begin{figure}[tb]
@@ -432,13 +432,13 @@ Queries accepted by the query interface are usually expressed in a specific quer
 
 \begin{example}[label=example:sql_query]{Searching for Paintings Using SQL}{}
 
-    Again using the relations $\relation_{\mathtt{paintings}}$ and $\relation_{\mathtt{artists}}$ from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
+    Again using the relations $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select * from paintings natural join artists where artist.death > 1800
+        select title from paintings natural join artists where artist.death > 1800
     \end{lstlisting}
 
-    The \texttt{select} clause expresses the projection $\projection$ to all attributes (*), the \texttt{natural join} clause expresses the natural join $\Join$ between \texttt{paintings} and \texttt{artist} and the \texttt{where} clause expresses the selection $\selection$ to tuples whose \texttt{artist.death} attribute is greater than 1800.
+    The \texttt{select} clause expresses the projection $\projection$ to attribute \texttt{title}, the \texttt{natural join} clause expresses the natural join $\Join$ between \texttt{paintings} and \texttt{artist} and the \texttt{where} clause expresses the selection $\selection$ to tuples whose \texttt{artist.death} attribute is greater than 1800.
 \end{example}
 
 Early attempts at a client-facing standardisation of the query interface for SQL-based systems led to the inception of the \acrfull{cli} standard \cite{XOpen:1995CLI}, which in its early version enabled embedding of \acrshort{sql} commands into C or Cobol programms. The \acrshort{cli} standard was later complemented by \acrfull{odbc} and \acrfull{jdbc}, which provide database connectivity to a wide range of \acrshort{sql} and NoSQL systems. In addition, most of the SQL (e.g., MySQL, PostgreSQL, Microsoft SQL, Oracle) and NoSQL (e.g., MongoDB, Neo4j, Redis) provide database specific and therefore un-standardised connectivity thorugh a plethora of client libraries that are maintained for different platforms and programming environments by either companies and / or open source contributors.
@@ -461,12 +461,12 @@ Practically, query parsing involves several steps \cite{Graefe:1993Query,Garcia:
 A query planner tries to transform the logical query plan produced by the parser to a physical plan in a way that allows for efficient and effective query execution, e.g., in terms of minimal execution time or resource usage \cite{Jarke:1984Query,Garcia:2009Database}. Despite being a central task of every \acrshort{dbms} and a huge body of research, there are only very few, comprehensive surveys and overviews of established techniques \cite{Jarke:1984Query,Graefe:1993Query,Chaudhuri:1998An}. This has been pointed as early as \citeyear{Jarke:1984Query} and one of the reasons identified is that query optimisation is achived ``by integrating a large number of techniques and strategies, ranging from logical transformations of queries to the optimization of access paths and the storage of data on the file system level'' \cite{Jarke:1984Query}. Consequently, many of the techniques are very specific to a concrete \acrshort{dbms} implementation and the underlying data and execution model.
 
 \begin{example}[label=example:join_algorithm]{Implementation of a \texttt{JOIN} between two relations.}{}
-    Let $\relation_{paintings}$ and $\relation_{artists}$ be the two relations from \Cref{example:sql_query} with $N = |\relation_{artists}|$, $M = |\relation_{paintings}|$ and $N < M$. The \texttt{JOIN} between the two relations, i.e., $\relation_{artist} \Join \relation_{paintings}$ can be implemented by the following algorithms \cite{Graefe:1993Query}:
+    Let $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be the two relations from \Cref{example:sql_query} with $N = |\relation_{\mathtt{artist}}|$, $M = |\relation_{\mathtt{painting}}|$ and $N < M$. The \texttt{JOIN} between the two relations, i.e., $\relation_{\mathtt{artist}} \Join \relation_{\mathtt{painting}}$ can be implemented by the following algorithms \cite{Graefe:1993Query}:
 
     \begin{description}
-        \item[Nested-Loop Join] The nested loop join iterates over all elements in the smaller relation, i.e., $\relation_{artists}$ and tries to find matching entries in the larger relation, i.e., $\relation_{paintings}$ for every element. If $\relation_{paintings}$ exhibited an index on the join column, that index could be used for lookup. Otherwise, a full scan of $\relation_{paintings}$ must be performed for every element in $\relation_{artists}$. Therefore, computational complexity ranges between $\mathcal{O}(N \log M)$ and $\mathcal{O}(NM)$.
+        \item[Nested-Loop Join] The nested loop join iterates over all elements in the smaller relation, i.e., $\relation_{\mathtt{artist}}$ and tries to find matching entries in the larger relation, i.e., $\relation_{\mathtt{painting}}$ for every element. If $\relation_{\mathtt{painting}}$ exhibited an index on the join column, that index could be used for lookup. Otherwise, a full scan of $\relation_{\mathtt{painting}}$ must be performed for every element in $\relation_{\mathtt{artist}}$. Therefore, computational complexity ranges between $\mathcal{O}(N \log M)$ and $\mathcal{O}(NM)$.
         \item[Hash Join] The hash join algorithm builds-up a hash-table for one side of the  \texttt{JOIN} to speed-up the lookup of join keys, hence, ommitting the inner loop of the nested-loop join. If resource consumption of building and accessing the hash-table is ignored, the computational complexity becomes $\mathcal{O}(N + M)$. However, typically building the hash-table is accompanied by a non-negligible cost, especially, if it does not fit into main memory.
-        \item[Sort-Merge Join] The sort-merge join can only be used if $\relation_{artists}$ and $\relation_{paintings}$ were sorted by the join key (i.e., the name of the artist) and if the comparison operator checks for equality between the two keys. Given this pre-condition, the join can be realised in a single loop that collects the entries for distinct values of the join keys, i.e.,  computational complexity is  $\mathcal{O}(N + M)$, if we assume that the relations come pre-sorted.  
+        \item[Sort-Merge Join] The sort-merge join can only be used if $\relation_{\mathtt{artist}}$ and $\relation_{\mathtt{painting}}$ were sorted by the join key (i.e., the name of the artist) and if the comparison operator checks for equality between the two keys. Given this pre-condition, the join can be realised in a single loop that collects the entries for distinct values of the join keys, i.e.,  computational complexity is  $\mathcal{O}(N + M)$, if we assume that the relations come pre-sorted.  
     \end{description}
 \end{example}
 

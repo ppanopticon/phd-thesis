@@ -199,7 +199,7 @@ The choice of (dis-)similarity measure mainly depends on the application. All th
 
 In the follwing sections, we will explore different variants of the similarity search problem, which are all variants of \Cref{definition:similarity_search} and illustrated in \Cref{fig:sim_search_algorithm} and \Cref{example:similarity_search}
 
-\subsubsection{\acrfull{nns}}
+\subsubsection{\texorpdfstring{\acrfull{nns}}{Nearest Neighbour Search (NNS)}}
 
 \acrshort{nns} is probably one of the most prominent types of queries used in multimedia retrieval and certainly the one employed most often in the context of the \emph{vitrivr} \cite{Rossetto:2016vitrivr,Gasser:2019Multimodal} stack. Given the query object $q$ and an arbitrary limit $k \in \symnatural$ the task is to find the $k$ features $f \in \symfeatures$ that are closest to $q$ as illustrated in \Cref{fig:knn}. This is also referred to as \acrfull{knn}. Formally, the resultset $R$ is given by \Cref{eq:knn}.
 
@@ -214,7 +214,7 @@ A variant of \acrshort{knn} is \acrfull{kfn} wherein instead of the nearest, the
 
 \subsubsection{Range Search}
 
-The range query or $\epsilon$NN is useful for finding objects that lie within a given range, typically expressed by a value $\epsilon \in \symreal$. Given the query object $q$, the task is to find all features $f \in \symfeatures$ that lie within $\epsilon$ of $q$ as illustrated in \Cref{fig:enn}. Formally, the resultset $R$ is given by \Cref{eq:epsilonnn}.
+Range search or $\epsilon$NN is useful for finding objects that lie within a given range, typically expressed by a value $\epsilon \in \symreal$. Given the query object $q$, the task is to find all features $f \in \symfeatures$ that lie within $\epsilon$ of $q$ as illustrated in \Cref{fig:enn}. Formally, the resultset $R$ is given by \Cref{eq:epsilonnn}.
 
 \begin{equation}
     \label{eq:epsilonnn}
@@ -225,7 +225,7 @@ Algorithmically, this search strategy is similar to \acrshort{nns} in that all f
 
 Variants of $\epsilon$NN include instances, where $f$ must be larger than $\epsilon$ or where $f$ must fall into an interval $[ \epsilon_{lower}, \epsilon_{upper} ]$. However, these variants are equivalent to the base-case since only the selection predicate changes.
 
-\subsubsection{\acrfull{rnns}}
+\subsubsection{\texorpdfstring{\acrfull{rnns}}{Reverse Nearest Neighbour Search (RNNS)}}
 
 In \acrshort{rnns} we try to find all $f \in \symfeatures$ that given a limit $k \in \symnatural$ consider the query $q \in \symfeatures$ to be part of their \acrshort{knn} resultset as illustrated in \Cref{fig:rknn}. Formally, the resultset $R$ is given by \Cref{eq:rknn} 
 
@@ -272,7 +272,8 @@ Algorithmically, this type of search is more complex than \acrshort{knn} or $\ep
     \label{fig:sim_search_algorithm}
 \end{figure}
 
-\subsection{\acrshort{nns} and High-Dimensional Index Structures}
+\subsection{\texorpdfstring{\acrshort{nns}}{NNS} and High-Dimensional Index Structures}
+\label{section:index_structures}
 
 As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrshort{nns} problem in $\symreal^d$ exhibits a non-negligible runtime complexity of $\mathcal{O}(dN)$ for a linear, brute-force scan -- thus being proportional to the cardinality of $N = |\symfeatures|$ and the dimension $d$. Experience from database research shows that linear scans are too slow in terms of time required for query execution if $N$ becomes large enough, especially when interactive query workloads are involved. This necessitates the use of index structures that allow for sub-linear data access.
 
@@ -315,7 +316,7 @@ Early examples of high-dimensional indexes used to rely on space or data partiti
 
 More recent research focuses on the use of proximity graphs \cite{Zhao:2022Approximate} and especially \acrfull{hnsw} graphs  \cite{Malkov:2018Efficient,Chen:2021SPANN} to facilitate fast \acrshort{anns}. Another focus lies on the ability to execute \acrshort{nns} indexing and search on a GPU \cite{Johnson:2019Billion,Zhao:2020Song} or specialised hardware \cite{Lee:2022Anna}. Some research also goes in the direction of dynamic indexes, i.e., indexes that allow for online processing of changes to the data \cite{Olafsson:2011Dynamic,Zhao:2022Approximate}. In the next few sections, we will highlight a few examples of.
 
-\subsubsection{\acrfull{vaf}}
+\subsubsection{\texorpdfstring{\acrfull{vaf}}{Vector Approximation File (VAF)}}
 
 VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the problem of the dimensionality curse and were later refined by \cite{Ferhatosmanoglu:2000Vector}. The basic idea of a \acrshort{vaf} is the division of the data space into $2^b$ cells, as illustrated in \Cref{fig:vaf}, where $b$ denotes a fixed number of bits. Typically, one choses a specific number of bits per dimension $b_d$ and uniformly partitions the vector space along each dimension, i.e., $b = b_dd$. A feature vector's position in the grid is concatenated into a compact \emph{signature} of size $b$ and the VA-file is a list of those signatures. 
 
@@ -330,7 +331,7 @@ VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the 
 
 The VA+-files described by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm, which implicitly assumes independence of the individual dimensions within a feature (which is often not a given). They suggest a prior decorellation of the individual dimensions by applying a \acrfull{klt}. Furthermore, they propose a non-uniform assignment of bits per dimension, based on data distribution, as opposed to a uniform distribution employed in the original paper. This leads to an independent quantizer per transformed dimension. Results suggest that these adjustments lead to a better estimation of lower- and upper-bounds, which improves the VA-file's filtering capabilities and thus further reduces IO cost.
 
-\subsubsection{\acrfull{lsh}}
+\subsubsection{\texorpdfstring{\acrfull{lsh}}{Locality Sensitive Hashing (LSH)}}
 
 \acrshort{lsh} refers to a family of algorithms \cite{Echihabi:2021High,Wang:2017ASurvey} that all share the same, basic idea of \emph{locality preserving hashing} as first proposed by \cite{Indyk1998:Approximate}. The idea is centered around a hash function $h: \symfeatures \rightarrow B$ that maps any two points $f,q \in \symfeatures$ to a bucket $b \in B$ such that Equations \ref{eq:lsh_1} and \ref{eq:lsh_2} hold, wherein $(\symfeatures, \symdist)$ must constitute a metric space, $P_1, P_2 \in [0, 1], P_1 > P_2$ denote probabilities, $R > 0$ denotes an arbitrary threshold and $c > 1$ denotes an approximation factor.
 
@@ -350,7 +351,7 @@ In simple terms, a locality preserving hash function has a high probability for 
 
 Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
 
-\subsubsection{\acrfull{pq}}
+\subsubsection{\texorpdfstring{\acrfull{pq}}{Product Quantization (PQ)}}
 
 The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantizing high-dimensional vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantization of each subspace. The quantization is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an inverted file index, as illustrated in \Cref{fig:pq}.
 
