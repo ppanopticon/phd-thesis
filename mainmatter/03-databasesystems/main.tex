@@ -385,7 +385,7 @@ The extended project as described by \cite{Garcia:2009Database} is an addition t
 \begin{enumerate*}[label=(\roman*)]
     \item any attribute $\attribute \in \schema(\relation)$,
     \item any literal value $\mathcal{L} \in \domain_{\mathcal{L}}, \text{ with } \domain_{\mathcal{L}} \in \domainset$ or,
-    \item any N-ary function expression $\mathcal{E} \colon \mathcal{G}_1 \times, \ldots, \times \mathcal{G}_A \rightarrow \mathcal{A}_{\text{out}}$ with $\mathcal{G}_j$ being either an attribute $\attribute_i \in \schema(\relation)$ or a literal $\mathcal{L}_j \in \domain_{\mathcal{L}}$.
+    \item any N-ary function expression $f \colon \mathcal{G}_1 \times, \ldots, \times \mathcal{G}_A \rightarrow \mathcal{A}_{\text{out}}$ with $\mathcal{G}_j$ being either an attribute $\attribute_i \in \schema(\relation)$ or a literal $\mathcal{L}_j \in \domain_{\mathcal{L}}$.
 \end{enumerate*}
 
 Therefore, in addition to projecting on existing attributes, the extended projection can be used to project onto literal values and arbitrary function expressions, thus appending new attributes to a relation. This is a very powerful extension, because it enables the generation of new values based on existing ones. A lot of \acrshort{dbms} also allow users to define their own \acrfull{udf}.
@@ -431,8 +431,7 @@ The query interface is the \acrshort{dbms}'s channel to the outside world and en
 Queries accepted by the query interface are usually expressed in a specific query language -- which are often designed for human users and therefore human-readable. We have already mentioned \acrshort{sql} \cite{XOpen:1996SQL,Chamberlin:2012Early} as the most prominent example of such a query language, which can be used to express queries using a declarative, textual syntax (see \Cref{example:sql_query}). In addition to SQL, there also exist other, domain-specific languages such as SPARQL \cite{Perez:2009Semantics} to query \acrfull{rdf} data, \emph{Cypher} to query labeled property graphs \cite{Francis:2018Cypher} found in graph databases such as \emph{Neo4j} \footnote{See https://neo4j.com/} or the document-oriented query language used by \emph{MongoDB} \footnote{See https://www.mongodb.com/}.
 
 \begin{example}[label=example:sql_query]{Searching for Paintings Using SQL}{}
-
-    Again using the relations $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
+    Let  $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be the two relations from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
         select title from paintings natural join artists where artist.death > 1800
@@ -458,7 +457,37 @@ Practically, query parsing involves several steps \cite{Graefe:1993Query,Garcia:
 
 \subsection{Query Planner \& Optimizer}
 
-A query planner tries to transform the logical query plan produced by the parser to a physical plan in a way that allows for efficient and effective query execution, e.g., in terms of minimal execution time or resource usage \cite{Jarke:1984Query,Garcia:2009Database}. Despite being a central task of every \acrshort{dbms} and a huge body of research, there are only very few, comprehensive surveys and overviews of established techniques \cite{Jarke:1984Query,Graefe:1993Query,Chaudhuri:1998An}. This has been pointed as early as \citeyear{Jarke:1984Query} and one of the reasons identified is that query optimisation is achived ``by integrating a large number of techniques and strategies, ranging from logical transformations of queries to the optimization of access paths and the storage of data on the file system level'' \cite{Jarke:1984Query}. Consequently, many of the techniques are very specific to a concrete \acrshort{dbms} implementation and the underlying data and execution model.
+A query planner tries to transform the \emph{logical} query plan produced by the parser to a \emph{physical} plan in a way that allows for efficient and effective query execution, e.g., in terms of minimal execution time or resource usage \cite{Jarke:1984Query,Garcia:2009Database}. The distinction between a logical and physical representation of a query is very common in \acrshort{dbms}. While the former determines \emph{what} should be produced terms of some logical algebra, the latter defines the \emph{how} in terms of operators and concrete access methods. An naive mapping of a logical plan to a physical plan is given in \Cref{example:logical_vs_physical}.
+
+\begin{example}[label=example:logical_vs_physical]{Logical Query Plan vs. Physical Quer Plan}{}
+    Let  $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be the two relations from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in relational algebra as follows:
+
+    \begin{equation*}
+        \relation_{\mathtt{result}} = \projection_{\attribute_{\mathtt{title}}} (\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{painting}} \Join \relation_{\mathtt{artist}}))
+    \end{equation*}
+
+    The naive, unoptimised phyiscal implementation can be obtained by mapping every relational algebra operator to a physical operator.
+
+    \begin{center}
+        \begin{tabular}{| l | l | p{8cm} |}
+            \hline
+            \textbf{Logical} & \textbf{Physical} & \textbf{Description} \\ 
+            \hline
+            \hline
+            $\relation_{\mathtt{painting}}$ & $\mathtt{SCAN}_{\mathtt{painting}}$ & Scans every tuple in $\relation_{\mathtt{painting}}$ \\
+            \hline
+            $\relation_{\mathtt{artist}}$ & $\mathtt{SCAN}_{\mathtt{artist}}$ & Scans every tuple in $\relation_{\mathtt{artist}}$ \\
+            \hline
+            $\Join$ & $\mathtt{HASHJOIN}_{\mathtt{artist}}$ & Performs a hash-join on the two input relations based on the common attribute. \\
+            \hline
+            $\selection_{\attribute_{\mathtt{death}} > 1800}$ & $\mathtt{FILTER}_{\mathtt{death} > 1800}$ & Filters every tuple based on comparison. \\ \hline
+            $\projection_{\attribute_{\mathtt{title}}}$ & $\mathtt{PROJECT}_{\mathtt{title}}$ & Projects onto attribute \texttt{title}. \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{example}
+
+Despite being a central task of every \acrshort{dbms} and a huge body of research, there are only very few, comprehensive surveys and overviews of established techniques \cite{Jarke:1984Query,Graefe:1993Query,Chaudhuri:1998An}. This has been pointed as early as \citeyear{Jarke:1984Query} and one of the reasons identified is that query optimisation is achived ``by integrating a large number of techniques and strategies, ranging from logical transformations of queries to the optimization of access paths and the storage of data on the file system level'' \cite{Jarke:1984Query}. Consequently, many of the techniques are very specific to a concrete \acrshort{dbms} implementation and the underlying data and execution model.
 
 \begin{example}[label=example:join_algorithm]{Implementation of a \texttt{JOIN} between two relations.}{}
     Let $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be the two relations from \Cref{example:sql_query} with $N = |\relation_{\mathtt{artist}}|$, $M = |\relation_{\mathtt{painting}}|$ and $N < M$. The \texttt{JOIN} between the two relations, i.e., $\relation_{\mathtt{artist}} \Join \relation_{\mathtt{painting}}$ can be implemented by the following algorithms \cite{Graefe:1993Query}:
@@ -470,9 +499,9 @@ A query planner tries to transform the logical query plan produced by the parser
     \end{description}
 \end{example}
 
-Over the years, two strategies at optimising a query have emerged: bottom-up and top-down \cite{Jarke:1984Query}. Early research focused on bottom-up approaches wherein individual operators and special edge-cases were studied and optimised. This turned out to be important, foundational work since at the lowest level, query optimisation can obviously be achieved by employing efficient algorithms. \cref{example:join_algorithm} tries to demonstrate this using possible implementations of a \texttt{JOIN} between two relations.
+Over the years, two high-level strategies at optimising a query have emerged: bottom-up and top-down \cite{Jarke:1984Query}. Early research focused on bottom-up approaches wherein individual operators and special edge-cases were studied and optimised. This turned out to be important, foundational work since at the lowest level, query optimisation can obviously be achieved by employing efficient algorithms. \cref{example:join_algorithm} tries to demonstrate this using possible implementations of a \texttt{JOIN} between two relations.
 
-However, as queries became more complex, bottom-up optimisation started to reach its limits, especially in terms of generalisability. If we turn to \cref{example:join_algorithm}, we will realise that the optimal path of execution does not only depend on the choice of \texttt{JOIN} algorithm but also on the join order, the presence or absence of indexes and the estimated size of intermediate data structures and thus the size of the relations themselves. If now, in addition, we consider queries that involve multiple \texttt{JOIN}s, we must acknowledge that these metrics may differ for every combination of relation, i.e., there may not be a single, optimal choice of algorithm. Consequently, attention has shifted towards top-down approaches that focused on holistic optimisation of the entire query plan.
+However, as queries became more complex, bottom-up optimisation started to reach its limits, especially in terms of generalisability. If we turn to \cref{example:join_algorithm}, we will realise that the optimal path of execution does not only depend on the choice of \texttt{JOIN} algorithm but also on the join order, the presence or absence of indexes that allow for more efficient access and the estimated size of intermediate data structures and thus the size of the relations themselves. If now, in addition, we consider queries that involve multiple \texttt{JOIN}s, we must acknowledge that these metrics may differ for every combination of relation, i.e., there may not be a single, optimal choice of algorithm. 
 
 \begin{figure}[tb]
     \centering
@@ -481,17 +510,43 @@ However, as queries became more complex, bottom-up optimisation started to reach
     \label{figure:query_planning}
 \end{figure}
 
-Early top-down approaches tried to focus on heuristic methods \cite{Jarke:1984Query}. However, the System-R paper \cite{Selinger:1979Access} published in \citeyear{Selinger:1979Access} established the idea of \emph{cost-based query optimisation} as a gold standard for \acrshort{dbms}. A cost-based query planner enumerates phyisical plans that employ different strategies and selects the one that minimises the estimated cost. Those costs may involve computation (time used on a CPU), storage access (data accessed on disk) or transmission (data transfered between nodes) required by a query \cite{Jarke:1984Query,Garcia:2009Database}. Which of those metrics are used is highly dependent on the system: In the not too distant past before the invention of \acrfull{ssd}, access to secondary storage was considered to be the defining cost and thus the main focus was to minimize disk access \cite{Garcia:2009Database}. However, for distributed databases, the moving of data between nodes has become an important factor to consider as well \cite{Bruno2013:Continuous}.
+Consequently, attention has shifted towards top-down approaches that focused on holistic optimisation of the entire query plan. Early top-down approaches tried to focus on heuristic methods \cite{Jarke:1984Query}. However, the System-R paper \cite{Selinger:1979Access} published in \citeyear{Selinger:1979Access} established the idea of \emph{cost-based query optimisation} as a gold standard for \acrshort{dbms}. A cost-based query planner enumerates phyisical plans that employ different strategies and selects the one that minimises the estimated cost. Those costs may involve computation (time used on a CPU), storage access (data accessed on disk) or transmission (data transfered between nodes) required by a query \cite{Jarke:1984Query,Garcia:2009Database}. Which of those metrics are used is highly dependent on the system: In the not too distant past before the invention of the \acrfull{ssd}, access to secondary storage was considered to be the defining cost and thus the main focus was to minimize disk access \cite{Garcia:2009Database}. However, for distributed databases, the moving of data between nodes has become another important factor to consider \cite{Bruno2013:Continuous}.
 
-The general approach at doing cost-based query optimisation is illustrated in \Cref{figure:query_planning}. It relies on an internal representation of the query, e.g., the logical plan illustrated in \Cref{figure:query-tree} and can be summarised as follows \cite{Jarke:1984Query,Graefe:1993Volcano} \footnote{The \emph{Volcano Optimizer Generator} \cite{Graefe:1993Volcano} still builds the theoretical foundation for modern systems such as \emph{Apache Calcite}.}:
+ Cost-based query planning relies on an internal representation of the query, e.g., the logical plan illustrated in \Cref{figure:query-tree} which is transformed into eqiuvalent, alternative representations over multiple iterations. As queries become more complex (e.g., multiple joins) the solution space grows exponentially. Therefore, the problem of is considered a NP-hard problem and can only be tackled by heuristic algorithms. 
+ 
+ Generally, the query optimisiation process can be divided into three phases as described for the \emph{Volcano Optimizer Generator} \cite{Jarke:1984Query,Graefe:1993Volcano} and illustrated in \Cref{figure:query_planning}:
 
 \begin{enumerate}
     \item Transformation of the logical input plan to either simplify it or to replace parts that can be covered by a specific edge-cases. This results in different, alternative logical query plans.
     \item Maping the transformed, logical query plans into sequences of elementary operations with known costs by selecting specific algorithms or access patterns. This results in a (potentially larger) set of physical query plans.
-    \item Estimate the total cost for the physical query plans and select the one that minimises those costs.
+    \item Estimate the total cost for the physical query plans and select the best one.
 \end{enumerate}
 
-Each of the aformentioned steps involve sub-steps that apply algebraic equivalence rules \cite{Garcia:2009Database}  (e.g., commutativity of operations), heuristics \cite{Garcia:2009Database,Graefe:1993Query,Swami:1989Optimization,Bruno:2010Polynomial,Tsialiamanis:2012Heuristics,} (e.g., predicate pushdown) or special rules to handle certain (edge-)cases \cite{Jarke:1984Query,Graefe:1993Query} (e.g., replace table by index scan).
+Each of the aformentioned steps involve sub-steps that apply algebraic equivalence rules \cite{Garcia:2009Database}  (e.g., commutativity of operations), heuristics \cite{Garcia:2009Database,Graefe:1993Query,Swami:1989Optimization,Bruno:2010Polynomial,Tsialiamanis:2012Heuristics,} (e.g., predicate pushdown) or special rules to handle certain (edge-)cases \cite{Jarke:1984Query,Graefe:1993Query} (e.g., replace table by index scan). 
+
+Indexes deserve a special mention in this context, since they are of huge, practical importance. An index is a special data structure that basically indexes a relation based on one or multiple attributes. This allows allows for more efficient data access -- $\mathcal{O}(\log N)$ instead of $\mathcal{O}(N)$, with $N = |\relation|$ for $B^{+}$-trees --  in presence of a predicate that uses the indexed attributes. \Cref{example:index_scan} illustrates this for a simple filter operation.
+
+\begin{example}[label=example:index_scan]{Index Scan vs. Table Scan}{}
+    Let us consider the logical and physical plan of \Cref{example:logical_vs_physical}. And let us further assume that there exists a  $B^{+}$-tree index on $\attribute_{\mathtt{death}}$ in $\relation_{\mathtt{artist}}$. The following query plan could be an optimisation of the original plan:
+
+    \begin{center}
+        \begin{tabular}{| l | l | p{6cm} |}
+            \hline
+            \textbf{Logical} & \textbf{Physical} & \textbf{Description} \\ 
+            \hline
+            \hline
+            $\relation_{\mathtt{painting}}$ & $\mathtt{SCAN}_{\mathtt{painting}}$ & Scans every tuple in $\relation_{\mathtt{painting}}$ \\
+            \hline
+            $\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{artist}})$ & $\mathtt{INDEX}^{\mathtt{death} > 1800}_{\mathtt{artist}}$ & Scans every tuple in the index that matches the predicate. \\
+            \hline
+            $\Join$ & $\mathtt{HASHJOIN}_{\mathtt{artist}}$ & Performs a hash-join on the two input relations based on the common attribute. \\
+            \hline
+            $\projection_{\attribute_{\mathtt{title}}}$ & $\mathtt{PROJECT}_{\mathtt{title}}$ & Projects onto attribute \texttt{title}. \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{example}
+
 
 A critical factor for any cost-based query optimizer is the model used for cost and cardinality estimation \cite{Jarke:1984Query,Yin:2015Robust}. Most existing systems rely on statistical modeling based on the data stored in the database \cite{Getoor:2001Selectivity,Ioannidis:2003History} as well as model for cost incurred by accessing system resources \cite{Manegold:2002Generic}. Simple statistics involve information about the number of entries in a relation or statistical moments of columns but may also rely on more complex analysis of data distribution such as histograms. This pre-hoc modeling was later complemented by taking the atained execution speed into account, which requires post-hoc analysis of an execution plan w.r.t to the cost model and created a continuous control loop between planner and execution engine \cite{Mackert:1986R}. Recent work in the field of query planning also tries to apply machine learning techniques at different levels of the cost-estimation and planning process \cite{Wu:2013Predicting,Vu:2019Deep}.
 
@@ -503,18 +558,18 @@ While this model is simple enough, there are a few subtle differences in how thi
 
 \begin{description}
     \item[Iterator Model] This is the model described in \cite{Graefe:1993Volcano,Graefe:1993Query} and implemented in the Cascades \cite{Graefe:1995Cascades} framework. In this model, every operator reads a single tuple, processes it and hands it to the next operator in the pipeline. Therefore, tuples are iterated one by one and handed from the leafs to the root of the operator tree.
-    \item[Materialization Model] In this model, every operator reads all tuples from the input, performs its work and then forwards the entire output to the next operator in one go. This requires potentially large buffers to store intermediate results.
+    \item[Materialization Model] In this model, every operator reads all tuples from the input, performs its work and then forwards the entire output to the next operator. This requires potentially large buffers to store intermediate results.
     \item[Batch Model] In this model, every operator reads a specific number of tuples from it inputs (a batch), processes these tuples and then forwards the batched results to the next operator. Therefore, data is processed batch by batch.
 \end{description}
 
-It must be mentioned, that even in the iterator model, some operators require intermediate materialisation (e.g., sort operators). In addition, we can distinguish between which operator initiates data exchange:
+It must be mentioned, that even in the iterator model, some operators still require intermediate materialisation. For example, a sort operation must be able to ``see'' all tuples in order to establish a total ordering. Consequently, intermediate caching is required in these cases. In addition, we can distinguish between which operator initiates data exchange:
 
 \begin{description}
     \item[Pull-based] Operators higher-up in the operator tree request the next item from the previous operator. This is the common model for disk-based systems and leads to the slowest operator in the pipeline determining execution speed.
     \item[Push-based] Operators lower in the operator tree send their results to the next operator, which has to buffer if it is not ready to process. While potentially more efficient, this requires a buffering infrastructure.
 \end{description}
 
-The pull-based iterator model is very easy to implement, since basically, every operator just needs to implement a \texttt{next()} method that returns the next tuple (and \texttt{open()} and \texttt{close()} methods to signal start and end). The model is illustrated in \Cref{figure:iterator_model}. It is probably the most common processing model found in disk-based \acrshort{dbms}, even though, it has downsides such a poor instruction locality and overhead due to the large number of method calls \cite{Neumann:2014Compiling}. The materialization model can be beneficial for small datasets and \acrshort{oltp} queries. However, it is not a good fit for analytical workloads on large datasets, especially, if main memory is limited. The batch model is something in between the previous two and can be beneficial when using vectorised processing and \acrshort{simd} instructions such as those provided by the \acrshort{avx} or \acrshort{sse} extensions. It is thus often employed in analytical databases such as MonetDB \cite{Idreos:2012MonetDB}.
+The pull-based iterator model is very easy to implement, since basically, every operator just needs to provide a \texttt{next()} method that returns the next tuple (in addition to \texttt{open()} and \texttt{close()} to signal start and end). Every operator then simply calls  \texttt{next()} on its input to get the next tuple. The model is illustrated in \Cref{figure:iterator_model}. It is probably the most common processing model found in disk-based \acrshort{dbms}, even though, it has downsides such a poor instruction locality and overhead due to the large number of method calls \cite{Neumann:2014Compiling}. The materialization model can be beneficial for small datasets and \acrshort{oltp} queries. However, it is not a good fit for analytical workloads on large datasets, especially, if main memory is limited. The batch model is something in between the previous two and can be beneficial when using vectorised processing and \acrshort{simd} instructions such as those provided by the \acrshort{avx} or \acrshort{sse} extensions, since multiple tuples can be processed in batches. It is thus often employed in analytical databases such as MonetDB \cite{Idreos:2012MonetDB}.
 
 \begin{figure}[tb]
     \centering
@@ -525,12 +580,12 @@ The pull-based iterator model is very easy to implement, since basically, every 
 
 \subsubsection{Query Parallelism}
 
-With most computing platforms offering multiple \acrshort{cpu}s or \acrshort{cpu} cores, parallel execution of queries can provide a considerable speed-up in terms of execution time. \cite{Graefe:1993Query} distinguishes between three types of parallelism in a \acrshort{dbms}:
+Since most computing platforms offer multiple \acrshort{cpu}s or \acrshort{cpu} cores nowadays, parallel execution of queries can provide a considerable speed-up in terms of execution time. \cite{Graefe:1993Query} distinguishes between three types of parallelism a \acrshort{dbms} can support:
 
 \begin{description}
-    \item[Inter-query parallelism] refers to the parallel execution of different, independent queries (potentially from different users). At a high level, there are two approaches at achieving inter-query parallelism, namely, by mapping different queries to different system processes (e.g., PostgreSQL) or to different threads within the same process (e.g., MySQL), with the advantage of the latter being that all queries share the same memory address space.
-    \item[Inter-operator parallelism] refers to the parallel execution of different operators within a query, which are then synchronised by a dedicated operator that merges the results. This is a form of \emph{intra-query parallelism}.
-    \item[Intra-operator parallelism] refers to the splitting-up of the work performed by a specific operator. This typically involves the ability to parallelise based on the data, e.g., by partitioning on it and letting different operators taking care of parts of the workload.  This is also a form of \emph{intra-query parallelism}.
+    \item[Inter-query parallelism] refers to the parallel execution of different, independent queries (potentially from different users). Roughly, there are two approaches to achieve inter-query parallelism, namely, by mapping different queries to different system processes (e.g., PostgreSQL) or to different threads within the same process (e.g., MySQL), with the advantage of the latter being that all queries share the same memory address space.
+    \item[Inter-operator parallelism] refers to the parallel execution of different operators within a query, which are then synchronised by a dedicated operator that merges the results. For example, one could parallelise the execution of the respective order operations on two relations prior to a sort-merge join. This is a form of \emph{intra-query parallelism}.
+    \item[Intra-operator parallelism] refers to the splitting-up of the work performed by a single operator. This typically involves the ability to parallelise based on the data, e.g., by partitioning on it and letting different operator instances taking care of parts of the workload. This is also a form of \emph{intra-query parallelism}.
 \end{description}
 
 All three aspect must be handled by the query execution engine (and other component involved) and give rise to a large number of implementation details that must be considered when building a \acrshort{dbms}. For example, the challenges that arise from parallel query execution and the resulting, concurrent data access -- especially in the presence of parallel reads and writes -- are covered by the \emph{isolation} part of \acrshort{acid} and typically mitigated by a \emph{transaction manager} and \emph{concurrency control protocols}.
@@ -538,11 +593,11 @@ All three aspect must be handled by the query execution engine (and other compon
 \subsubsection{Optimising Execution Speed}
 Speeding-up query execution has been a large corpus of research at different levels and has given rise to many relevant solutions. We have already mentioned the use of specialised CPU instructions such as \acrshort{avx} or \acrshort{sse}, which is an active area of research \cite{Idreos:2012MonetDB,Polychroniou:2020VIP,Polychroniou:2019Towards,Shen:2021Using} even to the extent, that workloads are executed on a \acrshort{gpu} instead of a \acrshort{cpu} \cite{Paul:2021Database}.
 
-Another approach used to minimise the overhead incurred by the iterator model is compilation as implemented by HyPer \cite{Neumann:2014Compiling}, which is also an active area of research \cite{Krolik:2021r3d3,Funke:2021Low}. This technique tries to compile parts of the execution plan directly into machine code, i.e., merging multiple operators into one, which increases instruction locality and allows for caching and later re-use of pre-compiled elements. The method can also be combined with vectorised execution \cite{Sompolski:2011Vectorization,Rosenfeld:2022Query}.
+Another approach used to minimise the overhead incurred by the iterator model is compilation as implemented by HyPer \cite{Neumann:2014Compiling}, which is also an active area of research \cite{Krolik:2021r3d3,Funke:2021Low}. This technique tries to compile parts of the execution plan directly into machine code, i.e., merging multiple operators into one, which increases instruction locality and allows for caching of pre-compiled elements. The method can be combined with vectorised execution \cite{Sompolski:2011Vectorization,Rosenfeld:2022Query}.
 
 \subsection{Storage Manager}
 
-At the lowest levels of any \acrshort{dbms} there is the storage manager, which orchestrates access to data on primary and/or secondary storage devices. Many different approaches at storage have been implemented over the year and we will simply focus on some basic concepts and refer to \cite{Petrov:2019Database} for more information on the topic. What most \acrshort{dbms} have in common is that they implement a two-level memory architecture wherin data resides on disk (which is slower but durable) and in main memory (which is faster but volatile). The two aspects are handled by the two main components: the \emph{disk manager} and the \emph{buffer pool manager} \cite{Petrov:2019Database}.
+At the lowest levels of any \acrshort{dbms} there is the storage manager, which orchestrates access to data on primary and/or secondary storage devices. Many different approaches at storage have been implemented over the year and we will simply focus on some basic concepts and refer to \cite{Petrov:2019Database} for more information on the topic. What most \acrshort{dbms} have in common is that they implement a two-level memory architecture wherin data resides on disk (which is slower but durable) and in \acrfull{ram} (which is faster but volatile). The two aspects are handled by the two main components: the \emph{disk manager} and the \emph{buffer pool manager} \cite{Petrov:2019Database}. Recent years have also seen a trend towards main memory databases that keep data primarily in \acrshort{ram} \cite{Garcia:1992Main,Faerber:2017Main}
 
 \subsubsection{Disk Manager}
 The disk manager provides access to the files that reside on disk. Most databases organise disk access in terms of fixed-size database pages that can be read and written. Typically, the size of a page is a fixed multiple of the block-size implemented by the underlying file system and ranges between 4 to \SI{16}{\kilo\byte}.
@@ -553,9 +608,9 @@ Recent work has given rise to different types of data organisation, e.g., in sys
 
 \subsubsection{Buffer Pool Manager}
 
-The main objective of the buffer pool manager is to keep frequently accessed pages in memory for faster access. That is, if upper-levels of the \acrshort{dbms} require access to a given page, they request it from the buffer pool manager, which can either serve it from memory or read it from disk through the disk manager. Meanwhile, the buffer pool manager can keep track of page access and can evict or retain pages depending on usage. In addition to caching, buffer pool managers also implement different strategies for page replacement and eviction (e.g., \acrshort{fifo} or \acrshort{lru}), pre-fetching of pages depending on workloads (e.g., when scans are performed) as well as locking of pages for concurrency control.
+The main objective of the buffer pool manager is to keep frequently accessed pages in memory for faster lookup. That is, if upper-levels of the \acrshort{dbms} require access to a given page, they request it from the buffer pool manager, which can either serve it from memory or read it from disk through the disk manager. Meanwhile, the buffer pool manager can keep track of page access and can evict or retain pages depending on usage. In addition to caching, buffer pool managers also implement different strategies for page replacement and eviction (e.g., \acrshort{fifo} or \acrshort{lru}), pre-fetching of pages depending on workloads (e.g., when scans are performed) as well as locking of pages for low-level concurrency control. These locks are also called latches.
 
-Some \acrshort{dbms}, such as MonetDB \cite{Boncz:2008Breaking} or LMDB \cite{Henry:2019Howard}, forego the implementation of a buffer pool manager and instead rely on the \acrshort{posix} \texttt{mmap} system call \cite{Stonebraker:1981Operating}, which allows the mapping of files on disk into the address space of an application and leaves caching of pages to the operating system. While this simplifies handling of data because loading and evicition of pages must not be handled explicitly, research suggest that the use of \texttt{mmap} in a \acrshort{dbms} is far from optimal \cite{Crotty:2022Are}, and that knowledge about the database workload (e.g., random access vs. scan) allows for much more finegrained control than \texttt{mmap}.
+Some \acrshort{dbms}, such as MonetDB \cite{Boncz:2008Breaking}, LMDB \cite{Henry:2019Howard} or MapDB \footnote{See https://mapdb.org/, Accessed Juli 2022}, forego the implementation of a buffer pool manager and instead rely on the \acrshort{posix} \texttt{mmap} system call \cite{Stonebraker:1981Operating}, which allows the mapping of files on disk into the address space of an application and leaves caching of pages to the operating system. While this simplifies handling of data because loading and evicition of pages must not be handled explicitly, research suggest that the use of \texttt{mmap} in a \acrshort{dbms} is far from optimal \cite{Crotty:2022Are}, and that knowledge about the database workload (e.g., random access vs. scan) allows for much more finegrained control than \texttt{mmap} for optimisations such as pre-fetching.
 
 \subsection{Common Components}
 
