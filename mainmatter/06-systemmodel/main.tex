@@ -489,38 +489,36 @@ Finally, the s,k-selection operator $\limit$ is also idempotent and commutes wit
 Lack of commutativity of $\limit$ with $\order$ follows directly from its definition: $\limit$ is sensitive to the ranking of $\rankedrel$ and $\order$ influences that ranking. Consequently, executing $\limit$ before or after imposing a certain order will yield different results. For commutativity with $\selection$, one can turn to \Cref{proof:limit_non_commutativity}. A summary of all properties can be found in \Cref{table:ext_algebraic_properties}. 
 
 \begin{proof}[label=proof:limit_non_commutativity]{Non-commutativity of $\selection$ and $\limit$}{}
-    Let $\relation$ be a unary relation with $M = |\relation|$ and $\schema(\relation) = \{ \attribute_R \}$. Let further be $t \left[ \attribute_R \right] = \texttt{RANK} (t) \forall t \in \relation$, i.e., the attribute holds the rank according to the current ordering as fixed value (e.g., created when populating the relation). If $\selection$ and $\limit_k$ were to commute, then following identity would hold for any $x < M \in \symnatural_{>0}$:
+    Let $\relation$ be a unary relation with $M = |\relation|$ and $\schema(\relation) = \{ \attribute_R \}$. Let further be $t \left[ \attribute_R \right] = \texttt{RANK} (t) \forall t \in \relation$, i.e., the attribute holds the rank of the tuple according to the natural ordering as a fixed value. If $\selection$ and $\limit_k$ were to commute, then following identity would hold for any $x < M \in \symnatural_{>0}$:
 
     \begin{equation*}
-        \selection_{\attribute_R > M - x} (\limit_{x} (\relation)) = \limit_{x} (\selection_{\attribute_R > M - x}(\relation))
+        \selection_{\attribute_R > x} (\limit_{x} (\relation)) = \limit_{x} (\selection_{\attribute_R > x}(\relation))
     \end{equation*}
 
     However, we can proof by contradiction that this does not hold since:
 
     \begin{equation*}
-        \selection_{\attribute_R < M - x} (\limit_{x} (\relation)) = \{ t_M \} \stackrel{!}{\neq} \limit_{x} (\selection_{\attribute_R < M - x}(\relation)) = \{ t_{M-x}, t_M \}
+        \selection_{\attribute_R > x} (\limit_{x} (\relation)) = \emptyset \stackrel{!}{\neq} \limit_{x} (\selection_{\attribute_R > x}(\relation)) = \{ t_{x+1}, \ldots, t_{\min(x+x,M)} \}
     \end{equation*}
 
-    That is, whenever $\limit_k$ removes tuples that match the predicate of $\selection$, the order of execution influences the result and the two operators do not commute. An example for $M = 3$ and $x = 2$ is given.
+    That is, whenever $\limit_k$ removes tuples that would match the predicate of $\selection$, the order of execution influences the result and the two operators do not commute. An example for $M = 6$ and $x = 2$ is given below,
 
     \begin{center}
-        \begin{tabular}{ l || l |}
-            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{R}}$ \\ 
+        \begin{tabular}{ l || l || l | l | l | l |}
+            $\relation$ & $\attributep_{\mathtt{R}}$ & $\limit_{x} (\relation)$ & $\selection_{\attribute_R > x}(\relation)$ & $\selection_{\attribute_R > x} (\limit_{x} (\relation))$ & $\limit_{x} (\selection_{\attribute_R > x}(\relation))$ \\ 
             \hline
             \hline
-            $t_1$ & $1$ \\
+            $t_1$ & $1$ & \cmark & \xmark & \xmark & \xmark \\
             \hline
-        \end{tabular}
-        \quad
-        \begin{tabular}{ l || l |}
-            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{R}}$ \\ 
+            $t_2$ & $2$ & \cmark & \xmark & \xmark & \xmark\\
             \hline
+            $t_3$ & $3$ & \xmark & \cmark & \xmark & \cmark \\
             \hline
-            $t_1$ & $1$ \\
+            $t_4$ & $4$ & \xmark & \cmark & \xmark & \cmark \\
             \hline
-            $t_2$ & $2$ \\
+            $t_5$ & $5$ & \xmark & \cmark & \xmark & \xmark  \\
             \hline
-            $t_3$ & $2$ \\
+            $t_6$ & $6$ &\xmark & \cmark  & \xmark & \xmark \\
             \hline
         \end{tabular}
     \end{center}
@@ -559,27 +557,31 @@ Optimising implementations of DFCs and general function invocations can be achie
 
 Another aspect that can be optimised is the use of vectorized implementations for computations that involve vectors or matrices, i.e., exchanging a scalar implementation of a \acrshort{dfc} by an implementation that uses \acrshort{simd} instructions. This can be beneficial both for a multimedia \acrshort{dbms} that employs the iteratore model and even more so for a batched processing model. However, for the iterator model it is to expected that one challenge lies in finding the threshold at which usage of such an optimised version pays off. If we take real-valued vectors as an example, it is likely that vectorised execution will not benefit low-dimensional vectors (e.g., $\text{dim} = 3$) while it will greatly benefit high-dimensional vectors (e.g., $\text{dim} = 2048$). Finding this threshold poses challenge in and by itself, which could be subject for future research.
 
-Finally, one can try to match constellations of functions and replace them with an optimised version. A simple example could be the expression $a * b + c$, i.e., $\mathtt{add}(\mathtt{mul}(\mathtt{a},\mathtt{b}), \mathtt{c})$, which can be replaced by a single \emph{fused multiply-add} function $\mathtt{fma}(\mathtt{a},\mathtt{b},\mathtt{c})$ to avoid loss of precission. In a manner of speaking, trading-in a high-dimensional index for the execution of a \acrshort{dfc} also falls into this category with the difference being that the transformation depends on more than just the function.
+Finally, one can try to match constellations of functions and replace them with an optimised version. A simple example could be the expression $a * b + c$, i.e., $\mathtt{add}(\mathtt{mul}(\mathtt{a},\mathtt{b}), \mathtt{c})$, which can be replaced by a single \emph{fused multiply-add} function $\mathtt{fma}(\mathtt{a},\mathtt{b},\mathtt{c})$ to avoid loss of precission. Replacing the evaluation of a \acrshort{dfc} with a lookup in a high-dimensional index also falls into this category, however, this transformation depends on more than just the function itself.
 
 \subsection{\texorpdfstring{\acrshort{dfc}s}{DFCs} and High-Dimensional Index Structures}
 
-One identity that is particularly relevant for the execution of proximity based queries is the relationship between the execution of a \acrshort{dfc} and the use of a high-dimensional index. As we have discussed in \Cref{section:index_structures}, there exist many different types of indexing techniques that can be used in different ways. We propose to formalise the use of high-dimensional indexes\footnote{By ``index'' we refer to a conceret implementation rather than a family since all techniques introduced in \Cref{section:index_structures} can be employed in different ways.} by definining equivalence classes between  an index and the relational algebra expressions it replaces. Before we can start to formalise the three classes we must provide a formalisation of the index concept itself, which is constructed in \Cref{definition:tuple_identifier}, \Cref{definition:index} and \Cref{definition:hd_index}.
+One identity that is particularly relevant for the execution of proximity based queries is the relationship between the execution of a \acrshort{dfc} and the use of a high-dimensional index. As we have discussed in \Cref{section:index_structures}, there exist many different types of indexing techniques that can be used in different ways. We propose to formalise the use of high-dimensional indexes\footnote{By ``index'' we refer to a concrete implementation rather than a family since all techniques introduced in \Cref{section:index_structures} can be employed in different ways.} by definining equivalence classes between  an index and the relational algebra expressions it replaces. Before we can start to formalise the three classes we must provide a formalisation of the index replacement concept, which is constructed in Definitions \ref{definition:tuple_identifier}, \ref{definition:index} and \ref{definition:definition:index_replacement_exact}.
 
-\begin{definition}[label=definition:tuple_identifier]{Tuple Identifier}{}
+\begin{definition}[label=definition:tuple_identifier]{Tuple Identifier of a Relation $\relation$}{}
     Let $\relation$ be a relation. We call $\attribute_{\mathtt{TID}}$ the relation's \emph{tuple identifier} if it uniquely identifies every tuple in $\relation$, i.e., has a unique value per tuple. $\attribute_{\mathtt{TID}}$ can be considered an internal primary key of $\relation$ and is often not visible to the outside.
 \end{definition}
 
-\begin{definition}[label=definition:index]{Index Structure}{}
+\begin{definition}[label=definition:index]{Index Structure for Relation $\relation$}{}
     Let $\relation$ be a relation with tuple identifier $\attribute_{\mathtt{TID}}$ and $I = \{ \attribute_{1}, \ldots, \attribute_{K} \} \subset \schema (\relation)$. We call $\mathtt{INDEX}^{\relation}_I$ an index of relation $\relation$ with respect to $I$ if $\mathtt{INDEX}^{\relation}_I$ contains at least $\attribute_{\mathtt{TID}}$ and if further $|\mathtt{INDEX}^{\relation}_I| = |\relation|$ and $\exists (t_1, t_2) : t_1[\attribute_{\mathtt{TID}}] = t_2[\attribute_{\mathtt{TID}}] \forall t_1 \in \relation, t_2 \in \mathtt{INDEX}^{\relation}_I$. $\mathtt{INDEX}^{\relation}_I$ itself is a relation.
 \end{definition}
 
-In simple terms, an index $\mathtt{INDEX}^{\relation}_{I}$ is a copy of $\relation$ with respect to the attribute $\attribute_{\mathtt{TID}}$, i.e., every value $\attribute_{\mathtt{TID}}$ in $\relation$ is contained in $\mathtt{INDEX}^{\relation}_{I}$. This basic identity holds for both traditional and high-dimensional index structures. However,  many of the properties that go beyond this definition, e.g., additional attributes contained in $\mathtt{INDEX}^{\relation}_{I}$, depend on the concrete index implementation.
+In other words, an index $\mathtt{INDEX}^{\relation}_{I}$ is a copy of $\relation$ with respect to the attribute $\attribute_{\mathtt{TID}}$, i.e., every value $\attribute_{\mathtt{TID}}$ in $\relation$ is contained in $\mathtt{INDEX}^{\relation}_{I}$. This basic identity holds for both traditional and high-dimensional index structures. As a consequence, we can always use $\mathtt{INDEX}^{\relation}_{I}$ instead of $\relation$ and we can always reconstruct the attibutes $A = \{ \attribute \colon \attribute \in \schema(\relation) \symand \attribute \not\in \schema(\mathtt{INDEX}^{\relation}_{I}) \}$ that are contained in $\relation$ but not contained in $\mathtt{INDEX}^{\relation}_{I}$ by considering the equi-join $\mathtt{INDEX}^{\relation}_{I} \Join_{\attribute_{\mathtt{TID}}} \projection_{A}(\relation)$. However, many of the properties that go beyond this definition, e.g., which additional attributes are contained in $\mathtt{INDEX}^{\relation}_{I}$, depend on the concrete index implementation.
 
-\begin{definition}[label=definition:hd_index]{High-Dimensional Index Structure}{}
-    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ and $\symdfc \colon \domain_f \times \domain_f \times \domain_{1} \ldots \times \domain_{n} \to \symreal$ be a \acrshort{dfc}. We call $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc}$ a high-dimensional index of relation $\relation$ with respect to $\attribute_f$ and $\symdfc$ if it satisifies \Cref{definition:index}.
+In addition to \Cref{definition:index}, the following restrictions may apply in addition to implementation specific restrictions for a specific index:
+\begin{enumerate*}[label=(\roman*)]
+    \item High-dimensional indexes are always derived from a feature attribute $\attribute_f \in \schema(\relation)$. Therefore, an index can only replace a DFC if they operate on an unaltered version of $\attribute_f$. Changes to $\attribute_f$, e.g., through application of a nested function $\mathtt{fun}(\attribute_f)$, will render the index unusable unless the same alteration was applied when creating the index.
+    \item High-dimensional indexes are sometimes trained for a specific distance function (e.g., Euclidean) or class of distance functions (e.g., Minkowski). Therefore, an index can only replace an expression if the DFC used in that expression coincides with the original function (-class).
+\end{enumerate*} Using these constraints, we can now formalise the replacement of a relational expression by an $\mathtt{INDEX}^{\relation}_{I}$ which, for high-dimensional indexes and depending on what expression is matched, falls into one of three classes given by to Definitions \ref{definition:dfc_index_class_1}, \ref{definition:dfc_index_class_2} or \ref{definition:dfc_index_class_3}.
+
+\begin{definition}[label=definition:definition:index_replacement_exact]{Exact Index Replacement}{}
+    Let $\relation$ be a relation, $\mathtt{EXP}$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\mathtt{EXP}$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{exact index replacement} if $\mathtt{EXP} = \mathtt{INDEX}^{\relation}_{I}$.
 \end{definition}
-
-Using this construct, we can now formalise the use of $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc}$ in lieu certain relational expressions related to proximity based queries. Depending on what expression is matched, an index replacement falls into one of three classes according to \Cref{definition:dfc_index_class_1}, \Cref{definition:dfc_index_class_2} and \Cref{definition:dfc_index_class_3}.
 
 \begin{definition}[label=definition:dfc_index_class_1]{High-Dimensional Index Replacement of Class 1}{}
     Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist = \symdfc(\attribute_f, q, \ldots) \in P$. We call a replacement operation with a high-dimensional index $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdist}$ \emph{class 1}, if $\projection_{\symdist}(\relation) \equiv \mathtt{INDEX}^{\relation}_{\attribute_f, \symdist}$ and therefore:
@@ -632,22 +634,29 @@ Class 3 replacements constitute an optimisation of a specific edge-case, which i
         \end{tabular}
     \end{center}
 
-    The result of the \acrshort{knn} search $\relation^{\mathcal{A}_d\uparrow}_{\mathtt{result}} = \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p)))$  can be produced by a class 3 index replacement with $\mathtt{INDEX}^{\relation_{p}}_{\attribute_f, \symdfc}$. Therefore:
+    The result of the \acrshort{knn}-search
+    
+    \begin{equation*}
+        \relation^{\mathcal{A}_d\uparrow}_{\mathtt{result}} = \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p)))
+    \end{equation*}
+
+    can be produced by a class 3 index replacement with $\mathtt{INDEX}^{\relation_{p}}_{\attribute_f, \symdfc}$ and therefore
 
     \begin{equation*}
-        \relation^{\mathcal{A}_d\uparrow}_{\mathtt{result}} = \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p))) = \mathtt{INDEX}^{\relation_{\mathtt{p}}}_{\attribute_f, \symdfc} \Join_{\attribute_{\mathtt{TID}}} \projection_{\attribute_{t}} (\relation_p)
+        \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p))) = \mathtt{INDEX}^{\relation_{\mathtt{p}}}_{\attribute_f, \symdfc} \Join_{\attribute_{\mathtt{TID}}} \projection_{\attribute_{t}} (\relation_p)
     \end{equation*}
     
-    A potential index structure could be the \acrshort{vaf} index \cite[]{Weber:1998Va}.
+    A potential index structure could be the \acrshort{vaf} index \cite{Weber:1998Va}.
 \end{example}
 
-In addition to \Cref{definition:dfc_index_class_1}, \Cref{definition:dfc_index_class_2} and \Cref{definition:dfc_index_class_3}, the following restrictions may apply in addition to implementation specific restrictions for a specific index:
-\begin{enumerate*}[label=(\roman*)]
-    \item High-dimensional indexes are always derived from a feature attribute $\attribute_f \in \schema(\relation)$. Therefore, an index can only replace a DFC if they operate on an unaltered version of $\attribute_f$. Changes to $\attribute_f$, e.g., through application of a nested function $\mathtt{fun}(\attribute_f)$, will render the index unusable unless the same alteration was applied when creating the index.
-    \item High-dimensional indexes are sometimes trained for a specific distance function (e.g., Euclidean) or class of distance functions (e.g., Minkowski). Therefore, an index can only replace a DFC if that DFC coincides with the original function (-class).
-\end{enumerate*}
+With the aforementioned definitions and restrictions, we have defined the basic relationship and rules that can be applied by a multimedia \acrshort{dbms}, when deciding whether or not to use a high-dimensional index structure. However, the definitions so far consider the replacement an exact transformation, i.e., the result of the original expression and the index is supposed to be identical. In practice, this is often not the case, which leads to \Cref{definition:index_replacement_inexact} provides an excelent segue to \Cref{section:cost_model}.
 
-With the aforementioned definitions and restrictions, we have defined the basic relationship and rules that can be applied by a multimedia \acrshort{dbms}, when deciding whether or not to use a particular high-dimensional index structure. However, the definitions so far consider the replacement an exact operation, i.e., the result of the original relational expression and the expression that uses the index is supposed to be identical. In practice, this is often not the case and we will propose an extension to accomodate inexact index structures in \Cref{section:cost_model}.  
+\begin{definition}[label=definition:index_replacement_inexact]{Inexact Index Replacement}{}
+    Let $\relation$ be a relation, $\mathtt{EXP}$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\mathtt{EXP}$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{inexact index replacement} if $\mathtt{EXP} \approx_{b} \mathtt{INDEX}^{\relation}_{I}$ with:
+    \begin{equation*}
+        \mathtt{EXP} \approx_{b} \mathtt{INDEX}^{\relation}_{I} \leftrightarrow \frac{\mathtt{EXP} \cap \mathtt{INDEX}^{\relation}_{I}}{\mathtt{EXP}} \geq b, b \in [0, 1]
+    \end{equation*}
+\end{definition}  
 
 \section{Cost Model for Retrieval Accuracy}
 \label{section:cost_model}
@@ -680,7 +689,7 @@ These four factors can be used to characterise query workloads in a purely local
 The role of $C_{\mathcal{P}}$ is twofold: First, its absolute values can be used by the \acrshort{dbms} to determine hard constraints imposed for query execution. For example, if there is a fixed limit on memory that can be used by a query, an execution plan may be discarded simply based on exceeding that memory limit regardless of other factors. Similarily, a hard constraint on accuracy could be imposed. Second, it can be used to compare execution plans relatively to one another. \Cref{example:cost_model} illustrates cost calculation for a simple execution plan.
 
 \begin{example}[label=example:cost_model]{Cost of a Query Execution Plan}{}
-    Again using the relations $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ from \Cref{example:rel_alg_query} and \Cref{example:sql_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' results in the following, unoptimised execution plan.
+    Let $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be relations from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' results in the following, unoptimised execution plan:
 
     \begin{equation*}
         \mathcal{P} = \projection_{\attribute_{\mathtt{title}}}(\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{artist}} \Join \relation_{\mathtt{painting}}))
@@ -701,7 +710,7 @@ The values of the atomic costs per operator can be determined in many ways and t
     \item[Memory Cost Estimation] Memory cost can be estimated by the size of the data structures maintained by an operator (e.g., for sorting or hash-joins).
 \end{description}
 
-Since the atomic costs of any cost stem from completely different domains and are therefore not directly comparable (e.g., memory costs may be measured im bytes wheras IO costs may be measured in number of page accesses), we require a normalisation step for relative comparison of execution plans. That normalisation step is outline in \Cref{definition:cost_normalisation}.
+Since the atomic costs stem from completely different domains and are therefore not directly comparable (e.g., memory costs may be measured in bytes wheras IO costs may be measured in number of page accesses), we require a normalisation step for relative comparison of execution plans. That normalisation step is outline in \Cref{definition:cost_normalisation}.
 
 \begin{definition}[label=definition:cost_normalisation]{Cost Normalisation}{}
     Let $\mathtt{PLANS} = \mathcal{P}_1, \ldots, \mathcal{P}_N$ be $N$ equivalent query execution plans with associated costs $\mathtt{COSTS} =C_{\mathcal{P}_1}, \ldots,C_{\mathcal{P}_N}$. We consider the maximum cost $C_{\mathtt{max}}$ for those plans to be the component-wise maximum of all $C_{\mathcal{P}} \in \mathtt{COSTS}$. Using $C_{\mathtt{max}}$, the normalised cost $ C_{\mathcal{P},i,\mathtt{norm}}$ can be expressed as
@@ -710,24 +719,26 @@ Since the atomic costs of any cost stem from completely different domains and ar
         C_{\mathcal{P},i,\mathtt{norm}} = (\frac{c_{\mathtt{IO},i}}{c_{\mathtt{IO},\mathtt{max}}},\frac{c_{\mathtt{CPU},i}}{c_{\mathtt{CPU},\mathtt{max}}},\frac{c_{\mathtt{MEM},i}}{c_{\mathtt{MEM},\mathtt{max}}},\frac{c_{\mathtt{ACC},i}}{c_{\mathtt{ACC},\mathtt{max}}})
     \end{equation*}
 
-    It follows from the definition, that each component of a normalised cost falls in an interval between $0$ and $1$ due to the normalisation, i.e., $c_{\mathtt{*},\mathtt{norm}} \in [ 0, 1]$.
+    It follows from the definition, that each component of a normalised cost falls into an interval between $0$ and $1$ due to the normalisation, i.e., $c_{\mathtt{*},\mathtt{norm}} \in [ 0, 1 ]$.
 \end{definition}
 
-It is important to not that the normalised cost can only be used for relative comparison based on an existing set of plans. It generally does not provide any information about the original cost value. Using this normalised costs, we can now derive \emph{cost score} according to \Cref{definition:cost_score}.
+It is important to note, that the normalised cost can only be used for relative comparison within an existing set of plans. It generally does not provide any information about the original cost value. Using this normalised costs, we can now derive \emph{cost score} according to \Cref{definition:cost_score}.
 
-\begin{definition}[label=definition:cost_score]{Basic Cost Score}{}
+\begin{definition}[label=definition:cost_score]{Simple Cost Score}{}
     Let $\mathcal{P}$  be a query execution plan with associated, normalised cost $C_{\mathcal{P}_{\mathtt{norm}}}$. We consider the \emph{cost score} to be the sum of the atomic costs.
 
     \begin{equation*}
         \mathcal{S} = c_{\mathtt{IO},\mathtt{norm}} + c_{\mathtt{CPU},\mathtt{norm}} + c_{\mathtt{MEM},\mathtt{norm}} + c_{\mathtt{ACC},\mathtt{norm}}
     \end{equation*}
 
-    The basic cost score $ \mathcal{S}$ falls into an interval between $0$ and $N$ wherein $n$ denotes the number of atomic costs, i.e., $\mathcal{S} \in [0, $N] for $N = |C_{\mathcal{P}_{\mathtt{norm}}}|$.
+    The basic cost score $ \mathcal{S}$ falls into an interval between $0$ and $N$ wherein $N$ denotes the number of atomic costs, i.e., $\mathcal{S} \in [0, $N] for $N = |C_{\mathcal{P}_{\mathtt{norm}}}|$.
 \end{definition}
+
+The cost score $\mathcal{S}$ can be used to directly compare query plans and, e.g., sort them in ascending order to select the one plan that minimises the cost.
 
 \subsection{Cost Policies}
 
-The definitions employed so far treat every component of a cost $C_{\mathcal{P}_{\mathtt{norm}}}$ equally with regards to the resulting cost score $\mathcal{S}$. This is rarely desirable since the different component influence the outcome (e.g., in terms of query execution time) to a different extent. This can be expressed by a \emph{cost policy}  
+The definitions employed so far treat every component of a cost $C_{\mathcal{P}_{\mathtt{norm}}}$ equally with regards to the resulting cost score $\mathcal{S}$. This is rarely desirable since the different component influence the outcome to a different extent (e.g., in terms of query execution time or result accuracy). This can be expressed by employing \emph{cost policy} as outlined in \Cref{definition:cost_policy}.
 
 \begin{definition}[label=definition:cost_policy]{Cost Policy and Weighted Score}{}
 
@@ -737,15 +748,19 @@ The definitions employed so far treat every component of a cost $C_{\mathcal{P}_
         \mathcal{W} = (w_{\mathtt{IO}}, w_{\mathtt{CPU}}, w_{\mathtt{MEM}}, w_{\mathtt{ACC}})
     \end{equation*}
 
-    a cost-policy, with $w_{\mathtt{IO}}, w_{\mathtt{CPU}}, w_{\mathtt{MEM}}, w_{\mathtt{ACC}} \ in [0, 1]$. 
-    
-    The cost score $\mathcal{S}_{\mathcal{W}}$ with respect to $\mathcal{W}$ can be expressed as the linear combination of $C_{\mathcal{P}_{\mathtt{norm}}}$ and $\mathcal{W}$, i.e., 
+    a cost-policy, with $w_{\mathtt{IO}} + w_{\mathtt{CPU}} + w_{\mathtt{MEM}} + w_{\mathtt{ACC}} = 1.0$. The weighted cost score $\mathcal{S}_{\mathcal{W}}$ with respect to $\mathcal{W}$ can be expressed as the linear combination of $C_{\mathcal{P}_{\mathtt{norm}}}$ and $\mathcal{W}$:
 
     \begin{equation*}
-        \mathcal{S}_{\mathcal{W}} = C_{\mathcal{P}_{\mathtt{norm}}} \cdot \mathcal{W} w_{\mathtt{IO}} = c_{\mathtt{IO},\mathtt{norm}} + w_{\mathtt{CPU}} c_{\mathtt{CPU},\mathtt{norm}} + w_{\mathtt{MEM}} c_{\mathtt{MEM},\mathtt{norm}} + w_{\mathtt{ACC}} * c_{\mathtt{ACC},\mathtt{norm}}
+        \mathcal{S}_{\mathcal{W}} = C_{\mathcal{P}_{\mathtt{norm}}} \cdot \mathcal{W} = w_{\mathtt{IO}}c_{\mathtt{IO},\mathtt{norm}} + w_{\mathtt{CPU}} c_{\mathtt{CPU},\mathtt{norm}} + w_{\mathtt{MEM}} c_{\mathtt{MEM},\mathtt{norm}} + w_{\mathtt{ACC}} c_{\mathtt{ACC},\mathtt{norm}}
     \end{equation*}
 \end{definition}
 
+The cost policy gives us blunt but simple instrument to assign importance to individual cost factors. For example, we can prioritise execution speed by assigning more weight to the CPU and IO components. In an actual system, $\mathcal{W}$ can be influenced at different levels, which supersede one another, namely 
+\begin{enumerate*}[label=(\roman*), itemjoin={{, }}, itemjoin*={{, or, }}, after={{.}}]
+    \item as a system-wide configuration
+    \item for a user-session (connection-level) or transaction
+    \item for an individual query
+\end{enumerate*}
 
 \subsection{Estimating Cost of Inaccuracy}
 \label{section:inaccuracy_cost_estimation}
