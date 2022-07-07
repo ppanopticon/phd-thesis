@@ -273,7 +273,7 @@ Algorithmically, this type of search is more complex than \acrshort{knn} or $\ep
 \end{figure}
 
 \subsection{\texorpdfstring{\acrshort{nns}}{NNS} and High-Dimensional Index Structures}
-\label{section:index_structures}
+\label{section:hd_index_structures}
 
 As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrshort{nns} problem in $\symreal^d$ exhibits a non-negligible runtime complexity of $\mathcal{O}(dN)$ for a linear, brute-force scan -- thus being proportional to the cardinality of $N = |\symfeatures|$ and the dimension $d$. Experience from database research shows that linear scans are too slow in terms of time required for query execution if $N$ becomes large enough, especially when interactive query workloads are involved. This necessitates the use of index structures that allow for sub-linear data access.
 
