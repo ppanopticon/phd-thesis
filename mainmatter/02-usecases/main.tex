@@ -122,6 +122,7 @@ Firstly, and similarly to the multimedia retrieval problem, one requires a dedic
 Secondly, and also similarly to interactive multimedia retrieval, query time is an important aspect and should be minimised as much as possible, especially in a clinical setup. However, in contrast to multimedia retrieval, this optimisation cannot be bought by trading retrieval accuracy, because the \acrshort{mrf} problem does not have a human in the loop who might correct an error in an individual query. Instead, the process relies on the lookup of the correct signal vector for every single query. Preliminary work on applying multimedia retrieval techniques to speeding up \acrshort{mrf} pattern matching has shown that sacrificing accuracy leads to sub-optimal image reconstruction results \cite{Huerbin:2020Retrieval,Zihlmann:2021Magnetic} and thus high-dimensional indexing methods known from multimedia retrieval may not be directly applicable.
 
 \section{Deriving Requirements}
+\label{section:requirements}
 In Sections \ref{section:application_retrieval}, \ref{section:application_online_analysis} and \ref{section:application_mrf} we have discussed three applications that, 
 \begin{enumerate*}[label=(\roman*)]
     \item deal with large amounts of unstructured (multimedia) data that must be stored, managed and queried,
@@ -182,10 +183,20 @@ This is not a new idea, per-se, and to some extent self-evident since new use ca
 
 \subsection{Functions as First-class Citizen}
 
-All applications considered so far involve the execution of functions that operate on individual, complex data atoms, e.g., to determine the similarity between items in the database. For a multimedia database to be able to operate effectively, those functions must be considered first-class citizens as well, in that the multimedia database must have the ability to reason about them and make decisions regarding their execution. Hence, they should not be regarded as mere blackboxes, as, for example, a \acrshort{udf}. We argue, that similarly to user-defined types, there is a trade-off between loose- and tight integration of such functionality.
+All applications considered so far involve the execution of functions that operate on complex data atoms, e.g., to obtain the similarity between a query and items in the database. For a multimedia database to be able to operate effectively, those functions must be considered first-class citizens as well, in that the multimedia database must have the ability to reason about them and make decisions regarding their execution. Hence, they should not be regarded as mere blackboxes, as, for example, a \acrshort{udf}. We argue, that similarly to user-defined types, there is a trade-off between loose- and tight integration of such functions into the \acrshort{dbms}.
 
-This has also been layed out in the 2020 \emph{Seattle Report on Database Research}, where the combination of ``relational algebra and linear algebra in a richer query paradigm'' is named as a potential research focus \cite{Abadi:2020Seattle} (p. 52).
+This has also been layed out in the 2020 \emph{Seattle Report on Database Research}, where the combination of ``relational algebra and linear algebra in a richer query paradigm'' \cite{Abadi:2020Seattle} (p. 52) is listed as a possible research focus.
 
-\begin{requirement}{Functions as First-class Citizen}{}
+\begin{requirement}[label=requirement:functions]{Functions as First-class Citizen}{}
     A multimedia database must treat mathematical functions as first-class citizens of the execution model and must have the ability to reason about those functions' properties during query planning and execution.
 \end{requirement}
+
+\section{Mapping Requirements to Contribution}
+
+In reference to the contributions listed in \Cref{section:contributions}, we can make the following mapping between those contributions and the requirements listed in \Cref{section:requirements}:
+
+\begin{description}
+    \item[Generalised Model for Similarity Search] addresses \Cref{requirement:multimedia_search} on a theoretical level in that it combines the different query paradigms in a consistent yet versatile framework. The proposed model and especially its implementation also address \Cref{requirement:complex_data_types} and \Cref{requirement:functions} to some extent, with one focus lieing on the optimisation of function execution within a query as well as the connection between index structures and the execution of such functions. However, there are stil many aspects to be explored.
+    \item[Adaptive Index Management] provides an answer to the velocity aspect of \Cref{requirement:big_data}, because managing indexes in the face of changing data obviously is a consequence of changing data. As we have argued, these changes can take place fast and they take place concurrently to other query operations, which the multimedia database must handle elastically. The proposed solution is a general-purpose approach and can obviously be complemented with more specialised optimisations at an index level.
+    \item[Cost Model for Accuracy] is a direct consequence of \Cref{requirement:big_data} because, as we will demonstrate, responding to changes in the data can lead to the deterioration of indexing quality. Hence, the multimedia database is forced to decide between one over the other. Since some use cases may tolerate such deterioration while other's do not, the contribution also directly addresses \Cref{requirement:accuracy_model}.
+\end{description}
