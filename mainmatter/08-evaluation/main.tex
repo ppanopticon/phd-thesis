@@ -1,13 +1,78 @@
 \chapter{Evaluation}
 \label{chapter:evaluation}
 
+In this chapter we present the evaluation of \cottontail{} \cite{Gasser:2020Cottontail}, which implements the previously described concepts and has become an integral part of the \vitrivr{} \cite{Rossetto:2016vitrivr,Gasser:2019Towards,Gasser:2019Multimodal} stack. Over the years, \cottontail{} has been  sucessfully employed in various iterations of both the \acrshort{vbs} and \acrshort{lsc} and has even enabled top results on two occasions \cite{}. This qualitative assesment is now complemented with some actual measurements.
+
+For this quantiative evaluation, we focus on three aspects that we would like to highlight:
+
+\begin{description}
+    \item[Interactive Multimedia Retrieval Workloads] This series of tests focuses on interactive video retrieval workloads on comparatively small datasets, for which \cottontail{} was primarily designed. All measurements operate on the Vimeo Creative Commons Collection 1 \& 2 (V3C) \cite{Berns:2019V3C1,Rossetto:2021Insights}, which currently serves as the evaluation dataset for both \acrshort{vbs} and TRECVID AVS. The video dataset consists of 17235 videos, which amounts to 2300h of video content. We use a series of features derived by \vitrivr{}'s feature extraction engine Cineast as listed in \Cref{table:datasets}
+    \item[Large-Scale Similarity Search] In this test, we examine how \cottontail{} scales out to billion-scale datasets as employed in challenges such as the ANN-Benchmark \cite{Aumueller:2017ANN}. While not the primary focus of \cottontail{}'s design, we are still interested in the raw numbers. Furthermore, we use this opportunity to compare \cottontail{} to Milvus \cite{Wang:2021Milvus} in a series of large-scale \acrshort{nns} queries. All queries take place on the Deep1B dataset \cite{Babenko:2016Efficient}, which is a collection of 96-dimensional descriptors dervied from the last fully connected layer of a GoogLeNet \cite{Szegedy:2015Going} deep neural network.
+    \item[Adaptive Index Management] This test examines \cottontail{} ability to cope with changes to datasets and associated index structures.
+\end{description}
+
+\section{Dataset, Storage and Environment}
+
+For this evaluation, we use the datasets listed in \Cref{table:datasets}. All data is imported into \cottontail{} as dedicated entities. Each entity has the columns \texttt{id} and \texttt{feature}. The \texttt{id}  column serves as a primary key and is either a string (all V3C-based datasets) or an integer value (all Deep1B-based datasets).
+
+\begin{table}
+    \begin{tabular}{ | l | c | c | c | p{5cm} |}
+        \hline
+        \textbf{Entity} & \textbf{Source} & \textbf{d} & \textbf{N} & \textbf{Description} \\
+        \hline
+        \hline
+        features\_averagecolor & V3C1 \& 2  & 3 & 2512715 & Average colours derived from video segments. \\ 
+        \hline
+        features\_visualtextcoembedding & V3C1 \& 2 & 25 & 2506273 & Video to text co-embedding derived from vide segments. See \cite{Spiess:2021Competitive}. \\
+        \hline
+        features\_surfmf25k512  & V3C1 \& 2  & 512 & 2500943 & SURF \cite{Bay:2006surf} describtors derived from video segments. \\
+        \hline
+        features\_inceptionresnetv2 & V3C1 \& 2  & 1536 & 2508358 & Vector derived from last fully connected layer of a pre-trained InceptionResNetV2 applied on video segments.\\
+        \hline
+        features\_conceptmasksade20k & V3C1 \& 2 & 2048 & 2469844 & Image embedding for query by semantic sketch. See \cite{Rossetto:2019Query}. \\
+        \hline
+        yandex\_deep5M  & Deep1B  & 96 & 5000000 & See \cite{Babenko:2016Efficient} for m\\
+        \hline
+        yandex\_deep10M  & Deep1B & 96 & 10000000 & See \cite{Babenko:2016Efficient} \\
+        \hline
+        yandex\_deep100M  & Deep1B & 96 & 100000000 & See \cite{Babenko:2016Efficient} \\
+        \hline
+        yandex\_deep1B  & Deep1B & 96 & 1000000000 & See \cite{Babenko:2016Efficient} \\
+        \hline
+        \hline
+    \end{tabular}
+    \caption{The data collections used for this evaluation.}
+    \label{table:datasets}
+\end{table}
+
+The \cottontail{} instance runs on a single server that sports two Intel Xeon CPU E5-2630 v4 nodes with a \SI{192}{\giga\byte}
+
+
+
+
 \section{Interactive Multimedia Retrieval}
 \todo[inline]{vitrivr's participation to VBS, LSC etc, DRES.}
+
+
+\section{Large-Scale Similarity Search}
+\subsection{Milvus}
+We have introduced Milvus already in \Cref{section:milvus}
+
+\begin{lstlisting}[language=Python, caption={Example of a hybrid query to Milvus in Python. The \texttt{expr} parameter can be used to specify Boolean filters. Source: https://milvus.io/}, label={listing:milvus_query}]
+    from pymilvus import Collection
+    
+    # Get an existing collection.
+    collection = Collection("images")      
+    collection.load()
+
+    # Perform search
+    sparams = {"metric_type": "L2", "params": {"nprobe": 10}}
+    results = collection.search(
+        data=[[0.0, 0.0]], anns_field="feature", param=sparams, 
+        limit=10, expr="size <= 1000", consistency_level="Strong"
+    )
+\end{lstlisting}
 
 \section{Adaptive Index Management}
 
 \todo[inline]{Brute force vs. plain index vs. index with auxilary data structure}
-
-\section{Cost Model}
-
-\todo[inline]{Benchmark effect of cost model in different settings (e.g. based on use cases from chapter 2)}
