@@ -38,7 +38,7 @@ Even though the various types of media may exhibit very different characteristic
     \begin{wrapfigure}{R}{0.45\textwidth}
         \includegraphics[width=0.45\textwidth]{figures/example-audio-signal.eps}
     \end{wrapfigure}
-    The airpressure waves that form sound can be recorded and translated to an electrical signal by microphones. When digitizing this information, the temporal development of this signal amplitude is \emph{sampled} at a fixed rate. Each sample point consist of a value that quantizes the amplitude's energy at a given point in time to a number on a given range. An audio stream is then a sequence of these values. The quality of the process is determined by the \emph{sample rate}, i.e., the number of samples per time unit, and the \emph{bit depth}, which determines quantization of the amplitude power.
+    The airpressure waves that form sound can be recorded and translated to an electrical signal by microphones. When digitizing this information, the temporal development of this signal amplitude is \emph{sampled} at a fixed rate. Each sample point consist of a value that quantises the amplitude's energy at a given point in time to a number on a given range. An audio stream is then a sequence of these values. The quality of the process is determined by the \emph{sample rate}, i.e., the number of samples per time unit, and the \emph{bit depth}, which determines quantisation of the amplitude power.
 
     If we take a \SI{1}{\second} audio snippet, sampled at \SI{44}{\kilo\hertz}, we end up storing \num{44000} sample points. Using a bit depth of \SI{16}{bit} per sample, this amounts to \SI{704000}{\bit} or \SI{88}{\kilo\byte} of uncompressed audio data. In modern audio systems, we typically record multiple audio channels independently, leading to even more data.
 \end{example}
@@ -279,7 +279,7 @@ As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrsh
 
 For search in high-dimensional vector spaces, the dependency on $d$ has a huge impact on execution performance of any \acrshort{nns} algorithm, due to what is known as the \emph{curse of dimensionality} \cite{Indyk1998:Approximate,Zezula:2006Similarity}. The impact of this ``curse'' is twofold: First, the execution time of a brute-force algorithm is directly proportional to the size of the feature vector. With a tendency towards more complex and thus higher-dimensional vectors, there is a direct, negative effect on runtime. Second, and more importantly, research has shown that the task of indexing high-dimensional vectors for more efficient access is not trivial and that traditional approaches, e.g., based on partitioning or classical tree structures, degenerate as dimensionality increases \cite{Indyk1998:Approximate,Weber:1998Va} with the consequence, that they only yield marginal or no improvement over executing a linear scan. In fact, it was formally proven by \cite{Shaft:2006Theory} in their \emph{Theory of Nearest Neighbor Indexability} that the performance of almost all known index structures at that time deteriorate to that of a linear scan if $d$ becomes large enough.
 
-Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the accuracy of the results, wherein accuracy is often measured in terms of precission and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice accuracy for speed, this is also known as \acrfull{anns}. Second, based on their \emph{structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantization}, \emph{hashing} or \emph{partitioning}. An overview of different algorithms is provided in \Cref{table:index_structures} without any claim to completeness.
+Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the accuracy of the results, wherein accuracy is often measured in terms of precission and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice accuracy for speed, this is also known as \acrfull{anns}. Second, based on their \emph{structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantisation}, \emph{hashing} or \emph{partitioning}. An overview of different algorithms is provided in \Cref{table:index_structures} without any claim to completeness.
 
 \begin{table}
     \begin{tabular}{ | l | c | c | c |}
@@ -291,15 +291,17 @@ Nevertheless, the issue of index structures that allow for more efficient \acrsh
         \hline
         $R^{*}$-Tree \cite{Beckmann:1990RTree} & exact & tree & data partitioning \\ 
         \hline
-        \acrshort{vaf} \cite{Weber:1998Va} & exact & list & quantization \\ 
+        \acrshort{vaf} \cite{Weber:1998Va} & exact & list & quantisation \\ 
         \hline
-        VA+ \cite{Ferhatosmanoglu:2000Vector} & exact & list & quantization \\ 
+        VA+ \cite{Ferhatosmanoglu:2000Vector} & exact & list & quantisation \\ 
         \hline
         \acrshort{lsh} \cite{Indyk1998:Approximate, Wang:2017ASurvey} & approximate, probabilistic & hash table i.a.  & hashing \\ 
         \hline
-        \acrshort{pq} \cite{Jegou:2010Product} & approximate & inverted file & quantization \\ 
+        \acrshort{pq} \cite{Jegou:2010Product} & approximate & list / inverted file & partitioning / quantisation \\ 
         \hline
-        NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & quantization \\ 
+        NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & quantisation \\ 
+        \hline
+        NGT \cite{Iwasaki2016:Pruned} & approximate & graph / tree & proximity graph \\ 
         \hline
         MRNG \cite{Lejsek:2009NVTree} & approximate & graph & proximity graph \\ 
         \hline
@@ -329,7 +331,7 @@ VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the 
 
 \acrshort{nns} is then realised as a linear scan of the VA-file. Speed-up over a brute-force scan of the original vectors is achieved in two ways: Firstly, the signatures are more compact than the original representation, which reduces IO cost through compression. Secondly, the signatures can be used to obtain approximate bounds that are computationally less expensive than the actual distance calculation. These bounds can be used to filter out a majority of the points in the file, further reducing IO and CPU costs. Experimental results presented in \cite{Weber:1998Va} demonstrate that 90\% of all features can be skipped and thus a distance must only be obtained for the remaining 10\%. However, \cite{Echihabi:2021High} determine theoretically that for \acrshort{vaf} degeneration is to be expected nevertheless for high dimensions.
 
-The VA+-files described by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm, which implicitly assumes independence of the individual dimensions within a feature (which is often not a given). They suggest a prior decorellation of the individual dimensions by applying a \acrfull{klt}. Furthermore, they propose a non-uniform assignment of bits per dimension, based on data distribution, as opposed to a uniform distribution employed in the original paper. This leads to an independent quantizer per transformed dimension. Results suggest that these adjustments lead to a better estimation of lower- and upper-bounds, which improves the VA-file's filtering capabilities and thus further reduces IO cost.
+The VA+-files described by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm, which implicitly assumes independence of the individual dimensions within a feature (which is often not a given). They suggest a prior decorellation of the individual dimensions by applying a \acrfull{klt}. Furthermore, they propose a non-uniform assignment of bits per dimension, based on data distribution, as opposed to a uniform distribution employed in the original paper. This leads to an independent quantiser per transformed dimension. Results suggest that these adjustments lead to a better estimation of lower- and upper-bounds, which improves the VA-file's filtering capabilities and thus further reduces IO cost.
 
 \subsubsection{\texorpdfstring{\acrfull{lsh}}{Locality Sensitive Hashing (LSH)}}
 
@@ -351,20 +353,20 @@ In simple terms, a locality preserving hash function has a high probability for 
 
 Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
 
-\subsubsection{\texorpdfstring{\acrfull{pq}}{Product Quantization (PQ)}}
+\subsubsection{\texorpdfstring{\acrfull{pq}}{Product Quantisation (PQ)}}
 
-The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantizing high-dimensional vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantization of each subspace. The quantization is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an inverted file index, as illustrated in \Cref{fig:pq}.
+The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantising high-dimensional vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantisation of each subspace. The quantisation is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an index, as illustrated in \Cref{fig:pq}.
 
 \begin{figure}[tb]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/pq}
-    \caption{A simplified illustration of the basic \acrshort{pq} indexing scheme. A vector is divided into smaller subvectors and each subvector is assigned to the nearest centroid in the codebook of the respective subspace. Concatenating the resulting centroid index per subspace gives rise to the signature, which can be stored in an inverted file index.}
+    \caption{A simplified illustration of the basic \acrshort{pq} indexing scheme. A vector is divided into smaller subvectors and each subvector is assigned to the nearest centroid in the codebook of the respective subspace (quantisation). Concatenating the resulting centroid index per subspace gives rise to the signature, which can be stored.}
     \label{fig:pq}
 \end{figure}
 
-Speedup of \acrshort{nns} is achieved in two ways: First, the resulting signature is a highly compressed representation of the original vector, which reduces IO by a large margin as is demonstrated in \Cref{example:pq_compression}. Secondly, the signature can be used directly to approximate the distance between a query $q$ and a feature $f$ using a pre-calculated lookup-table and inexpensive operations, which reduces CPU costs. However, this speedup must be bought by a distortion of the approximated distance, which may lead to errors if features lie very close to one another and makes PQ a suboptimal fit if exact distance values are required.
+Speedup of \acrshort{nns} is achieved in two ways: First, the resulting signature is a highly compressed representation of the original vector, which reduces IO by a large margin as is demonstrated in \Cref{example:pq_compression}. Secondly, the signature can be used to approximate the distance between a query $q$ and a feature $f$ using a pre-calculated lookup table and inexpensive operations, which significantly reduces CPU costs. However, this speedup is bought by a distortion of the approximated distance, which may lead to errors if features lie very close to one another and makes PQ a suboptimal fit if exact distance values are required.
 
-\cite{Jegou:2010Product} also discusses several optimisations, e.g., encoding the difference between feature vector and centroid -- the so called residual -- instead of the actual feature vectors to increase accuracy or to use multiple levels of coarser quantizers to introduce an additional partitioning of the data in very large collections.
+\cite{Jegou:2010Product} also discusses several optimisations, e.g., encoding the difference between feature vector and centroid -- the residual -- or to use an additional, coarse quantiser to assign vectors to entries in an inverted file index (IVFPQ).
 
 \begin{example}[label=example:pq_compression]{Size of PQ-Signature vs. original feature}{}
     Let us assume $\symfeatures \subset \symreal^{256}$, i.e., a $256$-dimensional vector space ($d = 256$). Assuming a \texttt{float} data type, we require \SI{4}{\byte} per vector component, i.e., \SI{1024}{\byte} to store a single vector.
