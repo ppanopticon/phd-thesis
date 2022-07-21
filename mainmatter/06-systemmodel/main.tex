@@ -579,7 +579,7 @@ One identity that is particularly relevant for the execution of proximity based 
     \end{equation*}
 \end{definition}
 
-Class 1 index replacements constitute the simplest and most versatile case but also the least common. The index acts as a drop-in replacement for the distance calculation. While many high-dimensional index-structures in existence can provide this functionality, it rarely makes sense in practice because the speed-up is minimal.
+Class 1 index replacements constitute the simplest and most versatile case but also the least common. The index acts as a drop-in replacement for the distance calculation. One high-dimensional index-structures that can provide this functionality it the simplest variant of the \acrshort{pq} index, namely, the exhaustive SDC and ADC algorithms described in \cite{Jegou:2010Product} .
 
 \begin{definition}[label=definition:dfc_index_class_2]{High-Dimensional Index Replacement of Class 2}{}
     Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist =\symdfc(\attribute_f, q, \ldots) \in P$ and $\order_{\attribute_{d\updownarrow}}$ be an order operation involving the derived distance attribute $\attribute_{d}$. We call a replacement with a high-dimensional index  $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc} \equiv\order_{\attribute_{d\updownarrow}} (\projection_{\symdist}(\relation)) $ \emph{class 2} if:
@@ -753,35 +753,84 @@ The cost policy gives us blunt but simple instrument to assign importance to ind
 \subsection{Estimating Cost of Inaccuracy}
 \label{section:inaccuracy_cost_estimation}
 
+\section{Adaptive Index Maintenance}
+
+Maintining a consistent behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level, both in terms of efficiency and effectiveness. While the problem of keeping classical index structures (e.g., the $B^{+}$-tree index) up-to-date is a well understood problem \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index}. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own abilities and characteristics also in terms of index maintenance. 
+
+In this section, we propose a recipe at a systems level to accomodate and maintain these different types of index structures in the face of different query workloads and changing data. To start with, we formalise the notion of a change to the data in a \acrshort{dbms} in \Cref{definition:change}.
+
+\begin{definition}[label=definition:change]{Change Operations to Relation $\relation$}{}
+    Let $\relation$ be a relation, $t \in \relation$ a tuple in and $t^{\prime} \in \relation^{\prime}$ another tuple with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\mathtt{OP}_{c}(\relation,\cdot) = \lbrace \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) \rbrace$ a change operation on $\relation$ with:
+
+    \begin{align*}
+        \mathtt{INSERT}(\relation, t^{\prime}) &= \relation \cup \lbrace t \rbrace \\
+        \mathtt{DELETE}(\relation, t ) &= \relation \setminus \lbrace t \rbrace \\
+        \mathtt{UPDATE}(\relation, t, t^{\prime}) &= ((\relation \cup \lbrace t^{\prime} \rbrace) \setminus \lbrace t \rbrace)\\
+    \end{align*}
+
+    That is, $\mathtt{OP}_{c}(\relation,\cdot)$ can be used to add, remove or replace tuples it $\relation$. These operations correspond to the basic \acrshort{crud} operations available to a \acrshort{dbms}.
+\end{definition}
+
+For our model, we propose three components that a multimedia database must provide in order to be able to maintain index structures in the face of changing data: A \emph{write model} and a \emph{failure model} for every type of index and the ability to rebuild an index from scratch.
+
+\subsection{Write Model of an Index}
+An index's write model characterises its ability to cope with change operations. It is specific to an index structure and must therefore be implemented separately for each type of index. Formally, we can turn to definition \Cref{definition:write_mode}.
+
+\begin{definition}[label=definition:write_mode]{Write Model for Index $\mathtt{INDEX}^{\relation}_{I}$}{}
+    Let $\relation$ be a relation and $\mathtt{INDEX}^{\relation}_{I}$ an index on attributes $I \subset \schema(\relation)$. The write model of $\mathtt{INDEX}^{\relation}_{I}$ is a function that determines, if a data change operation $\mathtt{OP}_{c}(\cdot)$ can be propagated to the index:
+
+    \begin{equation}
+        \mathtt{WRITEM}(\mathtt{OP}_{c}(\cdot)) = 
+        \begin{cases}
+           \mathtt{true}, & \text{if }  \mathtt{OP}_{c}(\cdot) \text{ can be applied }\\
+           \mathtt{false},              & \text{otherwise}
+        \end{cases}
+    \end{equation}
+
+    The write model is specific to the index structure that implements it.
+\end{definition}
+
+In case a change $\mathtt{OP}_{c}$ can be propagated, the index's data structures are updated accordingly and the write model returns \texttt{true}. If the change $\mathtt{OP}_{c}$ cannot be propagated the write model returns \texttt{false}. In both cases, the current change operation $\mathtt{OP}_{c}$ is forwarded to the index's failure model.
+
+\subsection{Failure Model and State of an Index}
+
+The failure model is another function implemented by the index that determines for every $\mathtt{OP}_{c}$ if the change leads to index failure. Based on the outcome of this assessment, the index state and internal statistics are updated accordingly. An index's state determines, if it can be used for execution. We distiguish between three states as illustrated in \Cref{figure:failure_model}:
+
+\begin{description}
+    \item[Clean] indexes are ready for use by the \acrshort{dbms} and able to produce correct results within the quality guarantees they can provide.
+    \item[Dirty] indexes are still ready for use by the \acrshort{dbms}. However, the flag signals that an index's ability to produce correct results may be impaired. This flag is usually accompanied by adjustments to the cost characteristic of the index.
+    \item[Stale] indexes ave stopped functioning within their defined parameters and are therefore removed from consideration for query planning.
+\end{description}
+
+Newly built indexes find themselves in the \emph{clean} state. Every change operation $\mathtt{OP}_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, then the state is instantly updated to  \texttt{STALE} and the index becomes unusable. If the write model returns \texttt{true}, then the change is applied. Furthermore, internal statistics of the index are refreshed and depending on the outcome, the failure model may mark the index as either \texttt{DIRTY} or \texttt{STALE}. 
 
 
-\section{Adaptive Index Management}
+\subsection{Case Studies}
 
-\begin{figure}[h!]
+We demonstrate the concept of the write- and failure model based on two index structures \acrshort{vaf} and \acrshort{pq}. These case studies serve as mere examples and the concept can be extended to other indexes as well.
+
+\subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{vaf}}{VAF}}
+
+As is explained in \Cref{section:index_vaf}, the \acrshort{vaf} algorithm assigns a vector $f$ to a cell in a high-dimensional overlay grid that is determined by a partitioning of the vector space. That partitioning is derived from the component-wise minimum and maximum of all feature vectors $f \in \domain_f$ in the data collection. From that we can determine the following write model:
+
+\begin{equation}
+    \mathtt{WRITEM}_{VAF}(\mathtt{INSERT}(\relation, \cdot)) =
+    \begin{cases}
+        \mathtt{true},      & \text{if } f_i \geq f_{min,i} \wedge f_i \leq f_{max,i} \forall i \in [ 1, d ] \\
+        \mathtt{false},     & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+\subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{pq}}{PQ}}
+The functioning of a \acrshort{vaf} index is explained in \Cref{section:index_vaf}
+
+\begin{figure}[bt]
     \centering
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/adaptive_index.eps}
-        \label{fig:adaptive_index:architecture}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/adaptive_index_flow.eps}
-        \label{fig:adaptive_index:flow}
-    \end{subfigure}
-    \caption{Adaptive index structures overview.}
-    \label{fig:adaptive_index}
+    \includegraphics[width=\textwidth]{figures/failure_model.eps}
+    \caption{Failure model of an index. It knows the three states \texttt{CLEAN}, \texttt{DIRTY} and \texttt{STALE}.}
+    \label{figure:failure_model}
 \end{figure}
 
-Describe model for index management in the face of changing data (adaptive index management):
-
-\begin{itemize}
-    \item Reason about properties of secondary indexes for NNS (e.q., PQ, VA, LSH) with regards to data change
-    \item Derivation of error bounds possible (e.g., usable for planning)?! Use in query planning?
-    \item Systems perspective 1: How to cope with ``dirty'' indexes? Proposal: hot vs. cold index, auxilary data structure, offline optimization, see \cref{fig:adaptive_index}
-    \item Systems perspective 2: On-demand index based on query workload?
-\end{itemize}
 
 \section{Architecture Model}
 
