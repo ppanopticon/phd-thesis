@@ -319,6 +319,7 @@ Early examples of high-dimensional indexes used to rely on space or data partiti
 More recent research focuses on the use of proximity graphs \cite{Zhao:2022Approximate} and especially \acrfull{hnsw} graphs  \cite{Malkov:2018Efficient,Chen:2021SPANN} to facilitate fast \acrshort{anns}. Another focus lies on the ability to execute \acrshort{nns} indexing and search on a GPU \cite{Johnson:2019Billion,Zhao:2020Song} or specialised hardware \cite{Lee:2022Anna}. Some research also goes in the direction of dynamic indexes, i.e., indexes that allow for online processing of changes to the data \cite{Olafsson:2011Dynamic,Zhao:2022Approximate}. In the next few sections, we will highlight a few examples of.
 
 \subsubsection{\texorpdfstring{\acrfull{vaf}}{Vector Approximation File (VAF)}}
+\label{section:index_vaf}
 
 VA-files were first proposed by Weber et al. \cite{Weber:1998Va} to address the problem of the dimensionality curse and were later refined by \cite{Ferhatosmanoglu:2000Vector}. The basic idea of a \acrshort{vaf} is the division of the data space into $2^b$ cells, as illustrated in \Cref{fig:vaf}, where $b$ denotes a fixed number of bits. Typically, one choses a specific number of bits per dimension $b_d$ and uniformly partitions the vector space along each dimension, i.e., $b = b_dd$. A feature vector's position in the grid is concatenated into a compact \emph{signature} of size $b$ and the VA-file is a list of those signatures. 
 
@@ -354,6 +355,7 @@ In simple terms, a locality preserving hash function has a high probability for 
 Speedup for \acrshort{nns} can be achieved by limiting distance calculation to the vectors in the bucket a query $q$ falls into. This is referred to as non-exhaustive search. However, due to the probabilistc nature of the hash function, this type of search strategy may exhibit errors due to vectors that were hashed into the ``wrong'' bucket. More refined strategies can be employed including hash-code ranking as well as single- and multi-table lookup \cite{Wang:2017ASurvey} to further minimize that error. Nevertheless, \acrshort{lsh} remains an approximate search strategy. A survey of different LSH algorithms can be found in \cite{Wang:2017ASurvey}.
 
 \subsubsection{\texorpdfstring{\acrfull{pq}}{Product Quantisation (PQ)}}
+\label{section:index_pq}
 
 The idea for \acrshort{pq} was proposed by \cite{Jegou:2010Product} and it describes a technique for quantising high-dimensional vectors. The main idea involves decomposition of the original vector space $\symreal^d$ into smaller subspaces $\symreal^s$ with $s < d$ and separate quantisation of each subspace. The quantisation is achieved by learning a codebook for every subspace through k-means clustering on a representative sample of the data. Upon indexing, all subvectors of each feature vector $f \in \symfeatures$ are assigned to the nearest centroid in the codebook for the respective subspace. Concatenation of the centroid indexes gives rise to a compact signature that can be stored in an index, as illustrated in \Cref{fig:pq}.
 
