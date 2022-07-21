@@ -73,7 +73,7 @@
 \newglossaryentry{order}{sort={BMorder},name=\ensuremath{\omega},symbol=\ensuremath{\omega},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \). Usually printed with a subscript to list order attributes $O$, e.g., \( \order_{\attribute_1 \uparrow,\attribute_2 \downarrow} \).}}
 \newcommand{\order}{\glssymbol{order}}
 
-\newglossaryentry{limit}{sort={BNlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples. Usually printed with a subscript to define $k$, e.g., \( \limit_{k} \).}}
+\newglossaryentry{limit}{sort={BNlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples. Usually printed with a subscript to define \( k \), e.g., \( \limit_{k} \).}}
 \newcommand{\limit}{\glssymbol{limit}}
 
 \newglossaryentry{aggregation}{sort={BOlimit},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary aggregation operator.}}
@@ -103,8 +103,21 @@
 \newglossaryentry{symcorr}{sort={CFsymcorr},name=\ensuremath{\mathfrak{c}},symbol=\ensuremath{\mathfrak{c}},type={symbols},description={A correspondence function \(\symcorr \colon \symreal \rightarrow [0, 1]\).}}
 \newcommand{\symcorr}{\glssymbol{symcorr}}
 
-\newglossaryentry{symdfc}{sort={Csymdfc},name=\ensuremath{\hat{\mathfrak{d}}},symbol=\ensuremath{\hat{\mathfrak{d}}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
+
+%% C group (the group is specified in the sort field)
+\newcommand*{\Dgroupname}{System Model}
+
+\newglossaryentry{symdfc}{sort={DAsymdfc},name=\ensuremath{\hat{\mathfrak{d}}},symbol=\ensuremath{\hat{\mathfrak{d}}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
 \newcommand{\symdfc}{\glssymbol{symdfc}}
+
+\newglossaryentry{symindex}{sort={DEsymindex},name=\ensuremath{\mathtt{INDEX}^{\relation}_{I}},symbol=\ensuremath{\mathtt{INDEX}^{\relation}_{I}},type={symbols},description={An index on relation \( \relation \) indexing attributes \( I \subset \schema(\relation) \).}}
+\newcommand{\symindex}{\glssymbol{symindex}}
+
+\newglossaryentry{symchangeop}{sort={DFsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\) that can either be an insert, update or delete.}}
+\newcommand{\symchangeop}{\glssymbol{symchangeop}}
+
+\newglossaryentry{symchange}{sort={DGsymchange},name=\ensuremath{\mathcal{C}},symbol=\ensuremath{\mathcal{C}},type={symbols},description={A change on relation \( \relation \) with \( \symchange = (\symchangeop, \relation, t, t^{\prime})\).}}
+\newcommand{\symchange}{\glssymbol{symchange}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Math Symbols.

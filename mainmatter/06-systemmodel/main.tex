@@ -757,69 +757,86 @@ The cost policy gives us blunt but simple instrument to assign importance to ind
 
 Maintining a consistent behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level, both in terms of efficiency and effectiveness. While the problem of keeping classical index structures (e.g., the $B^{+}$-tree index) up-to-date is a well understood problem \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index}. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own abilities and characteristics also in terms of index maintenance. 
 
-In this section, we propose a recipe at a systems level to accomodate and maintain these different types of index structures in the face of different query workloads and changing data. To start with, we formalise the notion of a change to the data in a \acrshort{dbms} in \Cref{definition:change}.
+In this section, we propose a recipe at a systems level to accomodate and maintain these different types of index structures in the face of different query workloads and changing data. This recipe consists of a series of models an index must adhere to based on which a \acrshort{dbms} can make informed decisions as to how a query should be executed at a given point in time. To start with, we formalise the notion of a change to the data in a \acrshort{dbms} in \Cref{definition:change}.
 
 \begin{definition}[label=definition:change]{Change Operations to Relation $\relation$}{}
-    Let $\relation$ be a relation, $t \in \relation$ a tuple in and $t^{\prime} \in \relation^{\prime}$ another tuple with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\mathtt{OP}_{c}(\relation,\cdot) = \lbrace \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) \rbrace$ a change operation on $\relation$ with:
+    Let $\relation$ be a relation, $t \in \relation$ a tuple in and $t^{\prime} \in \relation^{\prime}$ another tuple with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\symchangeop(\relation,\cdot) \in [ \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) ]$ a change operation on $\relation$ and the quadruple $\symchange = (\symchangeop, \relation, t, t^{\prime})$ a \emph{change}.
 
     \begin{align*}
         \mathtt{INSERT}(\relation, t^{\prime}) &= \relation \cup \lbrace t \rbrace \\
         \mathtt{DELETE}(\relation, t ) &= \relation \setminus \lbrace t \rbrace \\
-        \mathtt{UPDATE}(\relation, t, t^{\prime}) &= ((\relation \cup \lbrace t^{\prime} \rbrace) \setminus \lbrace t \rbrace)\\
+        \mathtt{UPDATE}(\relation, t, t^{\prime}) &= ((\relation \setminus \lbrace t \rbrace) \cup \lbrace t^{\prime} \rbrace)\\
     \end{align*}
 
-    That is, $\mathtt{OP}_{c}(\relation,\cdot)$ can be used to add, remove or replace tuples it $\relation$. These operations correspond to the basic \acrshort{crud} operations available to a \acrshort{dbms}.
+    That is, $\symchangeop(\relation,\cdot)$ can be used to add, remove or replace tuples it $\relation$. These operations correspond to the basic \acrshort{crud} operations available to a \acrshort{dbms}. It is worth noting that formally, according to \Cref{definition:change}, we can decompose any update operation into an insert and a and therefore:
+
+    \begin{equation*}
+    \mathtt{UPDATE}(\relation, t, t^{\prime}) = \mathtt{DELETE}(\relation, t ) \circ \mathtt{INSERT}(\relation, t^{\prime})
+    \end{equation*}
 \end{definition}
 
-For our model, we propose three components that a multimedia database must provide in order to be able to maintain index structures in the face of changing data: A \emph{write model} and a \emph{failure model} for every type of index and the ability to rebuild an index from scratch.
+The first basic assumption and prerequisite is that all the high-dimensional index structures discussed thus far and offered by the \acrshort{dbms} always act as secondary indexes. Consequently, the primary data is always organised in a way that allows for seamless propagation of changes, e.g., as index or heap-organised tables. The fallback strategy that the \acrshort{dbms} therefore can always resort to is that of a sequential scan of the data, which results long execution times for reasons discussed in \Cref{section:multimedia_retrieval}. Furthermore, the primary data files can be used by an index to correct missing or outdated information on the fly during query time.
+
+For our index maintainance model, we now propose three components that a multimedia database must provide in order to be able to maintain the secondary index structures in the face of changing data: 
+\begin{enumerate*}[label=(\roman*)]
+    \item A \emph{write model} and,
+    \item a \emph{failure model} for every type of index and
+    \item the ability to (re-)build an index from scratch.
+\end{enumerate*}
+We consider the latter to be a given for any type of index, which is why we will not discuss this requirement further.
 
 \subsection{Write Model of an Index}
-An index's write model characterises its ability to cope with change operations. It is specific to an index structure and must therefore be implemented separately for each type of index. Formally, we can turn to definition \Cref{definition:write_mode}.
+An index's write model characterises its ability to cope with change operations directly. It is specific to an index structure and must therefore be implemented separately for each type of index. Formally, we can turn to definition \Cref{definition:write_mode}.
 
-\begin{definition}[label=definition:write_mode]{Write Model for Index $\mathtt{INDEX}^{\relation}_{I}$}{}
-    Let $\relation$ be a relation and $\mathtt{INDEX}^{\relation}_{I}$ an index on attributes $I \subset \schema(\relation)$. The write model of $\mathtt{INDEX}^{\relation}_{I}$ is a function that determines, if a data change operation $\mathtt{OP}_{c}(\cdot)$ can be propagated to the index:
+\begin{definition}[label=definition:write_mode]{Write Model for Index $\symindex$}{}
+    Let $\relation$ be a relation and $\symindex$ an index on attributes $I \subset \schema(\relation)$. The write model of $\symindex$ is a function that determines, if a change $\symchange = (\symchangeop, \relation, t, t^{\prime})$ can be applied to the index:
 
     \begin{equation}
-        \mathtt{WRITEM}(\mathtt{OP}_{c}(\cdot)) = 
+        \mathtt{WRITEM}(\symchange) = 
         \begin{cases}
-           \mathtt{true}, & \text{if }  \mathtt{OP}_{c}(\cdot) \text{ can be applied }\\
-           \mathtt{false},              & \text{otherwise}
+           \mathtt{true},       & \text{if } \symchangeop(\relation,t,t^{\prime}) \text{ can be applied to } \symindex \\
+           \mathtt{false},      & \text{otherwise}
         \end{cases}
     \end{equation}
 
     The write model is specific to the index structure that implements it.
 \end{definition}
 
-In case a change $\mathtt{OP}_{c}$ can be propagated, the index's data structures are updated accordingly and the write model returns \texttt{true}. If the change $\mathtt{OP}_{c}$ cannot be propagated the write model returns \texttt{false}. In both cases, the current change operation $\mathtt{OP}_{c}$ is forwarded to the index's failure model.
+In case a change $\symchange$ can be propagated, the index's data structures are updated accordingly and the write model returns \texttt{true}. If the change cannot be propagated, the write model returns \texttt{false}. In both cases, the change is forwarded to the index's failure model. In practice, the check and the application of the change are executed in a single step, which makes the change a side-effect of $ \mathtt{WRITEM}(\symchange)$. However, the two steps could also be decoupled, which makes this an implementation detail.
 
 \subsection{Failure Model and State of an Index}
 
-The failure model is another function implemented by the index that determines for every $\mathtt{OP}_{c}$ if the change leads to index failure. Based on the outcome of this assessment, the index state and internal statistics are updated accordingly. An index's state determines, if it can be used for execution. We distiguish between three states as illustrated in \Cref{figure:failure_model}:
+The failure model is a second function implemented by the index that determines for every change $\symchange$ if it leads to index failure. Based on the outcome of this assessment, the index state and internal statistics are updated accordingly. An index's state determines, if and how it can be used for execution. We distiguish between three states as illustrated in \Cref{figure:failure_model}:
 
 \begin{description}
-    \item[Clean] indexes are ready for use by the \acrshort{dbms} and able to produce correct results within the quality guarantees they can provide.
-    \item[Dirty] indexes are still ready for use by the \acrshort{dbms}. However, the flag signals that an index's ability to produce correct results may be impaired. This flag is usually accompanied by adjustments to the cost characteristic of the index.
-    \item[Stale] indexes ave stopped functioning within their defined parameters and are therefore removed from consideration for query planning.
+    \item[Clean] indexes are ready for use by the \acrshort{dbms} and able to produce results within the speed and quality parameters they naturally provide.
+    \item[Dirty] indexes are still ready for use by the \acrshort{dbms}. However, the flag signals that an index's ability to produce results within speed and quality parameters is impaired. This flag is usually accompanied by adjustments to the cost characteristic of the index.
+    \item[Stale] indexes have stopped functioning within their defined parameters and are therefore removed from consideration for query planning.
 \end{description}
 
-Newly built indexes find themselves in the \emph{clean} state. Every change operation $\mathtt{OP}_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, then the state is instantly updated to  \texttt{STALE} and the index becomes unusable. If the write model returns \texttt{true}, then the change is applied. Furthermore, internal statistics of the index are refreshed and depending on the outcome, the failure model may mark the index as either \texttt{DIRTY} or \texttt{STALE}. 
-
+Freshly built indexes find themselves in the \emph{clean} state. Every change operation $\mathtt{OP}_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, the state is instantly updated to either \texttt{DIRTY} or \texttt{STALE}. Furthermore, internal statistics of the index are refreshed. 
 
 \subsection{Case Studies}
 
-We demonstrate the concept of the write- and failure model based on two index structures \acrshort{vaf} and \acrshort{pq}. These case studies serve as mere examples and the concept can be extended to other indexes as well.
+We demonstrate the idea of the write- and failure model using two index structures \acrshort{vaf} \cite{Weber:1998Va} and \acrshort{pq} \cite{Jegou:2010Product}. These case studies serve as mere examples and the concepts themselves can be applied to other indexes as well.
 
 \subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{vaf}}{VAF}}
 
-As is explained in \Cref{section:index_vaf}, the \acrshort{vaf} algorithm assigns a vector $f$ to a cell in a high-dimensional overlay grid that is determined by a partitioning of the vector space. That partitioning is derived from the component-wise minimum and maximum of all feature vectors $f \in \domain_f$ in the data collection. From that we can determine the following write model:
+As is explained in \Cref{section:index_vaf}, the \acrshort{vaf} algorithm assigns a vector $f$ to a cell in a high-dimensional overlay grid that is determined by a partitioning of the vector space. That partitioning is derived from the component-wise minimum and maximum $f_{min}$ and $f_{max}$ of all feature vectors $f \in \domain_f$ in the data collection. From that we can determine the following write model for a relation $\relation$ with the attribute $\attribute_f$ of data domain $\domain_f \subset \symreal^d$ with $d \in \symnatural_{>0}$.
+
+If a new tuple $t^{\prime}$ is inserted, then the write model for the \acrshort{vaf} index must check if the vector $t^{\prime}[\attribute_f]$ is within bounds of the componen-wise minimum and maximum. If it is, then the signature can be calculated and appended -- the write model returns $\mathtt{true}$. If it is not, then the vector's position in the grid is undefined and the write model returns $\mathtt{false}$
 
 \begin{equation}
-    \mathtt{WRITEM}_{VAF}(\mathtt{INSERT}(\relation, \cdot)) =
+    \mathtt{WRITEM}(\mathtt{INSERT}, \relation, t^{\prime}) =
     \begin{cases}
-        \mathtt{true},      & \text{if } f_i \geq f_{min,i} \wedge f_i \leq f_{max,i} \forall i \in [ 1, d ] \\
-        \mathtt{false},     & \text{otherwise}
+        \mathtt{true} & \text{if } t^{\prime}[\attribute_f]_i \geq f_{max,i} \wedge t^{\prime}[\attribute_f]_i \leq f_{min,i} \forall i \in [1,d]\\
+        \mathtt{true} & \text{otherwise}
     \end{cases}
 \end{equation}
+
+If an existing tuple $t \in \relation$ is removed, then this change can be applied in any case. The signature is simply removed from the list. However, as deletes accumulate, the component-wise minimum and maximum of the $\domain_f$ may shift, which leads to a overly large and therefore sparsely populated index. This can result in deterioration of query speed. The ability to apply an update can be directly derived from \Cref{definition:change} and therefore determines only on the portion part of the operation
+
+The same check must be executed if an existing tuple $t$ is updated to a new tuple $t^{\prime}$, then the write model for the \acrshort{vaf} index must check if the vector $t^{\prime}[\attribute_f]$ is within bounds of the componen-wise minimum and maximum. If it is, then the signature can be calculated and appended to the list -- the write model returns $\mathtt{true}$. If it is not, then the vector's position in the grid is undefined and the write model returns $\mathtt{false}$
 
 \subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{pq}}{PQ}}
 The functioning of a \acrshort{vaf} index is explained in \Cref{section:index_vaf}
@@ -830,12 +847,3 @@ The functioning of a \acrshort{vaf} index is explained in \Cref{section:index_va
     \caption{Failure model of an index. It knows the three states \texttt{CLEAN}, \texttt{DIRTY} and \texttt{STALE}.}
     \label{figure:failure_model}
 \end{figure}
-
-
-\section{Architecture Model}
-
-\todo[inline]{Putting everything together into a unified systems model (base on previous work + aforementioned aspects).}
-
-
-
-
