@@ -17,10 +17,10 @@ function loadMilvus(name, df)
     dict = read_json(joinpath("./evaluation/data/biganns/milvus","milvus-$name.json"))
     for (collection, value) in dict
         for (type, runtime) in zip(value["type"], value["runtime"])
-            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Runtime [s] (w/o loading)", runtime))
+            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (w/o loading)", runtime))
         end
         for (type, runtime) in zip(value["type"], value["runtime_with_load"])
-            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Runtime [s] (with loading)", runtime))
+            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (with loading)", runtime))
         end
     end
 end

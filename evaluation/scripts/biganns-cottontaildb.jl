@@ -27,6 +27,7 @@ loadCottontailData("5mto100m", df)
 
 # Export query plans
 plan = df |> 
+    @filter(_.Entit == "100M") |> 
     @orderby(_.Query) |> 
     @groupby({_.Query, _.Index}) |> 
     @map({
@@ -36,7 +37,7 @@ plan = df |>
         Plan=first(_.Plan)
     }) |>  DataFrame
 
-CSV.write("./plans.csv", plan)
+CSV.write("./mainmatter/08-evaluation/figures/bignns/cottontail/plans.csv", plan)
 
 
 # Generate PDFs
@@ -62,7 +63,7 @@ for query in ["NNS","NNS + Fetch","Hybrid"]
     p1 = plot(nns,
         ygroup=:Entity, x=:RuntimeMean, y=:Index, label=:Label,
         Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
-        Guide.xlabel("Runtime [s]"),
+        Guide.xlabel("Latency [s]"),
         Guide.ylabel(nothing),
         Scale.x_continuous(minvalue = 0.0, maxvalue=20.0),
         Scale.y_discrete,
