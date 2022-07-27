@@ -7,10 +7,10 @@ We have elaborated in \Cref{chapter:applications} that multimedia retrieval and 
     \item[Support for Non-atomic Data] Multimedia workloads process features, which are usually real-valued, high-dimensional vectors but can theoretically be any mathematical object (e.g., complex numbers, matrices etc.). A multimedia \acrshort{dbms} must support these objects as first-class citizens.
     \item[Support for Distance Computation] The notion of proximity between features plays a crucial role in all types of multimedia workloads, be it for simple \acrshort{nns} or clustering. While certain workloads rely on raw speed for simple computations and data structures that allow for this type of lookup, other workloads require the ability to compose more complex computations and execute them efficiently without the use of an index. Both aspects must be covered by a multimedia \acrshort{dbms}.
     \item[Dynamically Changing Data] Data is usually subject to constant change and a multimedia \acrshort{dbms} must be able to propagate these changes to all the relevant data structures while maintaining ther internal consistency model.
-    \item[Accuracy vs. Time] Multimedia queries often trade retrieval accuracy against speed or vice-versa, e.g., when using a high-dimensional indexes. The multimedia \acrshort{dbms} must allow the user to express their perference at different levels of the system.
+    \item[Quality vs. Time] Multimedia queries often trade retrieval quality against speed or vice-versa, e.g., when using a high-dimensional indexes. The multimedia \acrshort{dbms} must allow the user to express their perference at different levels of the system.
 \end{description}
 
-To address these requirements, we propose and formalize a set of functionality, which will be specified in the next sections. First, we propose a notion of \emph{generalized, proximity based queries} as an extension to the relational model. Second, we describe a \emph{cost-model} that takes the notion of accuracy of results into acount. And finally, we introduce a general-purpose mechanism to enable high-dimensional indexes to cope with changing data.
+To address these requirements, we propose and formalize a set of functionality, which will be specified in the next sections. First, we propose a notion of \emph{generalized, proximity based queries} as an extension to the relational model. Second, we describe a \emph{cost-model} that takes the notion of quality of results into acount. And finally, we introduce a general-purpose mechanism to enable high-dimensional indexes to cope with changing data.
 
 All these contributions can be seen as extensions to the functionality provided by a traditional \acrshort{dbms}. To establish a frame of reference, we assume the relational model and \acrshort{acid} properties for the model \acrshort{dbms} under consideration, without a loss of generality.
 
@@ -418,10 +418,10 @@ Since a query optimiser of a multimedia \acrshort{dbms} must be able to manipula
 
 \begin{align}
     \label{equation:algebraic_properties}
-    \mathtt{OP}_1 (\mathtt{OP}_2 ( \relation)) = \mathtt{OP}_2 (\mathtt{OP}_1 (\relation))   \tag{commutativity of operators} \\
-    \mathtt{OP}_{1} (\mathtt{OP}_{2} (\relation_L,  \relation_R)) = \mathtt{OP}_{2} ( \mathtt{OP}_{1} ( \relation_L), \mathtt{OP}_{1} ( \relation_R))  \tag{distributivity of operators}\\
-    \mathtt{OP} (\relation_L, \relation_R) = \mathtt{OP}(\relation_R, \relation_L)    \tag{commutativity of operands}\\
-    \mathtt{OP}(\mathtt{OP} ( \relation)) = \mathtt{OP} (\relation)   \tag{idempotence of operators} \\
+    \symop_1 (\symop_2 ( \relation)) = \symop_2 (\symop_1 (\relation))   \tag{commutativity of operators} \\
+    \symop_{1} (\symop_{2} (\relation_L,  \relation_R)) = \symop_{2} ( \symop_{1} ( \relation_L), \symop_{1} ( \relation_R))  \tag{distributivity of operators}\\
+    \symop (\relation_L, \relation_R) = \symop(\relation_R, \relation_L)    \tag{commutativity of operands}\\
+    \symop(\symop ( \relation)) = \symop (\relation)   \tag{idempotence of operators} \\
 \end{align}
   
 In addition, to account for ranked relations, we must distinguish between relational operators that are either \emph{order retaining} (order of the input remains the same), \emph{order inducing} (order of the input is changed). Furthermore, we call operators that do not commute with order inducing operators \emph{order sensitive}. 
@@ -568,7 +568,7 @@ One identity that is particularly relevant for the execution of proximity based 
 \end{enumerate*} Using these constraints, we can now formalise the replacement of a relational expression by an $\mathtt{INDEX}^{\relation}_{I}$ which, for high-dimensional indexes and depending on what expression is matched, falls into one of three classes given by to Definitions \ref{definition:dfc_index_class_1}, \ref{definition:dfc_index_class_2} or \ref{definition:dfc_index_class_3}.
 
 \begin{definition}[label=definition:definition:index_replacement_exact]{Exact Index Replacement}{}
-    Let $\relation$ be a relation, $\mathtt{EXP}$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\mathtt{EXP}$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{exact index replacement} if $\mathtt{EXP} \equiv \mathtt{INDEX}^{\relation}_{I}$.
+    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression (i.e., an execution plan) involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{exact index replacement} if $\symplan \equiv \mathtt{INDEX}^{\relation}_{I}$.
 \end{definition}
 
 \begin{definition}[label=definition:dfc_index_class_1]{High-Dimensional Index Replacement of Class 1}{}
@@ -637,123 +637,162 @@ Class 3 replacements constitute an optimisation of a specific edge-case, which i
     A potential index structure could be the \acrshort{vaf} index \cite{Weber:1998Va}.
 \end{example}
 
-With the aforementioned definitions and restrictions, we have defined the basic relationship and rules that can be applied by a multimedia \acrshort{dbms}, when deciding whether or not to use a high-dimensional index structure. However, the definitions so far consider the replacement an exact transformation, i.e., the result of the original expression and the index is supposed to be identical. In practice, this is often not the case, which leads to \Cref{definition:index_replacement_inexact} provides an excelent segue to \Cref{section:cost_model}.
+With the aforementioned definitions and restrictions, we have defined the basic relationship and rules that can be applied by a multimedia \acrshort{dbms}, when deciding whether or not to use a high-dimensional index structure. However, the definitions so far consider the replacement an exact transformation, i.e., the result of the original expression and the index is supposed to be identical. In practice, this is often not the case, which leads to \Cref{definition:index_replacement_approximate}.
 
-\begin{definition}[label=definition:index_replacement_inexact]{Inexact Index Replacement}{}
-    Let $\relation$ be a relation, $\mathtt{EXP}$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\mathtt{EXP}$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{inexact index replacement} if $\mathtt{EXP} \approx_{b} \mathtt{INDEX}^{\relation}_{I}$ with:
+\begin{definition}[label=definition:index_replacement_approximate]{Approximate Index Replacement}{}
+    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{approximate index replacement} if $\symplan \approx_{b} \mathtt{INDEX}^{\relation}_{I}$ with:
     \begin{equation*}
-        \mathtt{EXP} \approx_{b} \mathtt{INDEX}^{\relation}_{I} \leftrightarrow \frac{\mathtt{EXP} \cap \mathtt{INDEX}^{\relation}_{I}}{\mathtt{EXP}} \geq b, b \in [0, 1]
+        \symplan \approx_{b} \symindex \leftrightarrow Q(\symplan,\symindex) \geq b, b \in [0, 1]
     \end{equation*}
+
+     $Q$ is a \emph{quality estimator} that derives a score between zero and one by comparing $symplan$ and $\symindex$.
 \end{definition}  
 
-\section{Cost Model for Retrieval Accuracy}
+In a manner of speaking, $\symplan$ acts a groundtruth and is compared to the approximate results produced by $\mathtt{INDEX}^{\relation}_{I}$. The choice of quality metric $Q$ is implementation specific. One could, for example, pick recall if one is primarily interested in set-based overlap rather than the ranking of individual items, which is enough for unranked query plans:
+
+\begin{equation*}
+        Q_1(\symplan,\symindex) = \frac{|\symplan \cap \symindex|}{|\symplan|}
+\end{equation*}
+
+An alternative could be the use of a normalised \acrfull{dcg} \cite{Jarvelin:2002Cumulated}, if the ranking of items should be taken into account as well:
+
+\begin{equation*}
+    Q_2(\symplan,\symindex) = \frac{\mathtt{DCG}(\symplan,\symindex)}{\mathtt{iDCG}(\symplan)}
+\end{equation*}
+
+Regardless of the choice of metric, the challenge lies in predicting its value for a query prior to its execution. Since the result of $Q$ can only be produced in hindsight once a query has been executed, we require techniques to anticipate its value for an incoming query so that the \acrshort{dbms} can use this downstream to make decision about query execution. This provides an excelent segue to \Cref{section:cost_model}.
+
+\section{Cost Model for Multimedia Databases}
 \label{section:cost_model}
 
-As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} rely on a cost-model for planning and selecting the execution and access path of a user-specified query. In fact, ever since the System R paper \cite{Selinger:1979Access}, cost-based query planning and optimisation is considered a gold standard for database systems.
-
-Most traditional \acrshort{dbms} exhibit comparatively simple cost-models that mainly rely on the cost incurred by accessing (reading / writing) database pages from or to disk \todo{Source needed?}. Based on what has been discussed thus far, we argue that such a model has several shortcomings and that a cost model for multimedia databases should take the following aspects into account when chosing an execution path:
+As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} rely on a cost-model for planning and selecting the execution and access path of a user-specified query. In fact, ever since the System R paper \cite{Selinger:1979Access}, cost-based query planning and optimisation is considered a gold standard for database systems \cite{Mannino:1988Statistical}. Most traditional \acrshort{dbms} exhibit cost-models that mainly rely on the cost incurred by accessing (reading / writing) database pages from or to disk \cite{Mannino:1988Statistical,Garcia:2009Database,Petrov:2019Database}. Based on what has been discussed thus far, we argue that this model must be adapted to be useful for multimedia databases so that it takes the following aspects into account when chosing a query execution plan:
 
 \begin{description}
-    \item[Disk Access (IO)] Persistent storage and the access to information residing on disk is still the factor that contributes the most to long query execution times and is thus something, that a system should try to minimise \cite{Selinger:1979Access}. This is also true for proximity based queries, where part of the optimisation lies in reducing access to vectors.
-    \item[CPU] Due to the computational complexity of proximity based operations, especially when high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and must thus be taken into account as well. In fact, several index structures achieve speed-up by reducing the computational complexity of the distance calculation \cite{Weber:1998Va,Jegou:2010Product}
-    \item[Memory] Some algorithms, e.g., for sorting, can benefit greatly from pure in-memory processing as opposed to writing intermediate results to disk. While memory used to be a scarce resource, some environments allow for complete in-memory processing even for very large datasets.
-    \item[Inaccuracy] The inaccuracy of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. However, it should be transparent to the system for reasons explained in \Cref{requirement:accuracy_model}.
+    \item[Disk Access (IO)] Persistent storage and the access to information residing on disk is the factor that contributes the most to long query execution times and is thus a factor to minimise \cite{Selinger:1979Access}. This is also true for proximity based queries, where part of the optimisation lies in reducing access to vectors through compression and/or early filtering, e.g., \cite{Weber:1998Va, Chierichetti:2007Finding}.
+    \item[CPU] Due to the computational complexity of proximity based operations, especially when the evaluation of functions on high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and must thus be taken into account as well. In fact, several index structures achieve speed-up by reducing the computational complexity of the distance calculation \cite{Jegou:2010Product} or by avoiding it alltogether \cite{Weber:1998Va}.
+    \item[Memory] Some algorithms, e.g., for sorting, can benefit greatly from pure in-memory processing as opposed to writing intermediate results to disk. While memory used to be a scarce resource, some environments allow for complete in-memory processing even for very large datasets. This is exploited by systems like Milvus \cite{Wang:2021Milvus}, that load entire data collections into memory.
+    \item[Quality] The quality of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. This is common practice in approximate \acrshort{nns} and should be made transparent to the system and user for reasons explained in \Cref{requirement:quality_model}.
 \end{description}
 
-These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, obviously, the cost incurred by data and message exchange must be considered as well. However, this is not in scope for the work presented in this Thesis. The aforementioned factors lead us to \Cref{definition:op_cost} and  \Cref{definition:plan_cost} for the (extendable) cost incurred by an operator $\mathtt{OP}$ and query execution plan $\mathcal{P}$.
+These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, obviously, the cost incurred by data and message exchange must be considered as well. While this is not in scope for the work presented in this Thesis, the proposed model can be easily extended to accomodate those types of costs as well. The aforementioned factors lead us to \Cref{definition:op_cost} and \Cref{definition:plan_cost} for the cost incurred by an operator $\symop$ and query execution plan $\mathcal{P}$.
 
-\begin{definition}[label=definition:op_cost]{Cost of a Relational Operator $\mathtt{OP}$}{}
-    Let $\mathtt{OP}$ be a relational operator. The we call the 4-tuple $C_{\mathtt{OP}} = (c_{\mathtt{IO}}, c_{\mathtt{CPU}}, c_{\mathtt{MEM}},c_{\mathtt{ACC}})$ the \emph{cost} of $\mathtt{OP}$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and accuracy (ACC).
+\begin{definition}[label=definition:op_cost]{Cost of a Relational Operator $\symop$}{}
+    Let $\symop$ be a (relational) database operator. We call the 4-tuple $C_{\symop} = (c_{\mathtt{IO}}, c_{\mathtt{CPU}}, c_{\mathtt{MEM}},c_{\mathtt{Q}})$ the \emph{cost} of $\symop$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and quality (Q).
 \end{definition}
 
 \begin{definition}[label=definition:plan_cost]{Cost of a Query Exection Plan $\mathcal{P}$}{}
-    Let $\mathcal{P} = \mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N $ be a query execution plan consisting of $N$ operators. The total cost of that plan is given by the sum of the individual costs:
+    Let $\symplan = \symop_1 \circ \symop_2, \ldots \circ \symop_N $ be a query execution plan consisting of $N$ operators. The plan's total cost $C_{\symplan}$ is given by the component-wise sum of the individual cost components:
 
     \begin{equation*}
-        C_{\mathcal{P}} = \sum_{i=1}^{N} C_{\mathtt{OP}_i}
+        C_{\symplan} = \sum_{i=1}^{N} C_{\symop_i} = (\sum_{i=1}^{N} c_{\mathtt{IO},i}, \sum_{i=1}^{N} c_{\mathtt{CPU},i}, \sum_{i=1}^{N} c_{\mathtt{MEM},i}, \sum_{i=1}^{N} c_{\mathtt{Q},i})
     \end{equation*}
 \end{definition}
-
-The role of $C_{\mathcal{P}}$ is twofold: First, its absolute values can be used by the \acrshort{dbms} to determine hard constraints imposed for query execution. For example, if there is a fixed limit on memory that can be used by a query, an execution plan may be discarded simply based on exceeding that memory limit regardless of other factors. Similarily, a hard constraint on accuracy could be imposed. Second, it can be used to compare execution plans relatively to one another. \Cref{example:cost_model} illustrates cost calculation for a simple execution plan.
 
 \begin{example}[label=example:cost_model]{Cost of a Query Execution Plan}{}
     Let $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be relations from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' results in the following, unoptimised execution plan:
 
     \begin{equation*}
-        \mathcal{P} = \projection_{\attribute_{\mathtt{title}}}(\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{artist}} \Join \relation_{\mathtt{painting}}))
+        \symplan= \projection_{\attribute_{\mathtt{title}}}(\selection_{\attribute_{\mathtt{death}} > 1800}(\relation_{\mathtt{artist}} \Join \relation_{\mathtt{painting}}))
     \end{equation*}
 
-    This results in the following operator tree with individual and total costs:
+    This query gives rise to following operator tree with individual and total costs (the cost factors are purely illustrational and do not relate to any real values):
 
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{figures/cost_example.eps}
+        \includegraphics[width=0.90\textwidth]{figures/cost_example.eps}
     \end{center}
 \end{example}
 
-The values of the atomic costs per operator can be determined in many ways and the model does not assume any specific approach with the exception for $c_{\mathtt{ACC}}$, which will be described in \Cref{section:inaccuracy_cost_estimation}. However, we do require that the method for determining the atomic costs must be internally consistent and should not change so as to keep costs comparable. For illustrative purposes, we outline the following, rough methods to estimate $c_{\mathtt{IO}}$, $c_{\mathtt{CPU}}$, $c_{\mathtt{MEM}}$.
+The role of $C_{\symplan}$ is twofold: First, its absolute values can be used by the \acrshort{dbms} to determine hard constraints imposed for query execution. For example, if there is a fixed limit on memory that can be used by a query, an execution plan may be discarded simply based on exceeding that memory limit regardless of other factors. Similarily, a hard constraint on quality could be imposed. Second, it can be used to compare execution plans relatively to one another. \Cref{example:cost_model} illustrates cost calculation for a simple execution plan.
+
+The values of the atomic costs per operator can be determined in many ways and the model does not assume any specific approach with the exception for $c_{\mathtt{Q}}$, which will be described in \Cref{section:quality_cost_estimation}. However, we do require that the method for determining the atomic costs must be internally consistent and should not change so as to keep costs comparable. For illustrative purposes, we outline the following, rough methods to estimate $c_{\mathtt{IO}}$, $c_{\mathtt{CPU}}$, $c_{\mathtt{MEM}}$.
 
 \begin{description}
-    \item[IO Cost Estimation] IO cost can be estimated by estimating the number of pages that must be read / written by an operator. 
-    \item[CPU Cost Estimation] CPU cost can be estimated by the number of floating point operations that are executed by an operator (e.g., when executing distance calculations \footnote{Ultimately, this is a property of the \acrshort{dfc} $\symdfc$}).
-    \item[Memory Cost Estimation] Memory cost can be estimated by the size of the data structures maintained by an operator (e.g., for sorting or hash-joins).
+    \item[IO Cost] can be estimated by the number of pages or the number of bytes that must be read / written by an operator. Obviously, we must also differentiate between random- and sequential access.
+    \item[CPU Cost] can be estimated by the number memory accesses and/or the number of floating point operations that are executed by an operator.
+    \item[Memory Cost] can be estimated by the size of the in-memory data structures maintained by an operator (e.g., for sorting or hash-joins).
 \end{description}
 
-Since the atomic costs stem from completely different domains and are therefore not directly comparable (e.g., memory costs may be measured in bytes wheras IO costs may be measured in number of page accesses), we require a normalisation step for relative comparison of execution plans. That normalisation step is outline in \Cref{definition:cost_normalisation}.
+Since the atomic costs stem from completely different domains and are therefore not directly comparable (e.g., memory costs may be measured in bytes wheras IO costs may be measured in number of page accesses) and because we only compare plans relative to one another, we require a normalisation step, which is outlined in \Cref{definition:cost_normalisation}.
 
 \begin{definition}[label=definition:cost_normalisation]{Cost Normalisation}{}
     Let $\mathtt{PLANS} = \mathcal{P}_1, \ldots, \mathcal{P}_N$ be $N$ equivalent query execution plans with associated costs $\mathtt{COSTS} =C_{\mathcal{P}_1}, \ldots,C_{\mathcal{P}_N}$. We consider the maximum cost $C_{\mathtt{max}}$ for those plans to be the component-wise maximum of all $C_{\mathcal{P}} \in \mathtt{COSTS}$. Using $C_{\mathtt{max}}$, the normalised cost $ C_{\mathcal{P},i,\mathtt{norm}}$ can be expressed as
 
     \begin{equation*}
-        C_{\mathcal{P},i,\mathtt{norm}} = (\frac{c_{\mathtt{IO},i}}{c_{\mathtt{IO},\mathtt{max}}},\frac{c_{\mathtt{CPU},i}}{c_{\mathtt{CPU},\mathtt{max}}},\frac{c_{\mathtt{MEM},i}}{c_{\mathtt{MEM},\mathtt{max}}},\frac{c_{\mathtt{ACC},i}}{c_{\mathtt{ACC},\mathtt{max}}})
+        C_{\mathcal{P},i,\mathtt{norm}} = (\frac{c_{\mathtt{IO},i}}{c_{\mathtt{IO},\mathtt{max}}},\frac{c_{\mathtt{CPU},i}}{c_{\mathtt{CPU},\mathtt{max}}},\frac{c_{\mathtt{MEM},i}}{c_{\mathtt{MEM},\mathtt{max}}},\frac{c_{\mathtt{Q},i}}{c_{\mathtt{Q},\mathtt{max}}})
     \end{equation*}
 
     It follows from the definition, that each component of a normalised cost falls into an interval between $0$ and $1$ due to the normalisation, i.e., $c_{\mathtt{*},\mathtt{norm}} \in [ 0, 1 ]$.
 \end{definition}
 
-It is important to note, that the normalised cost can only be used for relative comparison within an existing set of plans. It generally does not provide any information about the original cost value. Using this normalised costs, we can now derive \emph{cost score} according to \Cref{definition:cost_score}.
+It is important to note, that the normalised cost can only be used for relative comparison within an existing set of plans. It generally does not provide any information about the original cost value and the underlying properties they may represent. Using this normalised costs, we can now derive \emph{cost score} according to \Cref{definition:cost_score}.
 
 \begin{definition}[label=definition:cost_score]{Simple Cost Score}{}
     Let $\mathcal{P}$  be a query execution plan with associated, normalised cost $C_{\mathcal{P}_{\mathtt{norm}}}$. We consider the \emph{cost score} to be the sum of the atomic costs.
 
     \begin{equation*}
-        \mathcal{S} = c_{\mathtt{IO},\mathtt{norm}} + c_{\mathtt{CPU},\mathtt{norm}} + c_{\mathtt{MEM},\mathtt{norm}} + c_{\mathtt{ACC},\mathtt{norm}}
+        \mathcal{S} = c_{\mathtt{IO},\mathtt{norm}} + c_{\mathtt{CPU},\mathtt{norm}} + c_{\mathtt{MEM},\mathtt{norm}} + c_{\mathtt{Q},\mathtt{norm}}
     \end{equation*}
 
     The basic cost score $ \mathcal{S}$ falls into an interval between $0$ and $N$ wherein $N$ denotes the number of atomic costs, i.e., $\mathcal{S} \in [0, $N] for $N = |C_{\mathcal{P}_{\mathtt{norm}}}|$.
 \end{definition}
 
-The cost score $\mathcal{S}$ can be used to directly compare query plans and, e.g., sort them in ascending order to select the one plan that minimises the cost.
+The cost score $\mathcal{S}$ can be used to directly compare query plans and, e.g., sort them in ascending order during plan enumeration in order to select the one plan that minimises the costs.
 
 \subsection{Cost Policies}
 
-The definitions employed so far treat every component of a cost $C_{\mathcal{P}_{\mathtt{norm}}}$ equally with regards to the resulting cost score $\mathcal{S}$. This is rarely desirable since the different component influence the outcome to a different extent (e.g., in terms of query execution time or result accuracy). This can be expressed by employing \emph{cost policy} as outlined in \Cref{definition:cost_policy}.
+The definitions employed so far treat every component of a cost $C_{\mathcal{P}_{\mathtt{norm}}}$ equally with regards to the resulting cost score $\mathcal{S}$. This is rarely desirable since the different component influence the outcome to a different extent (e.g., in terms of query execution time or result quality). This can be expressed by employing a \emph{cost policy} as outlined in \Cref{definition:cost_policy}.
 
 \begin{definition}[label=definition:cost_policy]{Cost Policy and Weighted Score}{}
 
-    Let $\mathcal{P}$  be a query execution plan with associated, normalised cost $C_{\mathcal{P}_{\mathtt{norm}}}$. We call the 4-tuple
+    Let $\mathcal{P}$  be a query execution plan with associated, normalised cost $C_{\mathcal{P}_{\mathtt{norm}}}$. We call the 4-tuple $\mathcal{W}$ a cost-policy.
 
     \begin{equation*}
-        \mathcal{W} = (w_{\mathtt{IO}}, w_{\mathtt{CPU}}, w_{\mathtt{MEM}}, w_{\mathtt{ACC}})
+        \mathcal{W} = (w_{\mathtt{IO}}, w_{\mathtt{CPU}}, w_{\mathtt{MEM}}, w_{\mathtt{Q}}), \text{ with } w_{\mathtt{IO}},  w_{\mathtt{CPU}}, w_{\mathtt{MEM}}, w_{\mathtt{Q}} \in [0, 1]
     \end{equation*}
 
-    a cost-policy, with $w_{\mathtt{IO}} + w_{\mathtt{CPU}} + w_{\mathtt{MEM}} + w_{\mathtt{ACC}} = 1.0$. The weighted cost score $\mathcal{S}_{\mathcal{W}}$ with respect to $\mathcal{W}$ can be expressed as the linear combination of $C_{\mathcal{P}_{\mathtt{norm}}}$ and $\mathcal{W}$:
+   The weighted cost score $\mathcal{S}_{\mathcal{W}}$ with respect to $\mathcal{W}$ can be expressed as the linear combination of $C_{\mathcal{P}_{\mathtt{norm}}}$ and $\mathcal{W}$:
 
     \begin{equation*}
-        \mathcal{S}_{\mathcal{W}} = C_{\mathcal{P}_{\mathtt{norm}}} \cdot \mathcal{W} = w_{\mathtt{IO}}c_{\mathtt{IO},\mathtt{norm}} + w_{\mathtt{CPU}} c_{\mathtt{CPU},\mathtt{norm}} + w_{\mathtt{MEM}} c_{\mathtt{MEM},\mathtt{norm}} + w_{\mathtt{ACC}} c_{\mathtt{ACC},\mathtt{norm}}
+        \mathcal{S}_{\mathcal{W}} = C_{\mathcal{P}_{\mathtt{norm}}} \cdot \mathcal{W} = w_{\mathtt{IO}}c_{\mathtt{IO},\mathtt{norm}} + w_{\mathtt{CPU}} c_{\mathtt{CPU},\mathtt{norm}} + w_{\mathtt{MEM}} c_{\mathtt{MEM},\mathtt{norm}} + w_{\mathtt{Q}} c_{\mathtt{Q},\mathtt{norm}}
     \end{equation*}
 \end{definition}
 
-The cost policy gives us blunt but simple instrument to assign importance to individual cost factors. For example, we can prioritise execution speed by assigning more weight to the CPU and IO components. In an actual system, $\mathcal{W}$ can be influenced at different levels, which supersede one another, namely 
-\begin{enumerate*}[label=(\roman*), itemjoin={{, }}, itemjoin*={{, or, }}, after={{.}}]
+The cost policy gives us a blunt but simple instrument to assign importance to individual cost factors. For example, one can prioritise execution speed by assigning more weight to the CPU and IO components. In an actual system implementation, $\mathcal{W}$ can be influenced at different levels, which supersede one another, namely 
+\begin{enumerate*}[label=(\roman*), itemjoin={{, }}, itemjoin*={{, or }}, after={{.}}]
     \item as a system-wide configuration
-    \item for a user-session (connection-level) or transaction
+    \item for a user-session (connection) or transaction
     \item for an individual query
 \end{enumerate*}
 
-\subsection{Estimating Cost of Inaccuracy}
-\label{section:inaccuracy_cost_estimation}
+\subsection{Estimating Cost of Approximation}
+\label{section:quality_cost_estimation}
 
-\section{Adaptive Index Maintenance}
+In order to complete the cost model, we must generate an estimate of how the quality of a result is influenced by chosing a particular execution plan over another. While the described model is kept general, it is directly related to the approximate index replacement problem given in \Cref{definition:index_replacement_approximate}. We propose a simple method that involves a post-hoc evaluation of results to estimate the quality measure at different levels using the quality function $Q$.
+
+\begin{definition}[label=definition:cost_estimation_quality]{Inexact Index Replacement}{}
+    Let $\symplan_1$, $\symplan_2$ be two equivalent query plans and $\limit_k$ the $s,k$-selection. Let further $Q$ be a quality estimator that derives a score by comparing $\symplan_1$ and $\symplan_2$. The cost estimate for quality $c_{Q,k}$ at a given level $k$ is then is given as:
+    
+    \begin{equation*}
+        c_{Q,k} = 1 - q_k = 1 - Q(\limit_k(\symplan_1),\limit_k(\symplan_2))
+    \end{equation*}
+\end{definition}
+
+For proximity based queries, $\symplan_1$, $\symplan_2$ are two equivalent query plans that do and don't involve the evaluation of an approximate, high-dimensional index. In practice, the obtained numbers for $c_{Q,k}$ can be stored in a lookup-table and updated on a regular basis (e.g., when querying the index anyway). In case no observation is available, one can provide a \emph{cost prior}, which is constant estimate of the cost or one can pre-calculate certain costs based on the known classes of high-dimensional index replacements described \Cref{section:dfc_and_planning}. When a query is being planned, the \acrshort{dbms} can use the lookup table to derive the estimate.
+
+As indicated by the index $k$, we estimate $c_{Q,k}$ at multiple levels. We propose a logarithmic progression of these ranking levels, e.g., $k= \{ 1, 2, 4, 8, \ldots \}$ for two reasons: Firstly, the probability of an extreme value is higher for lower than for higher levels. This is also visualised in \Cref{figure:index_quality}. And secondly, items with a lower rank are often considered more relevant than items exhibiting a high rank \cite{Jarvelin:2002Cumulated}, i.e., we require a more accurate estimate for lower levels.
+
+While the model is very simple it obviously only provides a rough estimate. Furthermore, there are some important implicit assumptions we operate upon: Firstly, we assume that the quality of an execution plan on average does not depend on the query parameters provided by the user (e.g., the vectors used for proximity based search). The underlying assumption is that the query parameters are being drawn from the same, (albeit unknown) probability distribution that has produced the indexed data. We believe this to be a reasonable assumption, because as we have argued in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, these vectors are usually produced by some well-defined feature transformation. To illustrate this, we plot the average recall and normalised \acrshort{dcg} for the results produced by a \acrshort{pq}-based index implementation over a $1000$ different queries in \Cref{figure:index_quality} \footnote{We used the Yandex Deep 1B dataset \cite{Babenko:2016Efficient} and the provided groundtruth query vectors to generate this plot.}. We can observe that the mean remains more or less constant over different levels approaching $1.0$ as the level is being increased. However, the minimum and maximum show a much larger spread for lower levels which is a purely stochastical phenomenon. The second assumption is, that the quality of the results at lower, constrained ranking levels provides a valid estimator for qualit at higher levels, i.e., that the agreement is continued indefinitely. Both assumptions require some ``well-behavedness'' of the index structure, which may not necessarily be a given.
+
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/index-quality-pq}
+    \caption{Quality of results produced by a \acrshort{pq} index in a \acrshort{nns} query in terms of recall and normalised \acrshort{dcg} at different levels observed and averaged over a $1000$ queries. The mean value remains more or less constant while minimum and maximum exhibit a large spread for smaller levels.}
+    \label{figure:index_quality}
+\end{figure}
+
+\section{Approximate Index Maintenance}
 
 Maintining a consistent behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level, both in terms of efficiency and effectiveness. While the problem of keeping classical index structures (e.g., the $B^{+}$-tree index) up-to-date is a well understood problem \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index}. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own abilities and characteristics also in terms of index maintenance. 
 
@@ -794,8 +833,8 @@ An index's write model characterises its ability to cope with change operations 
     \begin{equation}
         \mathtt{WRITEM}(\symchange) = 
         \begin{cases}
-           \mathtt{true},       & \text{if } \symchangeop(\relation,t,t^{\prime}) \text{ can be applied to } \symindex \\
-           \mathtt{false},      & \text{otherwise}
+           \mathtt{true}, & \text{if } \symchangeop(\relation,t,t^{\prime}) \text{ can be applied to } \symindex \\
+           \mathtt{false}, & \text{otherwise}
         \end{cases}
     \end{equation}
 
@@ -814,7 +853,7 @@ The failure model is a second function implemented by the index that determines 
     \item[Stale] indexes have stopped functioning within their defined parameters and are therefore removed from consideration for query planning.
 \end{description}
 
-Freshly built indexes find themselves in the \emph{clean} state. Every change operation $\mathtt{OP}_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, the state is instantly updated to either \texttt{DIRTY} or \texttt{STALE}. Furthermore, internal statistics of the index are refreshed. 
+Freshly built indexes find themselves in the \emph{clean} state. Every change operation $\symop_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, the state is instantly updated to either \texttt{DIRTY} or \texttt{STALE}. Furthermore, internal statistics of the index are refreshed. 
 
 \subsection{Case Studies}
 
