@@ -119,7 +119,7 @@ Once again, we assume that this pattern matching and image reconstruction step s
 
 Firstly, and similarly to the multimedia retrieval problem, one requires a dedicated data- and query model to store complex vectors and perform \acrshort{mips}. This model differs from the classical, metric-space model applied in multimedia retrieval because it does not restrict itself to real-valued vectors. However, considering complex vectors has been discussed in previous work already, e.g., in the context of similarity search on time series \cite{Rafiei:1997Similarity}. At the same time, the database must also be able to store and access very classical data that fits into the Boolean retrieval model such as the individual parameters $B_0$, $T_1$ or $T_2$. 
 
-Secondly, and also similarly to interactive multimedia retrieval, query time is an important aspect and should be minimised as much as possible, especially in a clinical setup. However, in contrast to multimedia retrieval, this optimisation cannot be bought by trading retrieval accuracy, because the \acrshort{mrf} problem does not have a human in the loop who might correct an error in an individual query. Instead, the process relies on the lookup of the correct signal vector for every single query. Preliminary work on applying multimedia retrieval techniques to speeding up \acrshort{mrf} pattern matching has shown that sacrificing accuracy leads to sub-optimal image reconstruction results \cite{Huerbin:2020Retrieval,Zihlmann:2021Magnetic} and thus high-dimensional indexing methods known from multimedia retrieval may not be directly applicable.
+Secondly, and also similarly to interactive multimedia retrieval, query time is an important aspect and should be minimised as much as possible, especially in a clinical setup. However, in contrast to multimedia retrieval, this optimisation cannot be bought by trading retrieval quality, because the \acrshort{mrf} problem does not have a human in the loop who might correct an error in an individual query. Instead, the process relies on the lookup of the correct signal vector for every single query. Preliminary work on applying multimedia retrieval techniques to speeding up \acrshort{mrf} pattern matching has shown that sacrificing accuracy leads to sub-optimal image reconstruction results \cite{Huerbin:2020Retrieval,Zihlmann:2021Magnetic} and thus high-dimensional indexing methods known from multimedia retrieval may not be directly applicable.
 
 \section{Deriving Requirements}
 \label{section:requirements}
@@ -157,17 +157,17 @@ At its core, dealing with multimedia data equates to dealing with \emph{Big Data
     A multimedia database must be able to deal with large volumes of data that exhibit a broad variety and may be subject to change at a high velocity within a single, well-defined framework.
 \end{requirement}
 
-\subsection{Modelling Retrieval Accuracy}
+\subsection{Modelling Retrieval Quality}
 
 Classical databases produce results that match or don't match a given query, i.e., there is no notion of uncertainty or imprecission in the results. In contrast, the models used in multimedia retrieval are inherently inaccurate to some extent, in that the ``best matching'' entries are obtained, meaning that even bad results may be produced in the absence of better options. This imprecission or inaccuracy is influenced by many factors, not the least of which are the design and choice of the multimedia descriptors themselves.
 
 While the inherent (in-)accuracy of any given descriptor is impossible to predict and thus out of scope for the database that holds it, the notion of accuracy still opens a relevant avenue, since some of that accuracy can be deliberately sacrificed in order to gain speed, which is often done in high-dimensional indexing. Since some use cases are very robust to such decisions while others are not, this aspect must be made explicit at a system level.
 
-\begin{requirement}[label=requirement:accuracy_model]{Model for Retrieval Accuracy}{}
-    A multimedia database must employ an internal model of accuracy of results. That model must
+\begin{requirement}[label=requirement:quality_model]{Model for Retrieval Quality}{}
+    A multimedia database must employ an internal model of quality of results. That model must
     \begin{enumerate*}[label=(\roman*)]
-        \item enable a user to specify the desired accuracy of the result
-        \item allow the database system to derive the expected accuracy for a query execution path
+        \item enable a user to specify the desired quality of the result
+        \item allow the database system to derive the expected quality for a query execution path
         \item take both aspects into account when planning query execution.
     \end{enumerate*}
 \end{requirement}
@@ -198,5 +198,5 @@ In reference to the contributions listed in \Cref{section:contributions}, we can
 \begin{description}
     \item[Generalised Model for Similarity Search] addresses \Cref{requirement:multimedia_search} on a theoretical level in that it combines the different query paradigms in a consistent yet versatile framework. The proposed model and especially its implementation also address \Cref{requirement:complex_data_types} and \Cref{requirement:functions} to some extent, with one focus lieing on the optimisation of function execution within a query as well as the connection between index structures and the execution of such functions. However, there are stil many aspects to be explored.
     \item[Adaptive Index Management] provides an answer to the velocity aspect of \Cref{requirement:big_data}, because managing indexes in the face of changing data obviously is a consequence of changing data. As we have argued, these changes can take place fast and they take place concurrently to other query operations, which the multimedia database must handle elastically. The proposed solution is a general-purpose approach and can obviously be complemented with more specialised optimisations at an index level.
-    \item[Cost Model for Accuracy] is a direct consequence of \Cref{requirement:big_data} because, as we will demonstrate, responding to changes in the data can lead to the deterioration of indexing quality. Hence, the multimedia database is forced to decide between one over the other. Since some use cases may tolerate such deterioration while other's do not, the contribution also directly addresses \Cref{requirement:accuracy_model}.
+    \item[Cost Model for Quality] is a direct consequence of \Cref{requirement:big_data} because, as we will demonstrate, responding to changes in the data can lead to the deterioration of indexing quality. Hence, the multimedia database is forced to decide between one over the other. Since some use cases may tolerate such deterioration while other's do not, the contribution also directly addresses \Cref{requirement:quality_model}.
 \end{description}
