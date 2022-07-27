@@ -21,15 +21,15 @@ Rather than working with randomly generated data, we decided to use existing dat
         \textbf{Entity} & \textbf{Source} & \textbf{d} & \textbf{N} & \textbf{Description} \\
         \hline
         \hline
-        features\_averagecolor & V3C1 \& 2  & 3 & 2512715 & Average colours derived from video segments. \\ 
+        features\_averagecolor & V3C1\&2  & 3 & 2512715 & Average colours derived from video segments. \\ 
         \hline
-        features\_visualtextcoembedding & V3C1 \& 2 & 25 & 2506273 & Video to text co-embedding derived from vide segments. See \cite{Spiess:2021Competitive}. \\
+        features\_visualtextcoembedding & V3C1\&2 & 25 & 2506273 & Video to text co-embedding derived from vide segments. See \cite{Spiess:2021Competitive}. \\
         \hline
-        features\_surfmf25k512  & V3C1 \& 2  & 512 & 2500943 & SURF \cite{Bay:2006surf} describtors derived from video segments. \\
+        features\_hogmf25k512  & V3C1\&2  & 512 & 2500943 & HOG \cite{Bay:2006surf} describtors derived from video segments. \\
         \hline
-        features\_inceptionresnetv2 & V3C1 \& 2  & 1536 & 2508358 & Vector derived from last fully connected layer of a pre-trained InceptionResNetV2 applied on video segments.\\
+        features\_inceptionresnetv2 & V3C1\&2  & 1536 & 2508358 & Vector derived from last fully connected layer of a pre-trained InceptionResNetV2 applied on video segments.\\
         \hline
-        features\_conceptmasksade20k & V3C1 \& 2 & 2048 & 2469844 & Image embedding for query by semantic sketch. See \cite{Rossetto:2019Query}. \\
+        features\_conceptmasksade20k & V3C1\&2 & 2048 & 2469844 & Image embedding for query by semantic sketch. See \cite{Rossetto:2019Query}. \\
         \hline
         yandex\_deep5M  & Deep1B  & 96 & $5000000$ & See \cite{Babenko:2016Efficient} for more details. \\
         \hline
@@ -125,16 +125,30 @@ The reasoning behind using this \acrshort{dcg} variant is that items with a low 
 \end{example}
 
 
-\section{Execution of Multimedia Retrieaval Workloads}
+\section{Execution of Multimedia Analytics Workloads}
 
-This series of measurements is about demonstrating \cottontail{}'s versatility to execute different types of multimedia retrieval workloads. For this, run two three of queries against the V3C-based collections listed in \Cref{table:datasets}:
-\begin{enumerate*}[label=(\roman*)]
-    \item A simple \acrshort{nns} query that only returns the primary key and the distance,
-    \item a \acrshort{fns} query, again only returning primary key and distance,
-    \item a range search query where we filter for the distance value.
-\end{enumerate*}
+This series of measurements is about demonstrating \cottontail{}'s versatility to execute different types of multimedia retrieval workloads. For this, we have prepared a little test protocol that we execute to demonstrate the versatility of the proposed, relational algebra extensions.  We start by obtaining a random vector from the test collection. We then go on to obtain the minimum, maximum and mean distance of all vector from that vector. We then perform a \acrshort{fns} query and check if the distance of the first entry equals the maximum distance. This is basically a sanity check. The executed queries are expressed as Pseudo-SQL in \Cref{listing:analytics_queries}.
 
-The dimensionality of the vectors ranges between $3$ and $2048$ and we fix the value of $k = 1000$ for all queries involing a $s,k$-selection. For the benchmark, we prepared the following indexes on the respective entities in \cottontail{}: The \acrshort{pq} index variant for exhaustive search ($8$ subspaces, $256$ centroids) and a \acrshort{vaf} index. In addition to the obtained metrics we also let \cottontail{} report the execution plan it selected for a given query using its \emph{explain query} endpoint. These execution plans are illustrated for the purpose of discussion.
+\begin{lstlisting}[language=SQL, caption={Pseudo-SQL of the queries executed for the analytics workload evaluation.}, label=listing:analytics_queries, numbers=none]
+    /* Select a random vector from collection --> this is the query vector. */
+    select feature from <collection> skip <random> limit 1
+    
+    /* Select minimum, mean and maximum distance from the query vector. */
+    select min(euclidean(feature, <query>)) from <collection> 
+    select mean(euclidean(feature, <query>)) from <collection> 
+    select max(euclidean(feature, <query>)) from <collection> 
+
+    /* Perform a range search. */
+    select id, euclidean(feature, <query>) as dst from <collection> where dst = ((<max> - <mean>) / 2) order by dst limit 1000
+
+    /* Perform a farthest neighbour search query. */
+    select id, euclidean(feature, <query>) as dst from <collection> order by dst desc limit 1000
+
+    /* Perform sub-select with nested nearest neighbour search. */
+    select * from multimedia_segment where segmentid IN (select id from <collection> order by euclidean(feature, <query>) asc limit 1000)
+\end{lstlisting}
+
+We run all the queries against the V3C-based collections listed in \Cref{table:datasets}: The dimensionality of the vectors ranges between $3$ and $2048$ and we fix the value of $k = 1000$ for all queries involing a $s,k$-selection. For the benchmark, we prepared the following indexes on the respective entities in \cottontail{}: The \acrshort{pq} index variant for exhaustive search ($2048$ centroids) and a \acrshort{vaf} index ($25$ marks per vector component). In addition to the obtained metrics we also let \cottontail{} report the execution plan it selected for a given query using its \emph{explain query} endpoint. These execution plans are illustrated for the purpose of discussion.
 
 \subsection{Influence of Index Structures}
 
@@ -168,7 +182,7 @@ We use the query vectors provided with the Deep1B dataset and establish a ground
 
 \subsection{\cottontail}
 \label{section:evaluation_bignns_cottontail}
-For this benchmark, prepared a series of indexes on the respective entities in \cottontail{}: Two variants of a \acrshort{pq} index, once organised as a list for exhaustive search ($8$ subspaces, $256$ centroids) and once organised as an inverted list for approximate search ($8$ subspaces, $256$ centroids and $256$ coarse centroids) and a \acrshort{vaf} index. Furthermore, we created a $B^{+}$-Tree index on the column \texttt{categories} which we expect to be beneficial for Boolean search. We again use query hints to nudge \cottontail{} into using certain high-dimensional index structures so as to be able to compare the different query execution strategies. Accross all workloads, we compare the performance of different types of execution strategies: Sequential scan (no index), the \acrshort{vaf} and the (IVF-)\acrshort{pq} index. We also limit the degree of parallism to $p = 32$. In addition, we also visualise the execution plan generated by \cottontail{}. Accross all workloads, we compared the performance of three different types of execution strategies: A sequential scan, the \acrshort{vaf} index and the \acrshort{pq} index (flat). 
+For this benchmark, we prepared a selection of indexes on the respective entities in \cottontail{}: Two variants of a \acrshort{pq} index, once organised as a list for exhaustive search ($8$ subspaces, $256$ centroids) and once organised as an inverted list for approximate search ($8$ subspaces, $256$ centroids and $256$ coarse centroids) and a \acrshort{vaf} index. Furthermore, we created a $B^{+}$-Tree index on the column \texttt{categories} which we expect to be beneficial for Boolean search. We again use query hints to nudge \cottontail{} into using certain high-dimensional index structures so as to be able to compare the different query execution strategies. Accross all workloads, we compare the performance of four different types of execution strategies: Sequential scan (no index) and the scan of the \acrshort{vaf} and the (IVF-)\acrshort{pq} indexes.
 
 \begin{figure}[p]
     \centering
@@ -198,7 +212,9 @@ For this benchmark, prepared a series of indexes on the respective entities in \
     \label{figure:cottontail_runtime}
 \end{figure}
 
-In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in Figure \Cref{figure:cottontail_nns_runtime}. Brute-force search took between $0.74 \pm 0.06 \, \si{\second}$ (5 million) and $12.24 \pm 0.17 \, \si{\second}$ (100 million). We can also cleary see, that using \acrshort{vaf} or \acrshort{pq} index, brings that time down significantly. However, they are not capable of properly handling very large collections, which can be explained by  the simple fact that these index structures execute an exhaustive search, i.e., they do not limit themselves to a subset of the data. The execution plan is shown in \Cref{figure:cottontail_nns_plan} and is fairly unsurprising: The use of \acrshort{vaf} and \acrshort{pq} constitutes a class 3 resp. class 1 index replacement. The fetching of the \texttt{id} columns is pushed down to after the sort and limit operations, since this limits the amount of IO.
+In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in Figure \Cref{figure:cottontail_nns_runtime}. Brute-force search took between $0.69 \pm 0.12 \, \si{\second}$ (5 million) and $10.45 \pm 0.13 \, \si{\second}$ (100 million). We can observe, that the \acrshort{vaf} index brings only minor advantages for the smaller datasets but reduces execution time by almost \SI{4}{\second} for the larger. This is an artifact of the query execution engine, which uses less than the assigned 32 workes because of the derived \acrshort{cpu} costs. We can also cleary see, that using the (IVF-)\acrshort{pq} index reduces the execution time significantly, but at the cost of impaired quality, which is below $0.5$ for both recall and \acrshort{dcg} (see \Cref{figure:appendix_bignns_cottontail_nns_quality}). However, experience shows that the retrieval quality for these indexes is mainly an issue of tuning the number of centroids used upon index construction. It is also worth noting, that the IVF\acrshort{pq} index does currently not support intra-query parallelism due to \cottontail{}'s partitioning model, i.e., the execution times we see for the IVFPQ index are single-threaded. 
+
+Both \acrshort{pq} and \acrshort{vaf} fail to deliver interactive execution times for very large collections, which can be explained by  the simple fact that these index structures perform an exhaustive search, i.e., they do not limit themselves to a subset of the data. The execution plan is shown in \Cref{figure:cottontail_nns_plan} and is fairly unsurprising: The use of \acrshort{vaf} and \acrshort{pq} constitutes a class 3 resp. class 1 index replacement. The fetching of the \texttt{id} columns is pushed down to after the sort and limit operations, since this reduces the amount of IO.
 
 \begin{figure}[p]
     \centering
@@ -228,9 +244,10 @@ In our first series of tests we executed the simple \acrshort{nns} workload. The
     \label{figure:cottontail_plans}
 \end{figure}
 
-Our second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. One can see in \Cref{figure:cottontail_nns_fetch_plan} that in terms of execution plan, accessing this additional column does not make a big difference. Since both the plan involving the entity scan and the \acrshort{vaf} index scan produce the \texttt{feature} column early on, there is not need to fetch it later. Only for the \acrshort{pq} index -- which uses a distance approximation that is obtained without the \texttt{feature} column - - an additional fetch is needed. Consequently, the execution times are very similar to the simple \acrshort{nns} as one can see in \Cref{figure:cottontail_nns_fetch_runtime}. They range between $0.73 \pm 0.05 \, \si{\second}$ (5 million) and $12.53 \pm 0.25 \, \si{\second}$ (100 million). The impact of the additional fetching of $1000$ feature columns is negligible for the \acrshort{pq} index, which is can be attributed to the fact that the fetch is pushed until after the $s,k$-selection. Obviously, the impact would become large for larger values of $k$ but should remain negligibel since typically, $k << N$.
+Our second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. One can see in \Cref{figure:cottontail_nns_fetch_plan} that in terms of execution plan, accessing this additional column does not make a big difference. Since both the plan involving the entity scan and the \acrshort{vaf} index scan produce the \texttt{feature} column early on, there is not need to fetch it later. Only for the \acrshort{pq} index -- which uses a distance approximation that is obtained without accessing the \texttt{feature} column - - an additional fetch is needed, which again takes place after the order by and k-selection, to reduce IO. Consequently, the execution times are very similar to the simple \acrshort{nns} as one can see in \Cref{figure:cottontail_nns_fetch_runtime}. The numbers for a sequential scan range between $0.68 \pm 0.06 \, \si{\second}$ (5 million) and $10.53 \pm 0.29 \, \si{\second}$ (100 million). The impact of the additional fetching of $1000$ feature columns is negligible for the \acrshort{pq} index, which can be attributed to the fact that the fetch is pushed until after the $s,k$-selection. Obviously, the impact would become more important for larger values of $k$ but should remain negligibel since typically, $k << N$.
 
-For the final measurement we executed hybrid queries, i.e., \acrshort{nns} is restricted to a subset of the data that matches the predicate. The predicate involves a simple equality check that should effectively limit the exhaustive \acrshort{nns} to roughly $\frac{1}{10}$ of the collection. Again, we first consider the query plans illustrated in \cite{figure:cottontail_hybrid_plan}. The sequential scan took place with the help of a $B^{+}-tree$ index, which speeds-up the Boolean filtering. Unforunately, the current implementation of the \acrshort{vaf} index cannot natively accomodate Boolean predicates, since it constitutes a class 1 index replacement and therefore, a special implementation of the index would be neeed. Consequently, a sequential scan was executed instead. Since the use of the \acrshort{pq} index constitutes a class 1 index replacement, it can be combined with Boolead predicates. However, one can see in \Cref{figure:cottontail_hybrid_runtime} that the impact on performance is huge. This can be attributed to the fact that a fetch operation for the \texttt{categry} column must be executed for every entry before executing the filtering. The IO overhead is much larger than the speed-up gained through the \acrshort{pq} index. This can be seen when using \cottontail{} to obtain the execution plans: 
+For the final measurement, we executed hybrid queries, i.e., \acrshort{nns} was restricted to a subset of the data that matches the predicate. The predicate involves a simple equality check that should effectively limit the exhaustive \acrshort{nns} to roughly $\frac{1}{10}$ of the collection. The values for a sequential scan range between $1.47 \pm 0.15 \, \si{\second}$ (5 million) and $25.6 \pm 0.39 \, \si{\second}$ (100 million) with very similar numbers for the \acrshort{vaf} and \acrshort{pq} indexes. To make sense of these values, we again turn to the query plans illustrated in \Cref{figure:cottontail_hybrid_plan}. The sequential scan took place with the help of a $B^{+}$-tree index, which speeds-up the Boolean filtering. Unfortunately, the current implementation of the \acrshort{vaf} index cannot natively accomodate Boolean predicates, since it constitutes a class 3 index replacement and therefore, a special implementation of the index would be required. Consequently, a $B^{+}$-tree was executed instead. In contrast, the \acrshort{pq} index can be combined with Boolead predicates, since it constitutes a class 1 index replacement. However, one can see in \Cref{figure:cottontail_hybrid_runtime} that the advantage of using it is negligible.
+This can be attributed to the fact that a fetch operation for the \texttt{category} column must be executed for every entry before executing the filtering. The IO overhead is much larger than the speed-up gained through the \acrshort{pq} index. This is confirmed by the numbers we see for the IVF\acrshort{pq} index, which restricts the scan to a small subset of the collection. 
 
 We refrain from visualising \acrshort{dcg} and recall values at this point but can report that recall was always $1.0$ for sequential scan and \acrshort{vaf} and around $0.30$ for \acrshort{pq}, which can probably be attributed to a too small number of centroids. The graphs can be found in \Cref{chapter:appendix_results}.
 
