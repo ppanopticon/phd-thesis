@@ -52,7 +52,7 @@
      \hline
      yandex\_deep5m.idx\_feature\_pq & INDEX & PQ & \SI{5e6}{} & -  & CLEAN \\
      \hline
-     yandex\_deep5m.idx\_feature\_pq & INDEX & IVFPQ & \SI{5e6}{} & - & CLEAN \\
+     yandex\_deep5m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{5e6}{} & - & CLEAN \\
      \hline
     \end{tabular}
 \end{table}
@@ -78,7 +78,7 @@
      \hline
      yandex\_deep10m.idx\_feature\_pq & INDEX & PQ & \SI{1e7}{}  & - & CLEAN \\
      \hline
-     yandex\_deep10m.idx\_feature\_pq & INDEX & IVFPQ & \SI{1e7}{} & - & CLEAN \\
+     yandex\_deep10m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e7}{} & - & CLEAN \\
      \hline
     \end{tabular}
 \end{table}
@@ -104,7 +104,7 @@
      \hline
      yandex\_deep100m.idx\_feature\_pq & INDEX & PQ & \SI{1e8}{} & - & CLEAN \\
      \hline
-     yandex\_deep100m.idx\_feature\_pq & INDEX & IVFPQ & \SI{1e8}{}  & - & CLEAN \\
+     yandex\_deep100m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e8}{}  & - & CLEAN \\
      \hline
     \end{tabular}
 \end{table}
@@ -128,6 +128,8 @@
      \hline
      yandex\_deep1b.idx\_feature\_pq & INDEX & PQ & \SI{1e9}{} & - & CLEAN \\
      \hline
+     yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e9}{} & - & CLEAN \\
+     \hline
     \end{tabular}
 \end{table}
 
@@ -137,6 +139,7 @@
 \begin{figure}[p]
     \includegraphics[width=\linewidth]{figures/bignns-cottontail-NNS-quality}
     \caption{Quality metrics for Cottontail DB during the simple \acrshort{nns} large-scale retrieval evaluation presented in \Cref{section:evaluation_bignns_cottontail}. Recall and \acrshort{dcg} are 1.0 for all execution strategies other than \acrshort{pq}.}
+    \label{figure:appendix_bignns_cottontail_nns_quality}
 \end{figure}
 
 \begin{figure}[p]
