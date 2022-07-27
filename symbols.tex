@@ -61,16 +61,16 @@
 \newglossaryentry{schema}{sort={BIschema},name=\ensuremath{\mathtt{SCH}},symbol=\ensuremath{\mathtt{SCH}},type={symbols},description={The schema of a relation \( \relation \), i.e., all attributes \(\schema (\relation) = (\attribute_1, \attribute_2, \ldots, \attribute_N)\) that make up \(\relation \).}}
 \newcommand{\schema}{\glssymbol{schema}}
 
-\newglossaryentry{selection}{sort={BJselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate $S$, e.g. \( \selection_{S} \).}}
+\newglossaryentry{selection}{sort={BJselection},name=\ensuremath{\sigma},symbol=\ensuremath{\sigma},type={symbols},description={The unary selection operator used to filter a relation \(\relation \). Usually printed with a subscript to describe the boolean predicate \( S \), e.g. \( \selection_{S} \).}}
 \newcommand{\selection}{\glssymbol{selection}}
 
-\newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the projection attributes $P$, e.g., \( \projection_{\attribute_1,\attribute_2} \).}}
+\newglossaryentry{projection}{sort={BKprojection},name=\ensuremath{\pi},symbol=\ensuremath{\pi},type={symbols},description={The unary projection operator used to restrict the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the projection attributes \( P \), e.g., \( \projection_{\attribute_1,\attribute_2} \).}}
 \newcommand{\projection}{\glssymbol{projection}}
 
 \newglossaryentry{rename}{sort={BLrename},name=\ensuremath{\rho},symbol=\ensuremath{\rho},type={symbols},description={The unary rename operator used to rename the attributes \( \attribute \) of a relation \( \relation \). Usually used with subscript to list the rename operations, e.g., \( \rename_{\attribute_1 \rightarrow \attribute_2} \).}}
 \newcommand{\rename}{\glssymbol{rename}}
 
-\newglossaryentry{order}{sort={BMorder},name=\ensuremath{\omega},symbol=\ensuremath{\omega},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \). Usually printed with a subscript to list order attributes $O$, e.g., \( \order_{\attribute_1 \uparrow,\attribute_2 \downarrow} \).}}
+\newglossaryentry{order}{sort={BMorder},name=\ensuremath{\omega},symbol=\ensuremath{\omega},type={symbols},description={The binary sort operator used to construct a ranked relation \( \rankedrel \). Usually printed with a subscript to list order attributes \( O \), e.g., \( \order_{\attribute_1 \uparrow,\attribute_2 \downarrow} \).}}
 \newcommand{\order}{\glssymbol{order}}
 
 \newglossaryentry{limit}{sort={BNlimit},name=\ensuremath{\lambda},symbol=\ensuremath{\lambda},type={symbols},description={The unary k-selection operator restricts \( \relation \) to the first \( k \) tuples. Usually printed with a subscript to define \( k \), e.g., \( \limit_{k} \).}}
@@ -79,22 +79,22 @@
 \newglossaryentry{aggregation}{sort={BOlimit},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary aggregation operator.}}
 \newcommand{\aggregation}{\glssymbol{aggregation}}
 
-\newglossaryentry{group}{sort={BPgroup},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary group operator aggregates tuples in \( \relation \). Usually printed with a subscript to list the group attributes $G$, e.g., \( \group_{G} \).}}
+\newglossaryentry{group}{sort={BPgroup},name=\ensuremath{\gamma},symbol=\ensuremath{\gamma},type={symbols},description={The unary group operator aggregates tuples in \( \relation \). Usually printed with a subscript to list the group attributes \( G \), e.g., \( \group_{G} \).}}
 \newcommand{\group}{\glssymbol{group}}
 
 %% C group (the group is specified in the sort field)
 \newcommand*{\Cgroupname}{Multimedia Retrieval}
 
-\newglossaryentry{symmediacol}{sort={CAsymmediacol},name=\ensuremath{\mathbb{O}},symbol=\ensuremath{\mathbb{O}},type={symbols},description={The media collection domain \(\symmediacol = \lbrace o_1, o_2 , \ldots, o_N \rbrace\).}}
+\newglossaryentry{symmediacol}{sort={CAsymmediacol},name=\ensuremath{\mathbb{O}},symbol=\ensuremath{\mathbb{O}},type={symbols},description={The media collection domain \(\symmediacol = \lbrace o_1, o_2 , \ldots, o_N \rbrace \).}}
 \newcommand{\symmediacol}{\glssymbol{symmediacol}}
 
-\newglossaryentry{symfeatures}{sort={CBsymfeatures},name=\ensuremath{\mathbb{F}},symbol=\ensuremath{\mathbb{F}},type={symbols},description={The feature domain \(\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace\).}}
+\newglossaryentry{symfeatures}{sort={CBsymfeatures},name=\ensuremath{\mathbb{F}},symbol=\ensuremath{\mathbb{F}},type={symbols},description={The feature domain \(\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace \).}}
 \newcommand{\symfeatures}{\glssymbol{symfeatures}}
 
 \newglossaryentry{symfeaturetransform}{sort={CCsymfeaturetransform},name=\ensuremath{\mathfrak{t}},symbol=\ensuremath{\mathfrak{t}},type={symbols},description={Feature transformation function \(\symfeaturetransform \colon \symmediacol \rightarrow \symfeatures \)}}
 \newcommand{\symfeaturetransform}{\glssymbol{symfeaturetransform}}
 
-\newglossaryentry{symdist}{sort={CDsymdist},name=\ensuremath{\mathfrak{d}},symbol=\ensuremath{\mathfrak{d}},type={symbols},description={Dissimilarity or distance function \(\symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal\).}}
+\newglossaryentry{symdist}{sort={CDsymdist},name=\ensuremath{\mathfrak{d}},symbol=\ensuremath{\mathfrak{d}},type={symbols},description={Dissimilarity or distance function \(\symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal \).}}
 \newcommand{\symdist}{\glssymbol{symdist}}
 
 \newglossaryentry{symsim}{sort={CEsymsim},name=\ensuremath{\mathfrak{s}},symbol=\ensuremath{\mathfrak{s}},type={symbols},description={Similarity function \(\symsim \colon \symfeatures \times \symfeatures \rightarrow [0, 1.]\).}}
@@ -116,7 +116,7 @@
 \newglossaryentry{symop}{sort={DFsymop},name=\ensuremath{\mathtt{OP}},symbol=\ensuremath{\mathtt{OP}},type={symbols},description={A (relational) database operation, typically acting on a relation \( \relation \).}}
 \newcommand{\symop}{\glssymbol{symop}}
 
-\newglossaryentry{symplan}{sort={DFsymplan},name=\ensuremath{\mathcal{P}},symbol=\ensuremath{\mathcal{P}},type={symbols},description={A query execution plan, i.e., a concatenation of $N$ operators \(\mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N \).}}
+\newglossaryentry{symplan}{sort={DFsymplan},name=\ensuremath{\mathcal{P}},symbol=\ensuremath{\mathcal{P}},type={symbols},description={A query execution plan, i.e., a concatenation of \( N \)operators \(\mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N \).}}
 \newcommand{\symplan}{\glssymbol{symplan}}
 
 \newglossaryentry{symchangeop}{sort={DHsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\) that can either be an insert, update or delete.}}
