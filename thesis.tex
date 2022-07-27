@@ -59,6 +59,34 @@ todonotes, % enables the todonotes package
     tabsize=2
 }
 
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    commentstyle=\color{UnibasMintDark}, % style of comment
+    stringstyle=\color{UnibasMint}, % style of strings
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{UnibasLightGray}, %only if you like
+    string=[s]{"}{"},
+    comment=[l]{:\ "},
+    morecomment=[l]{:"},
+    literate=
+        *{0}{{{\color{UnibasRed}0}}}{1}
+         {1}{{{\color{UnibasRed}1}}}{1}
+         {2}{{{\color{UnibasRed}2}}}{1}
+         {3}{{{\color{UnibasRed}3}}}{1}
+         {4}{{{\color{UnibasRed}4}}}{1}
+         {5}{{{\color{UnibasRed}5}}}{1}
+         {6}{{{\color{UnibasRed}6}}}{1}
+         {7}{{{\color{UnibasRed}7}}}{1}
+         {8}{{{\color{UnibasRed}8}}}{1}
+         {9}{{{\color{UnibasRed}9}}}{1}
+}
+
 \lstset{style=codestyle}
 
 % add you bibliographic entries

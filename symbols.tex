@@ -113,10 +113,16 @@
 \newglossaryentry{symindex}{sort={DEsymindex},name=\ensuremath{\mathtt{INDEX}^{\relation}_{I}},symbol=\ensuremath{\mathtt{INDEX}^{\relation}_{I}},type={symbols},description={An index on relation \( \relation \) indexing attributes \( I \subset \schema(\relation) \).}}
 \newcommand{\symindex}{\glssymbol{symindex}}
 
-\newglossaryentry{symchangeop}{sort={DFsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\) that can either be an insert, update or delete.}}
+\newglossaryentry{symop}{sort={DFsymop},name=\ensuremath{\mathtt{OP}},symbol=\ensuremath{\mathtt{OP}},type={symbols},description={A (relational) database operation, typically acting on a relation \( \relation \).}}
+\newcommand{\symop}{\glssymbol{symop}}
+
+\newglossaryentry{symplan}{sort={DFsymplan},name=\ensuremath{\mathcal{P}},symbol=\ensuremath{\mathcal{P}},type={symbols},description={A query execution plan, i.e., a concatenation of $N$ operators \(\mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N \).}}
+\newcommand{\symplan}{\glssymbol{symplan}}
+
+\newglossaryentry{symchangeop}{sort={DHsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\) that can either be an insert, update or delete.}}
 \newcommand{\symchangeop}{\glssymbol{symchangeop}}
 
-\newglossaryentry{symchange}{sort={DGsymchange},name=\ensuremath{\mathcal{C}},symbol=\ensuremath{\mathcal{C}},type={symbols},description={A change on relation \( \relation \) with \( \symchange = (\symchangeop, \relation, t, t^{\prime})\).}}
+\newglossaryentry{symchange}{sort={DIsymchange},name=\ensuremath{\mathcal{C}},symbol=\ensuremath{\mathcal{C}},type={symbols},description={A change on relation \( \relation \) with \( \symchange = (\symchangeop, \relation, t, t^{\prime})\).}}
 \newcommand{\symchange}{\glssymbol{symchange}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
