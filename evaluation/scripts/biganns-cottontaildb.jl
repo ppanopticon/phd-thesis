@@ -15,30 +15,15 @@ include("./recall.jl");
 
 # Functions used to load Milvus data
 function loadCottontailData(name, df)
-    dict = read_json(joinpath("./evaluation/data/biganns/cottontaildb","cottontail-$(name).json"))
-    for (entity, query, index, parallel, runtime, recall, dcg, plan) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["dcg"], dict["plan"])
+    dict = read_json(joinpath("./evaluation/data/biganns/cottontaildb","cottontail-$(name)~measurements.json"))
+    for (entity, query, index, parallel, runtime, recall, dcg, plan) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["dcg"])
         push!(df, (query, uppercase(replace(entity, "yandex_deep" => "")), index, parallel, runtime, recall, dcg, plan))
     end
 end
 
 # Load data files
 df = DataFrame(Query = String[], Entity = String[], Index = String[], Parallel = Int32[], Runtime = Float64[], Recall = Float64[], DCG = Float64[], Plan = Array{String}[])
-loadCottontailData("5mto100m", df)
-
-# Export query plans
-plan = df |> 
-    @filter(_.Entit == "100M") |> 
-    @orderby(_.Query) |> 
-    @groupby({_.Query, _.Index}) |> 
-    @map({
-        Query=key(_).Query,
-        Index=key(_).Index,
-        Plans=length(_.Plan),
-        Plan=first(_.Plan)
-    }) |>  DataFrame
-
-CSV.write("./mainmatter/08-evaluation/figures/bignns/cottontail/plans.csv", plan)
-
+loadCottontailData("5mto1b", df)
 
 # Generate PDFs
 for query in ["NNS","NNS + Fetch","Hybrid"]
