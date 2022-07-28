@@ -59,7 +59,7 @@ If now in addition, we consider \cref{example:svmdistance}, we see that restrict
 
 Again, we are confronted with an example that violates the text-book definition of a distance function. While the idealized idea that distance functions used in proximity based queries must always constitute a metric on some real-valued vector space may be very common~\cite{Zezula:2006Similarity}, we see in practice that this assumption is often violated~\cite{Skopal:2011Nonmetric,Bernhauer:2019Nonmetric} and that many functions used to calculate proximity between objects are not actual metrics. Even though, this can be a disadvantage when considering high-dimensional index structures that exploit the geometric properties of metric spaces, it is obvious that such functions exist and must thus be considered in any generalised multimedia database application supporting proximity based queries. 
 
-In contrast, there is actually good reason to assume the codomain of a distance function  $\symdist$ to lie in $\symreal$. On the one hand, it is obviously convenient both for the underlying mathematics as well as from an implementation prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for downstream operations such as sorting, ranking or clustering.
+In contrast, there is actually good reason to assume the codomain of a distance function  $\symdist$ to lie in $\symreal$. On the one hand, it is convenient both for the underlying mathematics as well as from an implementation prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for downstream operations such as sorting, ranking or clustering.
 
 To summarize, we have established that, on the one hand, we require a proper definition of what is considered to be a valid distance function so as to be able to efficiently plan and execute queries that use them, while on the other hand we must keep that definition open enough to accomodate the many different, applications.
 
@@ -197,7 +197,7 @@ If now we assume any DFC supported by the \acrshort{dbms} to be member of $\math
     \end{center}
 \end{example}
 
-Obviously, the evaluation of multiple \acrshort{dfc}s in a single, extended projection or the combination of simple attribute projections with the evaluation of \acrshort{dfc}s are also allowed.
+The evaluation of multiple \acrshort{dfc}s in a single, extended projection or the combination of simple attribute projections with the evaluation of \acrshort{dfc}s are also allowed.
 
 With the proposed, extended projection, the obtained distance value becomes an explicit attribute $\attribute_d$ in the relation $ \relation^{\prime} = \projection_{\symdfc(\cdot)}(\relation)$, which can then be used by downstream, relational operators and/or be returned by the query to any calling system. This makes sense, for example, in \acrshort{nns}, because the distance is usually converted to a similarity score by some correspondence function.
 
@@ -665,7 +665,7 @@ Regardless of the choice of metric, the challenge lies in predicting its value f
 \section{Cost Model for Multimedia Databases}
 \label{section:cost_model}
 
-As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} rely on a cost-model for planning and selecting the execution and access path of a user-specified query. In fact, ever since the System R paper \cite{Selinger:1979Access}, cost-based query planning and optimisation is considered a gold standard for database systems \cite{Mannino:1988Statistical}. Most traditional \acrshort{dbms} exhibit cost-models that mainly rely on the cost incurred by accessing (reading / writing) database pages from or to disk \cite{Mannino:1988Statistical,Garcia:2009Database,Petrov:2019Database}. Based on what has been discussed thus far, we argue that this model must be adapted to be useful for multimedia databases so that it takes the following aspects into account when chosing a query execution plan:
+As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} rely on a cost-model for planning and selecting the execution and access path of a user-specified query. In fact, ever since the System R paper \cite{Selinger:1979Access}, cost-based query planning and optimisation has been considered a gold standard for database systems \cite{Mannino:1988Statistical}. Most traditional \acrshort{dbms} exhibit cost-models that mainly rely on the cost incurred by accessing (reading / writing) database pages from or to disk \cite{Mannino:1988Statistical,Garcia:2009Database,Petrov:2019Database}. Based on what has been discussed thus far, we argue that this model must be adapted to be useful for multimedia databases so that it takes the following aspects into account when chosing a query execution plan:
 
 \begin{description}
     \item[Disk Access (IO)] Persistent storage and the access to information residing on disk is the factor that contributes the most to long query execution times and is thus a factor to minimise \cite{Selinger:1979Access}. This is also true for proximity based queries, where part of the optimisation lies in reducing access to vectors through compression and/or early filtering, e.g., \cite{Weber:1998Va, Chierichetti:2007Finding}.
@@ -674,7 +674,7 @@ As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} re
     \item[Quality] The quality of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. This is common practice in approximate \acrshort{nns} and should be made transparent to the system and user for reasons explained in \Cref{requirement:quality_model}.
 \end{description}
 
-These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, obviously, the cost incurred by data and message exchange must be considered as well. While this is not in scope for the work presented in this Thesis, the proposed model can be easily extended to accomodate those types of costs as well. The aforementioned factors lead us to \Cref{definition:op_cost} and \Cref{definition:plan_cost} for the cost incurred by an operator $\symop$ and query execution plan $\mathcal{P}$.
+These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, the cost incurred by data and message exchange must be considered as well. While this is not in scope for the work presented in this Thesis, the proposed model can be easily extended to accomodate those types of costs as well. The aforementioned factors lead us to \Cref{definition:op_cost} and \Cref{definition:plan_cost} for the cost incurred by an operator $\symop$ and query execution plan $\mathcal{P}$.
 
 \begin{definition}[label=definition:op_cost]{Cost of a Relational Operator $\symop$}{}
     Let $\symop$ be a (relational) database operator. We call the 4-tuple $C_{\symop} = (c_{\mathtt{IO}}, c_{\mathtt{CPU}}, c_{\mathtt{MEM}},c_{\mathtt{Q}})$ the \emph{cost} of $\symop$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and quality (Q).
@@ -707,7 +707,7 @@ The role of $C_{\symplan}$ is twofold: First, its absolute values can be used by
 The values of the atomic costs per operator can be determined in many ways and the model does not assume any specific approach with the exception for $c_{\mathtt{Q}}$, which will be described in \Cref{section:quality_cost_estimation}. However, we do require that the method for determining the atomic costs must be internally consistent and should not change so as to keep costs comparable. For illustrative purposes, we outline the following, rough methods to estimate $c_{\mathtt{IO}}$, $c_{\mathtt{CPU}}$, $c_{\mathtt{MEM}}$.
 
 \begin{description}
-    \item[IO Cost] can be estimated by the number of pages or the number of bytes that must be read / written by an operator. Obviously, we must also differentiate between random- and sequential access.
+    \item[IO Cost] can be estimated by the number of pages or the number of bytes that must be read / written by an operator.
     \item[CPU Cost] can be estimated by the number memory accesses and/or the number of floating point operations that are executed by an operator.
     \item[Memory Cost] can be estimated by the size of the in-memory data structures maintained by an operator (e.g., for sorting or hash-joins).
 \end{description}
@@ -783,8 +783,6 @@ As indicated by the index $k$, we estimate $c_{Q,k}$ at multiple levels. We prop
 
 While the model is very simple it obviously only provides a rough estimate. Furthermore, there are some important implicit assumptions we operate upon: Firstly, we assume that the quality of an execution plan on average does not depend on the query parameters provided by the user (e.g., the vectors used for proximity based search). The underlying assumption is that the query parameters are being drawn from the same, (albeit unknown) probability distribution that has produced the indexed data. We believe this to be a reasonable assumption, because as we have argued in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, these vectors are usually produced by some well-defined feature transformation. To illustrate this, we plot the average recall and normalised \acrshort{dcg} for the results produced by a \acrshort{pq}-based index implementation over a $1000$ different queries in \Cref{figure:index_quality} \footnote{We used the Yandex Deep 1B dataset \cite{Babenko:2016Efficient} and the provided groundtruth query vectors to generate this plot.}. We can observe that the mean remains more or less constant over different levels approaching $1.0$ as the level is being increased. However, the minimum and maximum show a much larger spread for lower levels which is a purely stochastical phenomenon. The second assumption is, that the quality of the results at lower, constrained ranking levels provides a valid estimator for qualit at higher levels, i.e., that the agreement is continued indefinitely. Both assumptions require some ``well-behavedness'' of the index structure, which may not necessarily be a given.
 
-
-
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figures/index-quality-pq}
@@ -794,15 +792,15 @@ While the model is very simple it obviously only provides a rough estimate. Furt
 
 \section{Approximate Index Maintenance}
 
-Maintining a consistent behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level, both in terms of efficiency and effectiveness. While the problem of keeping classical index structures (e.g., the $B^{+}$-tree index) up-to-date is a well understood problem \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index}. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own abilities and characteristics also in terms of index maintenance. 
+Maintining a consistent behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level, both in terms of efficiency and effectiveness. While the problem of keeping classical index structures (e.g., the $B^{+}$-tree index) up-to-date is well understood \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not, with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index,Lu:2020VHP}. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own abilities and characteristics also in terms of index maintenance. 
 
-In this section, we propose a recipe at a systems level to accomodate and maintain these different types of index structures in the face of different query workloads and changing data. This recipe consists of a series of models an index must adhere to based on which a \acrshort{dbms} can make informed decisions as to how a query should be executed at a given point in time. To start with, we formalise the notion of a change to the data in a \acrshort{dbms} in \Cref{definition:change}.
+In this section, we propose a mechanism at a systems level to accomodate and maintain different types of index structures in the face of different query workloads and changing data. This mechanism consists of a series of models an index must adhere to based on which a \acrshort{dbms} can make informed decisions as to how a query should be executed at a given point in time. To start with, we formalise the notion of a change to the data in the form of three operations listed in \Cref{definition:change}.
 
 \begin{definition}[label=definition:change]{Change Operations to Relation $\relation$}{}
-    Let $\relation$ be a relation, $t \in \relation$ a tuple in and $t^{\prime} \in \relation^{\prime}$ another tuple with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\symchangeop(\relation,\cdot) \in [ \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) ]$ a change operation on $\relation$ and the quadruple $\symchange = (\symchangeop, \relation, t, t^{\prime})$ a \emph{change}.
+    Let $\relation$ be a relation and $t \in \relation$, $t^{\prime} \in \relation^{\prime}$ tuples with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\symchangeop(\relation,\cdot) \in [ \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) ]$ a change operation on $\relation$ and the quadruple $\symchange = (\symchangeop, \relation, t, t^{\prime})$ a \emph{change}.
 
     \begin{align*}
-        \mathtt{INSERT}(\relation, t^{\prime}) &= \relation \cup \lbrace t \rbrace \\
+        \mathtt{INSERT}(\relation, t^{\prime}) &= \relation \cup \lbrace t^{\prime} \rbrace \\
         \mathtt{DELETE}(\relation, t ) &= \relation \setminus \lbrace t \rbrace \\
         \mathtt{UPDATE}(\relation, t, t^{\prime}) &= ((\relation \setminus \lbrace t \rbrace) \cup \lbrace t^{\prime} \rbrace)\\
     \end{align*}
@@ -814,38 +812,36 @@ In this section, we propose a recipe at a systems level to accomodate and mainta
     \end{equation*}
 \end{definition}
 
-The first basic assumption and prerequisite is that all the high-dimensional index structures discussed thus far and offered by the \acrshort{dbms} always act as secondary indexes. Consequently, the primary data is always organised in a way that allows for seamless propagation of changes, e.g., as index or heap-organised tables. The fallback strategy that the \acrshort{dbms} therefore can always resort to is that of a sequential scan of the data, which results long execution times for reasons discussed in \Cref{section:multimedia_retrieval}. Furthermore, the primary data files can be used by an index to correct missing or outdated information on the fly during query time.
+The first basic assumption and prerequisite is that all the high-dimensional index structures offered by the \acrshort{dbms} always act as secondary indexes. Consequently, the primary data is always organised in a way that allows for seamless propagation of changes, e.g., as index or heap-organised tables in the case of a relationa database. The fallback strategy that the \acrshort{dbms} therefore can always resort to is that of a (sequential) access to the original data (which results in longer response times for reasons discussed in \Cref{section:multimedia_retrieval}, and should therefore be avoided). Furthermore, the primary data files can be used by an index to correct missing or outdated information on the fly during query time.
 
 For our index maintainance model, we now propose three components that a multimedia database must provide in order to be able to maintain the secondary index structures in the face of changing data: 
 \begin{enumerate*}[label=(\roman*)]
     \item A \emph{write model} and,
     \item a \emph{failure model} for every type of index and
-    \item the ability to (re-)build an index from scratch.
+    \item the ability to (re-)build an index from scratch using the primary data.
 \end{enumerate*}
 We consider the latter to be a given for any type of index, which is why we will not discuss this requirement further.
 
 \subsection{Write Model of an Index}
-An index's write model characterises its ability to cope with change operations directly. It is specific to an index structure and must therefore be implemented separately for each type of index. Formally, we can turn to definition \Cref{definition:write_mode}.
+An index's write model , as given by \Cref{definition:write_mode}, characterises its ability to cope with change operations. It is specific to an index structure and must therefore be implemented separately for each type of index.
 
 \begin{definition}[label=definition:write_mode]{Write Model for Index $\symindex$}{}
-    Let $\relation$ be a relation and $\symindex$ an index on attributes $I \subset \schema(\relation)$. The write model of $\symindex$ is a function that determines, if a change $\symchange = (\symchangeop, \relation, t, t^{\prime})$ can be applied to the index:
+    Let $\relation$ be a relation and $\symindex$ an index on attributes $I \subset \schema(\relation)$. The write model of $\symindex$ is a function that determines, if a change $\symchange = (\symchangeop, \relation, t, t^{\prime})$ can be applied to the index given additional parameters $P = \{p_1, p_2, \ldots p_n\}$:
 
     \begin{equation}
-        \mathtt{WRITEM}(\symchange) = 
+        \symwritem(\symchange,P) = 
         \begin{cases}
            \mathtt{true}, & \text{if } \symchangeop(\relation,t,t^{\prime}) \text{ can be applied to } \symindex \\
            \mathtt{false}, & \text{otherwise}
         \end{cases}
     \end{equation}
-
-    The write model is specific to the index structure that implements it.
 \end{definition}
 
-In case a change $\symchange$ can be propagated, the index's data structures are updated accordingly and the write model returns \texttt{true}. If the change cannot be propagated, the write model returns \texttt{false}. In both cases, the change is forwarded to the index's failure model. In practice, the check and the application of the change are executed in a single step, which makes the change a side-effect of $ \mathtt{WRITEM}(\symchange)$. However, the two steps could also be decoupled, which makes this an implementation detail.
+In case a change $\symchange$ can be propagated, the index's data structures are updated accordingly and the write model returns \texttt{true}. If the change cannot be propagated, the write model returns \texttt{false}. In both cases, the change is forwarded to the index's failure model. In practice, the check and the application of the change are executed in a single step, which makes the change a side-effect of $\symwritem(\symchange,P)$. However, the two steps could also be decoupled, which makes this an implementation detail.
 
 \subsection{Failure Model and State of an Index}
 
-The failure model is a second function implemented by the index that determines for every change $\symchange$ if it leads to index failure. Based on the outcome of this assessment, the index state and internal statistics are updated accordingly. An index's state determines, if and how it can be used for execution. We distiguish between three states as illustrated in \Cref{figure:failure_model}:
+The failure model is a second function $\symfailm(\symchange,P)$ implemented by the index that determines for every change $\symchange$ if it leads to index failure given optional parameters $P = \{p_1, p_2, \ldots p_n\}$ (e.g., up-to-date index statistics). Based on the outcome of this assessment, the index state and internal statistics are updated accordingly. An index's state determines, if and how it can be used for execution. We distiguish between three states as illustrated in \Cref{figure:failure_model}:
 
 \begin{description}
     \item[Clean] indexes are ready for use by the \acrshort{dbms} and able to produce results within the speed and quality parameters they naturally provide.
@@ -853,11 +849,45 @@ The failure model is a second function implemented by the index that determines 
     \item[Stale] indexes have stopped functioning within their defined parameters and are therefore removed from consideration for query planning.
 \end{description}
 
-Freshly built indexes find themselves in the \emph{clean} state. Every change operation $\symop_{c}$, may trigger a transition to either the \emph{dirty} or \emph{stale} state. If the write model returns \texttt{false}, the state is instantly updated to either \texttt{DIRTY} or \texttt{STALE}. Furthermore, internal statistics of the index are refreshed. 
+Freshly built indexes find themselves in the \texttt{CLEAN} state. If the write model fails for a change $\symchange$, i.e., $\symwritem(\symchange,P) = \mathtt{false}$, the state is updated to \texttt{STALE} and the index becomes unavailable and is marked for rebuilding. If the write model succeeds, the change $\symchange$, may still trigger a transition to either the \texttt{DIRTY} or the \texttt{STALE} state, if the changes that have accumulated in the meanwhile are expected to lead to index deterioration that goes beyond a certain threshold. Internal statistics can be consulted and updated to, e.g., adjust the index's cost model.
+
+\begin{figure}[bt]
+    \centering
+    \includegraphics[width=\textwidth]{figures/failure_model.eps}
+    \caption{Write- and failure model of an index $\symindex$. It knows the three states \texttt{CLEAN}, \texttt{DIRTY} and \texttt{STALE} that are triggered by changes $\symchange$ to the data.}
+    \label{figure:failure_model}
+\end{figure}
+
+\subsection{Index Rebuilding}
+
+Once an index has been marked as \texttt{STALE} it can no longer be used by the \acrshort{dbms} until it is rebuilt by the $\symrebuild(\relation,\symindex,P)$, where $P = \{ p_, p_2, \ldots p_n \}$ again denotes a list of additional parameters. In essence, the rebuild function simply re-constructs the index $\symindex$ based on the primary data held in $\relation$.
+
+However, the rebuilding of high-dimensional indexes is often a long-running process that may take several minutes to hours for large datasets to complete, which is why we propose an algorithm that minimises conflicts with other, concurrent database operations. As a pre-requisite for this algorithm to work, we assume that every transaction $\symtrans_t$ operates on a consistent snapshot $\symsnap_t$ of the database state at the time $t$ when the transaction started. This is a concurrency control mechanism known as \emph{snapshot isolation} \cite{Berenson:1995Critique}, which is very common in modern \acrshort{dbms}'. We will refer to snapshots of relations and indexes with subscripts, e.g.,  $\relation_{1} \in \symsnap_1$ be a relation and $\symindex_{1 } \in \symsnap_1$ for $t=1$. The rebuilding of a (high-dimensional) index can now be separated in two steps: The \texttt{BUILD} and the \texttt{REPLACE} phase, which start at timepoints $s$ and $r$ respectively, with $s < m$. The basic assumption behind separating these two steps is, that building up the index structure is the time consuming part, while merging the index (i.e., writing it to disk) is faster because it does not involve any access to the primary data nor any complex computations. Hence, the aim is to minimise exclusive access the the primary data structures maintained by the \acrshort{dbms}. The entire algorithm is also illustrated in \Cref{figure:async_index_rebuild}
+
+During the \texttt{BUILD} phase, the primary data in $\relation_{s}$ is scanned in a read-only transaction $\symtrans_{s}$ and the obtained data is used to build up the data structures required by the index. The built-up data structures exist outside of any database snapshot (e.g., in memory or in a file on disk) and is therefore not part of any visible database state. We therefore refer to this as a \emph{shadow index} $\symindex^{\prime}$. Since transaction $\symtrans_{s}$ is read-only, concurrent reads and writes can occur and all transaction $\symtrans_{s \geq t < r}$ will see the state of the original $\symindex_{s < t < r}$, regardless of whether that index is still operational (\texttt{CLEAN}), in process of deterioration (\texttt{DIRTY}) or has failed in the meanwhile (\texttt{STALE}). 
+
+The index build-up is followed by the \texttt{REPLACE} phase, which takes place in a second transaction $\symtrans_{r}$ that follows directly after $\symtrans_{s}$ and writes the shadow index created during the \texttt{BUILD} to the \acrshort{dbms} snapshot $\symsnap_r$ and then commits that snapshot. $\symtrans_{r}$ is a write transaction and may require exclusive locks on the data structures involved. It replaces the $\symindex_{r-1}$ with an updated version $\symindex_{r}$ that can take over. All transactions $\symtrans_{t \geq r}$ will see the state of the index $\symindex_{t \geq m}$. 
+
+Separating these two steps obviously ignores one important aspect, which is that of change operations that take place between timepoints $s$ and $r$. Since the \texttt{SCAN} phase operates on snapshot $\relation_{s}$, they are not taken into account when rebuilding the index. We solve this, by introducing an additional \emph{side-channel} between $\symtrans_{s}$ and concurrent transactions $\symtrans_{s < t < m}$ that \texttt{LEAK} relevant information. Every concurrent transaction that commits successfully, reports all relevant changes to the entity that orchestrates the \texttt{REBUILD} operation, which will be responsible for merging these changes with the shadow index $\symindex^{\prime}$ using its write- and failure model. In practice, this can be realised as some kind of event-bus allowing for a \emph{publish-subscribe} like communication model. The entity that orchestrates the rebuild can the simply subscribe to changes of the relation it is scanning.
+
+\subsubsection{Failure Cases and Limitations}
+
+The proposed algorithm has several failure cases that must be handled and limitations that must be addressed. Obviously, $\symrebuild(\relation,\symindex,P)$ fails, if the leaking process fails (i.e., information is lost) or if during the \texttt{BUILD} phase, the shadow index becomes unusable, i.e., its failure model signals a problem with some of the leaked information. In both cases, the shadow index must be dicarded and rebuilding of the index must be and resumed from scratch in a new, up-to-date transaction. Therefore, for this algorithm to work, the index's write model should bring a certain degree of robustness to accumulating changes. 
+
+Since the likelihood of accumulating enough changes for the rebuild to fail increases with runtime, the algorithm can also be combined with other strategies to reduce time spent in the critical \texttt{BUILD} phase, e.g., by having multiple, smaller partitions of the primary data in $\relation$ being (re-)built independently. Formally, this leads to an index $\symindex$ that consists of multiple sub-indexes, each with their own (identical) write- and failure model but their own state. The state of the index is then determined by the state of its sub-indexes.
+
+Last but not least, it is important to note that the proposed solution becomes a poweful tool if index failure can be (approximately) anticipated. Presuming this is possible, the index rebuild can be started ahead of time while the original index $\symindex$ is still functional. Due to snapshot isolation, concurrent read transactions can continue to use the original index until the new version is ready. In addition to heuristics (e.g, after $x$ change operations the index is being rebuilt) one can also leverage the cost model proposed in \Cref{section:cost_model} to determine if index quality is deteriorating.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/asynchronous-index-rebuilding}
+    \caption{Illustration of the asynchronous index rebuilding process, which takes place in two separate phases \texttt{BUILD} and \texttt{SCAN}. Information from transactions that take place concurrently to the  \texttt{BUILD} process are \texttt{LEAK}ed through a side-channel upon commit of the respective transaction.}
+    \label{figure:async_index_rebuild}
+\end{figure}
 
 \subsection{Case Studies}
 
-We demonstrate the idea of the write- and failure model using two index structures \acrshort{vaf} \cite{Weber:1998Va} and \acrshort{pq} \cite{Jegou:2010Product}. These case studies serve as mere examples and the concepts themselves can be applied to other indexes as well.
+We illustrate the idea of the write- and failure model using two index structures \acrshort{vaf} \cite{Weber:1998Va} and \acrshort{pq} \cite{Jegou:2010Product}. These case studies serve as mere examples and the concepts themselves can be applied to other indexes as well, see, for example, \cite{Olafsson:2011Dynamic} for work on index updates.
 
 \subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{vaf}}{VAF}}
 
@@ -866,7 +896,7 @@ As is explained in \Cref{section:index_vaf}, the \acrshort{vaf} algorithm assign
 If a new tuple $t^{\prime}$ is inserted, then the write model for the \acrshort{vaf} index must check if the vector $t^{\prime}[\attribute_f]$ is within bounds of the componen-wise minimum and maximum. If it is, then the signature can be calculated and appended -- the write model returns $\mathtt{true}$. If it is not, then the vector's position in the grid is undefined and the write model returns $\mathtt{false}$
 
 \begin{equation}
-    \mathtt{WRITEM}(\mathtt{INSERT}, \relation, t^{\prime}) =
+    \symwritem(\mathtt{INSERT}, \relation, t^{\prime}) =
     \begin{cases}
         \mathtt{true} & \text{if } t^{\prime}[\attribute_f]_i \geq f_{max,i} \wedge t^{\prime}[\attribute_f]_i \leq f_{min,i} \forall i \in [1,d]\\
         \mathtt{true} & \text{otherwise}
@@ -879,10 +909,3 @@ The same check must be executed if an existing tuple $t$ is updated to a new tup
 
 \subsubsection{Write and Failure Model for \texorpdfstring{\acrfull{pq}}{PQ}}
 The functioning of a \acrshort{vaf} index is explained in \Cref{section:index_vaf}
-
-\begin{figure}[bt]
-    \centering
-    \includegraphics[width=\textwidth]{figures/failure_model.eps}
-    \caption{Failure model of an index. It knows the three states \texttt{CLEAN}, \texttt{DIRTY} and \texttt{STALE}.}
-    \label{figure:failure_model}
-\end{figure}
