@@ -16,81 +16,89 @@ include("./recall.jl");
 # Functions used to load Milvus data
 function loadCottontailData(name, df)
     dict = read_json(joinpath("./evaluation/data/biganns/cottontaildb","cottontail-$(name)~measurements.json"))
-    for (entity, query, index, parallel, runtime, recall, dcg, plan) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["dcg"])
-        push!(df, (query, uppercase(replace(entity, "yandex_deep" => "")), index, parallel, runtime, recall, dcg, plan))
+    for (entity, query, index, parallel, runtime, recall, dcg) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["dcg"])
+        if (entity == "yandex_deep5m")
+            push!(df, (query, "5M", 1, index, parallel, runtime, recall, dcg))
+        elseif (entity == "yandex_deep10m")
+            push!(df, (query, "10M", 2, index, parallel, runtime, recall, dcg))
+        elseif (entity == "yandex_deep100m")
+            push!(df, (query, "100M", 3, index, parallel, runtime, recall, dcg))
+        else
+            push!(df, (query, "1B", 4, index, parallel, runtime, recall, dcg))
+        end
     end
 end
 
 # Load data files
-df = DataFrame(Query = String[], Entity = String[], Index = String[], Parallel = Int32[], Runtime = Float64[], Recall = Float64[], DCG = Float64[], Plan = Array{String}[])
+df = DataFrame(Query = String[], Entity = String[], EntityOrder = Int32[], Index = String[], Parallel = Int32[], Runtime = Float64[], Recall = Float64[], DCG = Float64[])
 loadCottontailData("5mto1b", df)
 
 # Generate PDFs
-for query in ["NNS","NNS + Fetch","Hybrid"]
-    nns = df |> @filter(_.Query == query && _.Parallel == 32) |> 
-    @orderby_descending(_.Entity) |> 
-    @thenby_descending(_.Parallel) |> @thenby(_.Index) |>
-    @groupby({_.Entity, _.Index, _.Parallel}) |> 
-    @map({
-        Entity=key(_).Entity, 
-        Index=key(_).Index,
-        Parallel=key(_).Parallel,
-        Type="$(key(_).Index) (p=$(key(_).Parallel))",
-        RuntimeMean=Statistics.mean(_.Runtime), 
-        RecallMean=Statistics.mean(_.Recall), 
-        DCGMean=Statistics.mean(_.DCG), 
-        RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-        RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-        Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))",
-        LabelPosition=minimum([Statistics.mean(_.Runtime), 15]), 
-    }) |> DataFrame
 
-    p1 = plot(nns,
-        ygroup=:Entity, x=:RuntimeMean, y=:Index, label=:Label,
-        Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
-        Guide.xlabel("Latency [s]"),
-        Guide.ylabel(nothing),
-        Scale.x_continuous(minvalue = 0.0, maxvalue=20.0),
-        Scale.y_discrete,
-        Scale.color_discrete_manual("#D2EBE9","#DD879B"),
-        Theme(
-            major_label_font="Helvetica Neue Bold",
-            major_label_font_size=20pt, 
-            minor_label_font="Helvetica Neue",
-            minor_label_font_size=18pt, 
-            point_label_font="Helvetica Neue Light",
-            point_label_font_size=16pt, 
-            bar_spacing=1mm, 
-            key_position=:none,
-            default_color="#D2EBE9"
-        )
+nns = df |> @filter(_.Parallel == 32) |> 
+@orderby(_.EntityOrder) |> 
+@thenby(_.Index) |>
+@groupby({_.Entity, _.Index, _.Parallel, _.Query}) |> 
+@map({
+    Entity=key(_).Entity, 
+    Index=key(_).Index,
+    Parallel=key(_).Parallel,
+    Query=key(_).Query,
+    Type="$(key(_).Index) (p=$(key(_).Parallel))",
+    RuntimeMean=Statistics.mean(_.Runtime), 
+    RecallMean=Statistics.mean(_.Recall), 
+    DCGMean=Statistics.mean(_.DCG), 
+    RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+    RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+    Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))",
+    LabelPosition=minimum([Statistics.mean(_.Runtime), 100]), 
+}) |> DataFrame
+
+p1 = plot(nns,
+    xgroup=:Query, ygroup=:Entity, x=:RuntimeMean, y=:Index, label=:Label,
+    Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
+    Guide.xlabel("Latency [s]"),
+    Guide.ylabel(nothing),
+    Scale.x_continuous(minvalue = 0.0, maxvalue=20.0),
+    Scale.y_discrete,
+    Scale.color_discrete_manual("#D2EBE9","#DD879B"),
+    Theme(
+        major_label_font="Helvetica Neue Bold",
+        major_label_font_size=20pt, 
+        minor_label_font="Helvetica Neue",
+        minor_label_font_size=18pt, 
+        point_label_font="Helvetica Neue Light",
+        point_label_font_size=16pt, 
+        bar_spacing=1mm, 
+        key_position=:none,
+        default_color="#D2EBE9"
     )
+)
 
-    p2 = plot(nns,
-        ygroup=:Entity, x=:Index,
-        Geom.subplot_grid(
-            layer(y=:RecallMean, Geom.point, color=["#D2EBE9"], shape = [Shape.diamond]),
-            layer(y=:DCGMean, Geom.point, color=["#DD879B"], shape = [Shape.circle]), 
-            Guide.xticks(orientation=:vertical)
-        ),
-        Guide.xlabel("Quality"),
-        Guide.ylabel(nothing),
-        Scale.x_discrete,
-        Scale.y_continuous(minvalue = 0.0, maxvalue=1.0),
-        Scale.color_discrete_manual("#D2EBE9","#DD879B"),
-        Theme(
-            major_label_font="Helvetica Neue Bold",
-            major_label_font_size=20pt, 
-            minor_label_font="Helvetica Neue",
-            minor_label_font_size=18pt, 
-            point_label_font="Helvetica Neue Light",
-            point_label_font_size=16pt, 
-            point_size=6pt, 
-            key_position=:none,
-            default_color="#D2EBE9"
-        )
+p2 = plot(nns,
+    ygroup=:Entity, x=:Index,
+    Geom.subplot_grid(
+        layer(y=:RecallMean, Geom.point, color=["#D2EBE9"], shape = [Shape.diamond]),
+        layer(y=:DCGMean, Geom.point, color=["#DD879B"], shape = [Shape.circle]), 
+        Guide.xticks(orientation=:vertical)
+    ),
+    Guide.xlabel("Quality"),
+    Guide.ylabel(nothing),
+    Scale.x_discrete,
+    Scale.y_continuous(minvalue = 0.0, maxvalue=1.0),
+    Scale.color_discrete_manual("#D2EBE9","#DD879B"),
+    Theme(
+        major_label_font="Helvetica Neue Bold",
+        major_label_font_size=20pt, 
+        minor_label_font="Helvetica Neue",
+        minor_label_font_size=18pt, 
+        point_label_font="Helvetica Neue Light",
+        point_label_font_size=16pt, 
+        point_size=6pt, 
+        key_position=:none,
+        default_color="#D2EBE9"
     )
+)
 
-    draw(PDF("./mainmatter/08-evaluation/figures/bignns/cottontail/bignns-cottontail-$(query)-runtime.pdf",21cm,22cm),p1);
-    draw(PDF("./appendices/01-appendix/figures/bignns-cottontail-$(query)-quality.pdf",21cm,29cm),p2);
-end
+draw(PDF("./mainmatter/08-evaluation/figures/bignns/cottontail/bignns-cottontail-runtime.pdf",44cm,24cm),p1);
+draw(PDF("./appendices/01-appendix/figures/bignns-cottontail-quality.pdf",21cm,29cm),p2);

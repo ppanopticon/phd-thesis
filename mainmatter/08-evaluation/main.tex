@@ -184,37 +184,18 @@ We use the query vectors provided with the Deep1B dataset and establish a ground
 \label{section:evaluation_bignns_cottontail}
 For this benchmark, we prepared a selection of indexes on the respective entities in \cottontail{}: Two variants of a \acrshort{pq} index, once organised as a list for exhaustive search ($8$ subspaces, $256$ centroids) and once organised as an inverted list for approximate search ($8$ subspaces, $256$ centroids and $256$ coarse centroids) and a \acrshort{vaf} index. Furthermore, we created a $B^{+}$-Tree index on the column \texttt{categories} which we expect to be beneficial for Boolean search. We again use query hints to nudge \cottontail{} into using certain high-dimensional index structures so as to be able to compare the different query execution strategies. Accross all workloads, we compare the performance of four different types of execution strategies: Sequential scan (no index) and the scan of the \acrshort{vaf} and the (IVF-)\acrshort{pq} indexes.
 
-\begin{figure}[p]
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
+\begin{landscape}
+    \begin{figure}[p]
         \centering
-        \includegraphics[width=\textwidth]{figures/bignns/cottontail/bignns-cottontail-NNS-runtime}
-        \caption{Simple \acrshort{nns}.}
-        \label{figure:cottontail_nns_runtime}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/bignns/cottontail/bignns-cottontail-NNS + Fetch-runtime}
-        \caption{\acrshort{nns} and fetching of vectors.}
-        \label{figure:cottontail_nns_fetch_runtime}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/bignns/cottontail/bignns-cottontail-Hybrid-runtime}
-        \caption{Hybrid query with Boolean filter.}
-        \label{figure:cottontail_hybrid_runtime}
-    \end{subfigure}
-    \caption{Cottontail DB's query execution time in seconds for different query workloads on different shards of the Deep1B dataset using different execution strategies.}
-    \label{figure:cottontail_runtime}
-\end{figure}
+        \includegraphics[width=1.55\textwidth]{figures/bignns/cottontail/bignns-cottontail-runtime}
+        \caption {\cottontail{}'s latency in seconds for different workloads (x-axis) on different shards of the Deep 1B data set using different access methods (y-axis).}
+        \label{figure:cottontail_runtime}
+    \end{figure}
+\end{landscape}
 
-In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in Figure \Cref{figure:cottontail_nns_runtime}. Brute-force search took between $0.69 \pm 0.12 \, \si{\second}$ (5 million) and $10.45 \pm 0.13 \, \si{\second}$ (100 million). We can observe, that the \acrshort{vaf} index brings only minor advantages for the smaller datasets but reduces execution time by almost \SI{4}{\second} for the larger. This is an artifact of the query execution engine, which uses less than the assigned 32 workes because of the derived \acrshort{cpu} costs. We can also cleary see, that using the (IVF-)\acrshort{pq} index reduces the execution time significantly, but at the cost of impaired quality, which is below $0.5$ for both recall and \acrshort{dcg} (see \Cref{figure:appendix_bignns_cottontail_nns_quality}). However, experience shows that the retrieval quality for these indexes is mainly an issue of tuning the number of centroids used upon index construction. It is also worth noting, that the IVF\acrshort{pq} index does currently not support intra-query parallelism due to \cottontail{}'s partitioning model, i.e., the execution times we see for the IVFPQ index are single-threaded. 
+In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in \Cref{figure:cottontail_runtime} (NNS). Brute-force search took between $0.69 \pm 0.12 \, \si{\second}$ (5 million) and $10.45 \pm 0.13 \, \si{\second}$ (100 million). We can observe, that the \acrshort{vaf} index brings only minor advantages for the smaller datasets but reduces execution time by almost \SI{4}{\second} for the larger. This is an artifact of the query execution engine, which uses less than the assigned 32 workes because of the derived \acrshort{cpu} costs. We can also cleary see, that using the (IVF-)\acrshort{pq} index reduces the execution time significantly, but at the cost of impaired quality, which is below $0.5$ for both recall and \acrshort{dcg} (see \Cref{figure:appendix_bignns_cottontail_nns_quality}). However, experience shows that the retrieval quality for these indexes is mainly an issue of tuning the hyperparameters, e.g., the number of coarse and fine centroids used upon index construction. It is also worth noting, that the IVF\acrshort{pq} index does currently not support intra-query parallelism due to \cottontail{}'s partitioning model, i.e., the execution times we see for the IVFPQ index are single-threaded. 
 
-Both \acrshort{pq} and \acrshort{vaf} fail to deliver interactive execution times for very large collections, which can be explained by  the simple fact that these index structures perform an exhaustive search, i.e., they do not limit themselves to a subset of the data. The execution plan is shown in \Cref{figure:cottontail_nns_plan} and is fairly unsurprising: The use of \acrshort{vaf} and \acrshort{pq} constitutes a class 3 resp. class 1 index replacement. The fetching of the \texttt{id} columns is pushed down to after the sort and limit operations, since this reduces the amount of IO.
+Both \acrshort{pq} and \acrshort{vaf} fail to deliver interactive execution times for very large collections, which can be explained by  the simple fact that these index structures perform an exhaustive search, i.e., they do not limit themselves to a subset of the data. The execution plans are shown in \Cref{figure:cottontail_nns_plan} and is fairly unsurprising: The use of \acrshort{vaf} and \acrshort{pq} constitutes a class 3 resp. class 1 index replacement according to Definitions \ref{definition:dfc_index_class_3} and \ref{definition:dfc_index_class_1}. The fetching of the \texttt{id} columns is pushed down to after the sort and limit operations, since this significantly reduces the amount of IO (only $1000$ fetches instead of several millions).
 
 \begin{figure}[p]
     \centering
@@ -244,15 +225,15 @@ Both \acrshort{pq} and \acrshort{vaf} fail to deliver interactive execution time
     \label{figure:cottontail_plans}
 \end{figure}
 
-Our second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. One can see in \Cref{figure:cottontail_nns_fetch_plan} that in terms of execution plan, accessing this additional column does not make a big difference. Since both the plan involving the entity scan and the \acrshort{vaf} index scan produce the \texttt{feature} column early on, there is not need to fetch it later. Only for the \acrshort{pq} index -- which uses a distance approximation that is obtained without accessing the \texttt{feature} column - - an additional fetch is needed, which again takes place after the order by and k-selection, to reduce IO. Consequently, the execution times are very similar to the simple \acrshort{nns} as one can see in \Cref{figure:cottontail_nns_fetch_runtime}. The numbers for a sequential scan range between $0.68 \pm 0.06 \, \si{\second}$ (5 million) and $10.53 \pm 0.29 \, \si{\second}$ (100 million). The impact of the additional fetching of $1000$ feature columns is negligible for the \acrshort{pq} index, which can be attributed to the fact that the fetch is pushed until after the $s,k$-selection. Obviously, the impact would become more important for larger values of $k$ but should remain negligibel since typically, $k << N$.
+Our second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. One can see in \Cref{figure:cottontail_nns_fetch_plan} that in terms of execution plan, accessing this additional column does not make a difference. Since both the plan involving the entity scan and the \acrshort{vaf} index scan produce the \texttt{feature} column early on, there is not need to fetch it later. Only for the \acrshort{pq} index -- which uses a distance approximation that is obtained without accessing the \texttt{feature} column -- an additional fetch is needed, which again takes place after the order by and k-selection, to reduce IO. Consequently, the execution times are very similar to the simple \acrshort{nns} as one can see in \Cref{figure:cottontail_runtime} (NNS + Fetch). The numbers for a sequential scan range between $0.68 \pm 0.06 \, \si{\second}$ (5 million) and $10.53 \pm 0.29 \, \si{\second}$ (100 million). The impact of the additional fetching of $1000$ feature columns is negligible for the \acrshort{pq} index, which can be attributed to the fact that the fetch is pushed until after the $s,k$-selection. We expect the impact to become more important for larger values of $k$ but it should remain negligible since typically, $k << N$.
 
-For the final measurement, we executed hybrid queries, i.e., \acrshort{nns} was restricted to a subset of the data that matches the predicate. The predicate involves a simple equality check that should effectively limit the exhaustive \acrshort{nns} to roughly $\frac{1}{10}$ of the collection. The values for a sequential scan range between $1.47 \pm 0.15 \, \si{\second}$ (5 million) and $25.6 \pm 0.39 \, \si{\second}$ (100 million) with very similar numbers for the \acrshort{vaf} and \acrshort{pq} indexes. To make sense of these values, we again turn to the query plans illustrated in \Cref{figure:cottontail_hybrid_plan}. The sequential scan took place with the help of a $B^{+}$-tree index, which speeds-up the Boolean filtering. Unfortunately, the current implementation of the \acrshort{vaf} index cannot natively accomodate Boolean predicates, since it constitutes a class 3 index replacement and therefore, a special implementation of the index would be required. Consequently, a $B^{+}$-tree was executed instead. In contrast, the \acrshort{pq} index can be combined with Boolead predicates, since it constitutes a class 1 index replacement. However, one can see in \Cref{figure:cottontail_hybrid_runtime} that the advantage of using it is negligible.
-This can be attributed to the fact that a fetch operation for the \texttt{category} column must be executed for every entry before executing the filtering. The IO overhead is much larger than the speed-up gained through the \acrshort{pq} index. This is confirmed by the numbers we see for the IVF\acrshort{pq} index, which restricts the scan to a small subset of the collection. 
+For the final measurement, we executed hybrid queries, i.e., \acrshort{nns} was restricted to a subset of the data that matches the predicate. The predicate involves a simple equality check that should effectively limit the exhaustive \acrshort{nns} to roughly $\frac{1}{10}$ of the collection. The values for a sequential scan range between $1.47 \pm 0.15 \, \si{\second}$ (5 million) and $25.6 \pm 0.39 \, \si{\second}$ (100 million) with very similar numbers for the \acrshort{vaf} and \acrshort{pq} indexes. To make sense of these values, we again turn to the query plans illustrated in \Cref{figure:cottontail_runtime} (Hybrid). The sequential scan took place with the help of a $B^{+}$-tree index, which speeds-up the Boolean filtering. Unfortunately, the current implementation of the \acrshort{vaf} index cannot natively accomodate Boolean predicates, since it constitutes a class 3 index replacement according to \Cref{definition:dfc_index_class_3} and therefore, a special implementation of the index would be required\footnote{It is, however, unclear if such an implementation would be beneficial in practice.}. Consequently, a $B^{+}$-tree was executed instead. In contrast, the \acrshort{pq} index can be combined with Boolead predicates, since it constitutes a class 1 index replacement according to \Cref{definition:dfc_index_class_1}. However, one can see in \Cref{figure:cottontail_runtime} (NNS + Fetch) that the advantage of using the is negligible.
+This can be attributed to the fact that a fetch operation for the \texttt{category} column must be executed for every entry before executing the filtering. The IO overhead is much larger than the speed-up gained through the \acrshort{pq} index. This is confirmed by the numbers we see for the IVF\acrshort{pq} index, which restricts the scan to a small subset of the collection. Similarly to the IVF\acrshort{pq} index, the $B^{+}$-tree index does currently not allow for parallel evaluation due to \cottontail{}'s partitioning model. This is severly limiting for the hybrid queries and something that should be addressed in the future.
 
-We refrain from visualising \acrshort{dcg} and recall values at this point but can report that recall was always $1.0$ for sequential scan and \acrshort{vaf} and around $0.30$ for \acrshort{pq}, which can probably be attributed to a too small number of centroids. The graphs can be found in \Cref{chapter:appendix_results}.
+We refrain from visualising \acrshort{dcg} and recall values at this point due to space contraints but we can report that recall was always $1.0$ for sequential scan and \acrshort{vaf} and between $0.50$ and $0.30$ for \acrshort{pq} and IVF\acrshort{pq}, which can probably be attributed to a the small number of centroids that we used. The graphs showing these numbers can be found in \Cref{chapter:appendix_results}.
 
 \subsection{Milvus}
-For executing queries, the mode of operation is a bit different than it is for \cottontail, since Milvus requires a data collection to be available in main memory, in order to be able to query it. Therefore, every query consists of two steps: Loading the collection and then executing the query once the collection is ready. We have obtained the ellapsed time for loading and query execution separately, so that we can reason about the individual components. The way queries can be specified is outlined in \Cref{listing:milvus_query}. We show the Python instead of the Java syntax, because it is less verbose and more readable, assuming, that the functionality of the two client libraries is identical.  
+For executing queries in Milvus, the mode of operation is a bit different than it is for \cottontail, since Milvus requires a data collection to be available in main memory, in order to be able to query it. Therefore, every query consists of two steps: Loading the collection and then executing the query once the collection is ready. We have obtained the ellapsed time for loading and query execution separately, so that we can reason about the individual components. The way queries can be specified is outlined in \Cref{listing:milvus_query}. We show the Python instead of the Java syntax, because it is less verbose and more readable, assuming, that the functionality of the two client libraries is identical.  
 
 \begin{lstlisting}[language=Python, caption={Example of a similarity search query to Milvus in Python on a 2-dimensional vector with the prior loading of a data collection ``images''.}, label=listing:milvus_query, numbers=none]
     from pymilvus import Collection
@@ -271,45 +252,27 @@ For executing queries, the mode of operation is a bit different than it is for \
 
 Accross all workloads, we compared the performance of two different types of indexes: The \texttt{FLAT} index is the equivalent of a sequential scan and it is the only index in Milvus that guarantees a recall of $1.0$. The \texttt{IVF\_SQ8} index uses an inverted file of clusters and limits search to a subset of these clusters based on the parameters provided by the user and an initial distance calculation between the query and the cluster centers. The approach is comparable to cluster pruning \cite{Chierichetti:2007Finding} or the two stage quantisation process described in \cite{Jegou:2010Product}, where each vector is mapped to an inverted list using a coarse quantiser. In addition to limiting the search space, the \texttt{IVF\_SQ8} index also compresses the \SI{4}{\byte} (\texttt{float}) into a \SI{1}{\byte} (\texttt{int8}) presentation, which significantly reduces memory and \acrshort{cpu} usage by up to 70\%. We built the \texttt{IVF\_SQ8} index beforehand using $4096$ clusters and instructed Milvus to search $1024$ and $2048$ clusters respectively.
 
-In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in Figure \Cref{figure:milvus_nns_runtime}. We can summarise that even for brute-force search (\texttt{FLAT}), query execution speed is very impressive once a collection has been loaded into main memory. For our test collection, it took between $0.09 \pm 0.03 \, \si{\second}$ (5 million) and $1.3 \pm 0.18 \, \si{\second}$ (100 million) to execute a query, all the while retaining a perfect recall and \acrshort{dcg} of $1.0$. However, if one considers time to load a collection from disk to be part of the query time, these numbers rise to between $13.02 \pm 0.52 \, \si{\second}$ and $172.99 \pm 1.02 \, \si{\second}$. If one loads a collection once to then execute many queries thereafter, the performance provided by Milvus is very desirable as the cost of loading the collection can be amortised over time. However, if a large number of collections must be queried without the ability to predict which one, and not all collections can be pre-loaded, query exection time is expected to deteriorate. Furthermore, the requirement to load the collection prior to querying it turned out to be an insurmountable roadblock for the shard that contained 1 billion entries. Milvus was unable to load the collection as it ran out of available memory. We confirmed, that Milvus indeed used the entire \SI{376}{\giga\byte} available on the node.
+In our first series of tests we executed the simple \acrshort{nns} workload. The results are depicted in Figure \Cref{figure:milvus_runtime} (NNS). We can summarise that even for brute-force search (\texttt{FLAT}), query execution speed is very impressive once a collection has been loaded into main memory. For our test collection, it took between $0.09 \pm 0.03 \, \si{\second}$ (5 million) and $1.3 \pm 0.18 \, \si{\second}$ (100 million) to execute a query, all the while retaining a perfect recall and \acrshort{dcg} of $1.0$. However, if one considers time to load a collection from disk to be part of the query time, these numbers rise to between $13.02 \pm 0.52 \, \si{\second}$ and $172.99 \pm 1.02 \, \si{\second}$. During that time, \cottontail{} can query the same collection $15$ (VAF) to $34$ (PQ) times while being able to switch between collections and using different indexes.
 
-In a attempt to aleviate the memory pressure, we also considered the \texttt{IVF\_SQ8} index, which seem a sance choice due to its data compression characteristics. Unfortunately, it did not resolve the problem of collection loading, since apparently, Milvus always loads all the available data. Nevertheless, there two interesting insights from the data:
+If one loads a collection once to then execute many queries thereafter, the performance provided by Milvus is very desirable as the cost of loading the collection can be amortised over time. However, if a large number of collections must be queried without the ability to predict which one, and not all collections can be pre-loaded, query exection time is expected to deteriorate. Furthermore, the requirement to load the collection prior to querying it turned out to be an insurmountable roadblock for the shard that contained 1 billion entries. Milvus was unable to load the collection as it ran out of available memory. We can confirm, that Milvus indeed used the entire \SI{376}{\giga\byte} available on the node.
+
+In a attempt to aleviate the memory pressure, we also considered the \texttt{IVF\_SQ8} index, which seems a logical choice due to its data compression characteristics. Unfortunately, it did not resolve the problem of collection loading, since apparently, Milvus always loads all the available data. Nevertheless, there two interesting insights from the data:
 \begin{enumerate*}[label=(\roman*)]
     \item \texttt{IVF\_SQ8} brings considerable speed-up for raw query execution time, especially for larger collections (roughly \SI{1}{\second} faster on 100 million shard),
     \item however, it exacerbates the performance impact of collection loading, since the necessary data structures must apparently be loaded in addition to the raw data.
-\end{enumerate*} This confirms our suspicion, that Milvus indeed loads all data structures that belong to a collection, regardless of which one is being used.
+\end{enumerate*} This confirms our suspicion, that Milvus indeed loads all data that belong to a collection, regardless of which one is being used.
 
-\begin{figure}[p]
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/bignns/milvus/bignns-milvus-NNS.pdf}
-        \caption{Simple \acrshort{nns} query}
-        \label{figure:milvus_nns_runtime}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/bignns/milvus/bignns-milvus-NNS + Fetch}
-        \caption{\acrshort{nns} and fetching of vectors.}
-        \label{figure:milvus_nns_fetch_runtime}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/bignns/milvus/bignns-milvus-Hybrid}
-        \caption{Hybrid query with Boolean filter.}
-        \label{figure:milvus_hybrid_runtime}
-    \end{subfigure}
-    \caption{Milvus' query execution time in seconds for different query workloads on different shards of the Deep1B dataset excluding (left, mint) and including (right, red) the time required to load the collection.}
-    \label{figure:milvus_runtime_runtime}
-\end{figure}
+The second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. Unfortuntely, Milvus currently doesn't support the returning of vectors in a \acrshort{nns}, which is why this is a two-step process. First, the \acrshort{nns} is executed. Then the vectors for the resulting primary key's are fetched. We measure the time for both steps but do not reload the collection in between. The results are depicted in \Cref{figure:milvus_runtime} (NNS + Fetch). The additional fetching step, while cumbersome, does not seem to have a huge impact in cases where the \texttt{FLAT} index is used. However, use of the \texttt{IVF\_SQ8} index seems to lead to significant deterioration of the the query performance for the fetching step, adding approximately \SI{10}{\second} (5 million) to more than \SI{250}{\second} (100 million) to query execution time, even in cases where the query takes place in memory. We do not have an explanation for this and consider this to be abnormal behaviour.
 
-The second series of tests involved the combined \acrshort{nns} and fetching of the resulting vectors. Unfortuntely, Milvus currently doesn't support the returning of vectors in a \acrshort{nns}, which is why this is a two-step process. First, the \acrshort{nns} is executed. Then the vectors for the resulting primary key's are fetched. We measure the time for both steps but do not reload the collection in between. The results are depicted in \Cref{figure:milvus_nns_fetch_runtime}. The additional fetching step, while cumbersome, does not seem to have a huge impact in cases where the \texttt{FLAT} index is used. However, use of the \texttt{IVF\_SQ8} index seems to lead to significant deterioration of the the query performance for the fetching step, adding approximately \SI{10}{\second} (5 million) to more than \SI{250}{\second} (100 million) to query execution time, even imn cases where the query takes place in memory. We do not have an explanation for this and consider this to be abnormal behaviour.
+Last but not least, we did execute hybrid queries, wherein \acrshort{nns} was restricted to a subset of the data that was filtered by a simple predicate. In Milvus this is a query primitive. The results are visualised in \Cref{figure:milvus_runtime} (Hybrid) and do not hold any surprises. In-memory query execution speed is again outstanding whereas time required to load a collection is significant. Interestingly, the \texttt{IVF\_SQ8}did not seem to have a negative impact on query execution speed.
 
-Last but not least we did execute hybrid queries, wherein \acrshort{nns} was restricted to a subset of the data that was filtered by a simple predicate. In Milvus this is an existing query primitive. The data is visualised in \Cref{figure:milvus_hybrid_runtime} and does not hold any surprises. In-memory query execution speed is again outstanding whereas time required to load a collection is significant. Interestingly, the hybrid queries did not seem to have an impact on query execution speed with the \texttt{IVF\_SQ8} index.
+\begin{landscape}
+    \begin{figure}[p]
+        \includegraphics[width=1.6\textwidth]{figures/bignns/milvus/bignns-milvus}
+        \caption{Milvus's latency in seconds for different workloads (x-axis) on different shards of the Deep 1B data set using different access methods (y-axis), with (red) and without (mint) time used for loading the data from disk.}
+        \label{figure:milvus_runtime}
+    \end{figure}
+\end{landscape}
 
 We again refrain from visualising \acrshort{dcg} and recall values but can report that recall was always $1.0$ for \texttt{FLAT} and around $0.99$ for all six queries using the \texttt{IVF\_SQ8} index.
 
@@ -317,14 +280,14 @@ We again refrain from visualising \acrshort{dcg} and recall values but can repor
 While very convincing in terms of sheer execution speed, the current version of Milvus also has some limitations that we list here for future reference:
 
 \begin{itemize}
-    \item Milvus currently only supports the Euclidean and Inner Product distance for nearest neighbour search on floating point embeddings.
+    \item Milvus currently only supports the Euclidean and Inner Product distance for \acrshort{nns} on floating point embeddings.
     \item Milvus does not support proximity-based search strategies other than \acrshort{nns}. However, range search is due for the 2.2.0 release according to the official GitHub issue tracker.
-    \item Milvus cannot retrieve the actual feature vectors as part of a proximity-based query, i.e., they must be fetched in an additional query by looking them up based on the primary key. This issue is also due for being addressed in the 2.2.0 release.
-    \item Milvus can only maintain a single index per feature column, effectively limiting the set of available distance functions to one, since most indexes are trained for a specific index.
+    \item Milvus cannot retrieve the actual feature vectors as part of a \acrshort{nns}, i.e., they must be fetched in an additional query by looking them up based on the primary key. This issue is also due for being addressed in the 2.2.0 release.
+    \item Milvus can only maintain a single index per feature column, effectively limiting the set of available distance functions to one, since most indexes must be trained for a specific index.
 \end{itemize}
 
 Furthermore, we have observed that as Milvus uses up all the memory during collection loading, it starts to behave rather eratic making it difficult to unload the collection again. In some of our runs, it even started to reload the same collection after a restart, effectively rendering the entire instance unusable for several hours.
 
-\section{Adaptive Index Management}
-
+\section{Adaptive Index Maintenance}
+\label{section:evaluation_adaptive_index_maintenance}
 \todo[inline]{Brute force vs. plain index vs. index with auxilary data structure}1

@@ -17,10 +17,10 @@ function loadMilvus(name, df)
     dict = read_json(joinpath("./evaluation/data/biganns/milvus","milvus-$name.json"))
     for (collection, value) in dict
         for (type, runtime) in zip(value["type"], value["runtime"])
-            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (w/o loading)", runtime))
+            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (memory)", runtime))
         end
         for (type, runtime) in zip(value["type"], value["runtime_with_load"])
-            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (with loading)", runtime))
+            push!(df, (uppercase(replace(collection, "yandex_deep" => "")), type, uppercase(replace(name, "milvus-" => "")), "Latency [s] (disk)", runtime))
         end
     end
 end
@@ -32,42 +32,60 @@ loadMilvus("ivfsq8-1024", df)
 loadMilvus("ivfsq8-2048", df)
 
 # Generate PDFs
-for query in ["NNS","Hybrid","NNS + Fetch"]
-    nns = df |> 
-        @filter(_.Query == query) |>
-        @orderby_descending(_.Collection) |>
-        @thenby(_.Index) |>
-        @groupby({_.Collection,_.Index,_.Mode}) |> 
-        @map({
-            Collection=key(_).Collection, 
-            Index=key(_).Index, 
-            Mode=key(_).Mode, 
-            LabelPosition=minimum([Statistics.mean(_.Runtime), 200]), 
-            RuntimeMean=Statistics.mean(_.Runtime), 
-            RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-            RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-            Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))"}
-        ) |> DataFrame
+nns = df |> 
+    @orderby_descending(_.Collection) |>
+    @thenby(_.Index) |>
+    @groupby({_.Collection,_.Index,_.Query,_.Mode}) |> 
+    @map({
+        Collection=key(_).Collection, 
+        Index=key(_).Index, 
+        Query=key(_).Query, 
+        Mode=key(_).Mode, 
+        LabelPosition=minimum([Statistics.mean(_.Runtime), 200]), 
+        RuntimeMean=Statistics.mean(_.Runtime), 
+        RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+        RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+        Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))"}
+    ) |> DataFrame
 
-    p = plot(nns,
-        xgroup = :Mode, ygroup=:Collection, x=:RuntimeMean, y=:Index, color = :Mode, label=:Label,
-        Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
-        Guide.xlabel(nothing),
-        Guide.ylabel(nothing),
-        Scale.x_continuous(minvalue = 0.0, maxvalue=300.0),
-        Scale.y_discrete,
-        Scale.color_discrete_manual("#D2EBE9","#DD879B"),
-        Theme(
-            major_label_font="Helvetica Neue Bold",
-            major_label_font_size=20pt, 
-            minor_label_font="Helvetica Neue",
-            minor_label_font_size=18pt, 
-            point_label_font="Helvetica Neue Light",
-            point_label_font_size=16pt, 
-            bar_spacing=1mm, 
-            key_position=:none
-        )
+p1 = plot(nns |> @filter(_.Mode == "Latency [s] (memory)") |> DataFrame,
+    xgroup = :Query, ygroup=:Collection, x=:RuntimeMean, y=:Index, label=:Label,
+    Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
+    Guide.xlabel(nothing),
+    Guide.ylabel(nothing),
+    Scale.x_continuous(minvalue = 0.0, maxvalue=300.0),
+    Scale.y_discrete,
+    Theme(
+        default_color = "#D2EBE9",
+        major_label_font="Helvetica Neue Bold",
+        major_label_font_size=20pt, 
+        minor_label_font="Helvetica Neue",
+        minor_label_font_size=18pt, 
+        point_label_font="Helvetica Neue Light",
+        point_label_font_size=16pt, 
+        bar_spacing=1mm, 
+        key_position=:none
     )
+)
 
-    draw(PDF("./mainmatter/08-evaluation/bignns/figures/milvus/binnns-milvus-$(query).pdf",40cm,18cm),p);
-end
+p2 = plot(nns |> @filter(_.Mode == "Latency [s] (disk)") |> DataFrame,
+    xgroup = :Query, ygroup=:Collection, x=:RuntimeMean, y=:Index, label=:Label,
+    Geom.subplot_grid(layer(x=:LabelPosition, Geom.label(position = :right)), Geom.bar(position = :dodge, orientation = :horizontal), Guide.xticks(orientation=:vertical)),
+    Guide.xlabel("Latency [s]"),
+    Guide.ylabel(nothing),
+    Scale.x_continuous(minvalue = 0.0, maxvalue=300.0),
+    Scale.y_discrete,
+    Theme(
+        default_color="#DD879B",
+        major_label_font="Helvetica Neue Bold",
+        major_label_font_size=20pt, 
+        minor_label_font="Helvetica Neue",
+        minor_label_font_size=18pt, 
+        point_label_font="Helvetica Neue Light",
+        point_label_font_size=16pt, 
+        bar_spacing=1mm, 
+        key_position=:none
+    )
+)
+
+draw(PDF("./mainmatter/08-evaluation/figures/bignns/milvus/bignns-milvus.pdf",44cm,24cm),vstack(p1,p2));
