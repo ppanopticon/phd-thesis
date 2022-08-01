@@ -1,0 +1,474 @@
+{
+  "entity": [
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep5m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep10m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep100m",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b",
+    "yandex_deep1b"
+  ],
+  "index": [
+    "SCAN",
+    "SCAN",
+    "SCAN",
+    "VAF",
+    "VAF",
+    "VAF",
+    "PQ",
+    "PQ",
+    "PQ",
+    "IVFPQ",
+    "IVFPQ",
+    "IVFPQ",
+    "SCAN",
+    "SCAN",
+    "SCAN",
+    "VAF",
+    "VAF",
+    "VAF",
+    "PQ",
+    "PQ",
+    "PQ",
+    "IVFPQ",
+    "IVFPQ",
+    "IVFPQ",
+    "SCAN",
+    "SCAN",
+    "SCAN",
+    "VAF",
+    "VAF",
+    "VAF",
+    "PQ",
+    "PQ",
+    "PQ",
+    "IVFPQ",
+    "IVFPQ",
+    "IVFPQ",
+    "SCAN",
+    "SCAN",
+    "SCAN",
+    "VAF",
+    "VAF",
+    "VAF",
+    "PQ",
+    "PQ",
+    "PQ",
+    "IVFPQ",
+    "IVFPQ",
+    "IVFPQ"
+  ],
+  "query": [
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid",
+    "NNS",
+    "NNS + Fetch",
+    "Hybrid"
+  ],
+  "plan": [
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[warren.evaluation.yandex_deep5m.feature]"
+    ],
+    [
+      "0:Select[feature,distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[feature]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep5m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,feature,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep5m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id,warren.evaluation.yandex_deep5m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep5m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.category]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id,warren.evaluation.yandex_deep5m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep5m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep5m.category]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep5m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[warren.evaluation.yandex_deep10m.feature]"
+    ],
+    [
+      "0:Select[feature,distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[feature]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep10m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,feature,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep10m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id,warren.evaluation.yandex_deep10m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep10m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.category]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id,warren.evaluation.yandex_deep10m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep10m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep10m.category]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep10m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[warren.evaluation.yandex_deep100m.feature]"
+    ],
+    [
+      "0:Select[feature,distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[feature]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep100m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,feature,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.feature]",
+      "0:ScanIndex[BTREE,warren.evaluation.yandex_deep100m.category \u003d :1]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id,warren.evaluation.yandex_deep100m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep100m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.category]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id,warren.evaluation.yandex_deep100m.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep100m.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep100m.category]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep100m.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id,warren.evaluation.yandex_deep1b.category]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[warren.evaluation.yandex_deep1b.feature]"
+    ],
+    [
+      "0:Select[feature,distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id,warren.evaluation.yandex_deep1b.category]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:ScanEntity[feature]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Filter[warren.evaluation.yandex_deep1b.category \u003d :1]",
+      "0:ScanEntity[warren.evaluation.yandex_deep1b.feature,warren.evaluation.yandex_deep1b.category]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,feature,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:ScanIndex[VAF,NNS(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), k\u003d1000, distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Function[warren.euclidean(Typed[FLOAT_VEC(96)],Typed[FLOAT_VEC(96)]): DOUBLE -\u003e distance]",
+      "0:Filter[warren.evaluation.yandex_deep1b.category \u003d :1]",
+      "0:ScanEntity[warren.evaluation.yandex_deep1b.feature,warren.evaluation.yandex_deep1b.category]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id,warren.evaluation.yandex_deep1b.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep1b.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.category]",
+      "0:ScanIndex[PQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id,feature]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id,warren.evaluation.yandex_deep1b.feature]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ],
+    [
+      "0:Select[distance,id]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.id]",
+      "0:OrderAndLimit[distance ASCENDING,1000]",
+      "0:Filter[warren.evaluation.yandex_deep1b.category \u003d :1]",
+      "0:Fetch[warren.evaluation.yandex_deep1b.category]",
+      "0:ScanIndex[IVFPQ,Scan(column\u003dwarren.evaluation.yandex_deep1b.feature(type\u003dFLOAT_VEC(96), nullable\u003dfalse, primary\u003dfalse), distance\u003dorg.vitrivr.cottontail.core.queries.functions.math.distance.binary.EuclideanDistance$FloatVector@5a5322d5, query\u003d:0)]"
+    ]
+  ]
+}
