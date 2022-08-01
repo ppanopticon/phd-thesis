@@ -166,13 +166,11 @@ Once a collection of potential plans has been generated for each group, the quer
 
 \subsubsection{Plan Caching}
 
-The plan cache is an optimisation mechanism that amortises the cost of the potentially expensive query planning if a certain type of query is encountered multiple times. At its core, the cache maps the hash code of every incoming canonical operator tree to the resulting, optimised physical plan. If the same query is encountered again, that plan can be looked-up and re-used directly, hence, avoiding another round of planning.
+The plan cache is an optimisation mechanism that amortises the cost of the potentially expensive query planning if a certain type of query is encountered multiple times. At its core, the cache maps the hash code of every incoming canonical operator tree to the resulting, optimised physical plan. If the same query is encountered again, that plan can be looked-up and re-used directly, hence, avoiding another round of planning. Currently, there are certain limitations to the plan cache mechanism in \cottontail{}, which is why it is disabled by default. Firstly, the actual execution performance of a plan is not being evaluated against the cost model, i.e., the level of optimality of an execution plan is not assessed. And secondly, there is no mechanism that invalidates cached entries as changes to the data occur. 
 
-Currently, there are certain limitations to the plan cache mechanism in \cottontail{}, which is why it is disabled by default. Firstly, the actual execution performance of a plan is not being evaluated against the cost model, i.e., the level of optimality of an execution plan is not assessed. And secondly, there is no mechanism that invalidates cached entries as changes to the data occur. 
+\subsubsection{Logical Optimisation}
 
-\subsubsection{Logical optimisation}
-
-The logical optimisation step acts on structural properties of the operator node tree and aims at expanding the list of query plans in a way that increases the likelihood of finding the optimal plan during the physical phase. It basically leverages the algebraic properties of the operators involved, e.g., the ability to decompose a  \texttt{FILTER} operator evaluating a conjunction into two consecutive \texttt{FILTER} operators -- one for each side. There are two versions of this rule, one that applies the left side first and one that applies the right side first. This is illustrated in the example given in \Cref{figure:cottontail_logical_rule_conjunction}. The applicaton of this rule can be seen as a preparation for the physical optimisation phase, where specific predicates may be pushed down to a secondary index.
+The logical optimisation step acts on structural properties of the operator node tree and aims at expanding the list of query plans in a way that increases the likelihood of finding the optimal plan during the physical phase. It basically leverages the algebraic properties of the operators involved, e.g., the ability to decompose a  \texttt{FILTER} operator evaluating a conjunction into two consecutive \texttt{FILTER} operators -- one for each side. This is illustrated in the example given in \Cref{figure:cottontail_logical_rule_conjunction}. The applicaton of this rule can be seen as a preparation for the physical optimisation phase, where specific predicates may be satisifed by a secondary index.
 
 \begin{figure}[bt]
     \centering
@@ -181,7 +179,7 @@ The logical optimisation step acts on structural properties of the operator node
     \label{figure:cottontail_logical_rule_conjunction}
 \end{figure}
 
-\subsubsection{Physical optimisation}
+\subsubsection{Physical Optimisation}
 
 The physical optimisation step tries different implementations of operators to arrive at a more cost-effective plan. While structural changes to the operator tree may be possible, the focus lies on implementation aspects.  At a high level, we distinguish between the following types of rules:
 
@@ -199,7 +197,7 @@ The physical optimisation step tries different implementations of operators to a
 \begin{figure}[bt]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/physical-rule-fetch}
-    \caption{Illustration of deferring \texttt{FETCH} operations. Over multiple passes, the \texttt{FETCH} of the columns \texttt{id}, \texttt{name} and \texttt{death}is pushed until after the \texttt{FILTER} has been applied. Columns \texttt{name} and \texttt{death} are eventually eliminated because they are not required.}
+    \caption{Illustration of deferring \texttt{FETCH} operations. Over multiple passes, the \texttt{FETCH} of the columns \texttt{id}, \texttt{name} and \texttt{death} is pushed up until after the \texttt{FILTER} has been applied. Columns \texttt{name} and \texttt{death} are eventually eliminated because they are not required.}
     \label{figure:cottontail_physical_rule_fetch}
 \end{figure}
 
@@ -283,7 +281,7 @@ Even though the storage manager abstraction layer could be used to combine diffe
     \end{tabular}  
 \end{table}
 
-\subsubsection{Storage engine: MapDB}
+\subsubsection{Storage Engine: MapDB}
 
 The \emph{MapDB} storage engine is based on version $3.0.8$ of a library with the same name\footnote{See: https://mapdb.org/} and was the first storage engine for \cottontail{}. The main requirement at that time was speed and ease of integration.
 
@@ -293,7 +291,7 @@ At its core, \emph{MapDB} offers persistent versions of the \texttt{Map} interfa
 
 While easy to use in practice and reasonably fast by default, \emph{MapDB} has several disadvantages. Firstly, the use of memory-mapped files, while tempting, is highly discouraged for \acrshort{dbms} as shown by \cite{Crotty:2022Are}. Secondly, the implementation of memory mapped files provided by the \acrshort{jvm} is far from optimal and plagued by issues with resource retention on certain platforms. And finally, \emph{MapDB} does not offer any \acrshort{mvcc}, which is why isolation is provided by \acrshort{s2pl}.
 
-\subsubsection{Storage engine: Xodus}
+\subsubsection{Storage Engine: Xodus}
 The \emph{Xodus} storage engine is based on version $2.0.1$ of the open source, transactional and schema less, embedded database for Java and Kotlin with the same name, developed and maintained by JetBrains\footnote{See https://github.com/JetBrains/xodus()}. As opposed to \emph{MapDB}, \emph{Xodus} does not rely on the use of memory mapped files. Atomicity and durability in \emph{Xodus} is guaranteed through write-ahead logging. A property that is very desirable in the context of adaptive index maintenance described in \Cref{section:adaptive_index_maintenance}, is \emph{Xodus}' support for non-blocking reads through the use of \acrshort{mvcc} and snapshot isolation, which was one of the reasons to experiment with this engine. \emph{Xodus} offers three different levels of abstraction over the same core IO facility:
 
 \begin{description}
@@ -306,7 +304,7 @@ The \emph{Xodus} storage engine is based on version $2.0.1$ of the open source, 
 
 While \emph{Xodus} offers many advantages for Boolean retrieval and transactional workloads, it is slightly slower than \emph{MapDB} for linear scans of columns containing large values in a read-only setting. This is due to the tree traversal that is involved, which incurs more overhead than scanning \emph{MapDB}'s page files. However, we were able to compensate for this drawback by the application \emph{Snappy}\footnote{See https://github.com/google/snappy/} compression for high-dimensional vectors, leading to even higher throughput.
 
-\subsubsection{Storage engine: HARE}
+\subsubsection{Storage Engine: HARE}
 
 \emph{HARE} is an experimental storage engine for \cottontail{} that so far has not made it to a final version and has thus never been used in a productive setting. The idea of \emph{HARE} was to build the storage engine end-to-end to have more fine-grained control over data access patterns. \emph{HARE} sports all components required for persitent data management, including a dedicated \emph{disk manager} and a \emph{buffer pool manager}. Atomicity and durability are provided by maintaining an undo and redo logs on a page level, which is reasonably straightforward to implement, but too slow for write-heavy workloads.
 
