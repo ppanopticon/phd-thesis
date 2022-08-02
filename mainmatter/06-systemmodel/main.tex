@@ -1,26 +1,24 @@
-\chapter{Modelling a Database for Dynamic Multimedia Data}
+excelent\chapter{Modelling a Database for Dynamic Multimedia Data}
 \label{chapter:system_model}
 
-We have elaborated in \Cref{chapter:applications} that multimedia retrieval and analytics workloads (and workloads that exhibit similiar characteristics) pose specific requirements on a database system. In this chapter, we focus on four aspects and derive a formal model to accomodate them on a system level:
+We have argued in \Cref{chapter:applications} that multimedia retrieval, analysis and analytics workloads (and workloads that exhibit similiar characteristics) pose specific requirements on a database system. In this chapter, we focus on four aspects and derive a formal model to accomodate them on a systems level:
 
 \begin{description}
-    \item[Support for Non-atomic Data] Multimedia workloads process features, which are usually real-valued, high-dimensional vectors but can theoretically be any mathematical object (e.g., complex numbers, matrices etc.). A multimedia \acrshort{dbms} must support these objects as first-class citizens.
-    \item[Support for Distance Computation] The notion of proximity between features plays a crucial role in all types of multimedia workloads, be it for simple \acrshort{nns} or clustering. While certain workloads rely on raw speed for simple computations and data structures that allow for this type of lookup, other workloads require the ability to compose more complex computations and execute them efficiently without the use of an index. Both aspects must be covered by a multimedia \acrshort{dbms}.
-    \item[Dynamically Changing Data] Data is usually subject to constant change and a multimedia \acrshort{dbms} must be able to propagate these changes to all the relevant data structures while maintaining ther internal consistency model.
-    \item[Quality vs. Time] Multimedia queries often trade retrieval quality against speed or vice-versa, e.g., when using a high-dimensional indexes. The multimedia \acrshort{dbms} must allow the user to express their perference at different levels of the system.
+    \item[Support for Complex Data Types] Multimedia workloads process features, which are often real-valued, high-dimensional vectors but can be any type of mathematical object (e.g., complex numbers). A multimedia \acrshort{dbms} must support these objects as first-class citizens (see \Cref{requirement:complex_data_types}).
+    \item[Support for Distance Computation] The notion of proximity between features plays a crucial role in all types of multimedia workloads, which involves the evaluation of functions. A multimedia \acrshort{dbms} must be able to execute these funcitons efficiently, using the available data structures and execution methods (see \Cref{requirement:functions}).
+    \item[Dynamic Data] Data is usually subject to constant change and a multimedia \acrshort{dbms} must be able to propagate these changes to all the relevant data structures while maintaining an internal consistency model (see \Cref{requirement:big_data} and \Cref{requirement:classical_dbms}).
+    \item[Quality vs. Time] Multimedia queries often trade retrieval quality against speed or vice-versa, e.g., when using a high-dimensional indexes. A multimedia \acrshort{dbms} must make these decisions explicit and allow the user to express their perference at different levels of the system (see \Cref{requirement:quality_model}).
 \end{description}
 
-To address these requirements, we propose and formalize a set of functionality, which will be specified in the next sections. First, we propose a notion of \emph{generalized, proximity based queries} as an extension to the relational model. Second, we describe a \emph{cost-model} that takes the notion of quality of results into acount. And finally, we introduce a general-purpose mechanism to enable high-dimensional indexes to cope with changing data.
+To address these requirements, we propose and formalise a set of functionality, which will be specified in the next sections. First, we propose a notion of \emph{generalised, proximity based queries} as an extension to the relational model. Second, we describe a \emph{cost-model} that takes the notion of quality of results into account. And finally, we introduce the formal requirements to enable high-dimensional indexes to cope with dynamic data and derive a model for maintaining such indexes. All these contributions can be seen as extensions to the functionality provided by a traditional \acrshort{dbms}. To establish a frame of reference, we assume the relational model and \acrshort{acid} properties for the model \acrshort{dbms}. However, the introduced concepts should generalise to other data- and consistency models.
 
-All these contributions can be seen as extensions to the functionality provided by a traditional \acrshort{dbms}. To establish a frame of reference, we assume the relational model and \acrshort{acid} properties for the model \acrshort{dbms} under consideration, without a loss of generality.
-
-\section{Generalized Proximity Based Operations}
+\section{Generalised Proximity Based Operations}
 \label{section:generalised_proximity_based_ops}
 
 Starting with the vector space model for similarity search~\cite{Zezula:2006Similarity} presented in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we propose to extend the notion of distance-based similarity search to that of a more general \emph{proximity based query} following \cref{definition:pbq}.
 
 \begin{definition}[label=definition:pbq]{Proximity Based Query}{}
-    Let $\relation$ be a relation. Any database query that relies on the evaluation of a distance function $\delta: \domain_{f} \times \domain_{f} \rightarrow \symreal_{\geq 0}$ that calculates the distance between an attribute $\attribute_{f} \in \schema(\relation)$ and some query $q \in \domain_f$, is called a \emph{proximity based query}. We call $q$ the \emph{query} and $\attribute_{f}$ the \emph{probing argument}, which both share the same \emph{query data domain} $\domain_f$. It is to be noted, that $\domain_f \equiv \symfeatures$. 
+    Let $\relation$ be a relation. Any database query that relies on the evaluation of a distance function $\symdist: \domain_{f} \times \domain_{f} \rightarrow \symreal_{\geq 0}$ that calculates the distance between an attribute $\attribute_{f} \in \schema(\relation)$ and some query $q \in \domain_f$, is called a \emph{proximity based query}. We call $q$ the \emph{query} and $\attribute_{f}$ the \emph{probing argument}, which both share the same \emph{query data domain} $\domain_f$. It is to be noted, that $\domain_f \equiv \symfeatures$. 
 \end{definition}
 
 \cref{definition:pbq} simply requires a notion of proximity between some attribute and a query to be obtained by evaluating some distance function. The definition does not make any assumption as to what data domains $\domain_f$ query and probing attribute belong to nor how the distance is being used within the query. 
@@ -34,7 +32,7 @@ Since the choice of the distance function $\symdist$ is a crucial part of any pr
 \begin{enumerate}
     \item The domain (i.e., the input) of the distance function $\symdist$ is assumed to be $\symreal^{\mathtt{dim}} \times \symreal^{\mathtt{dim}}$, that is, the distance function is assumed to be a binary function and arguments are restricted to real-valued vectors.
     \item The codomain (i.e., the output) of the distance function $\symdist$ is assumed to be $\symreal_{\geq 0}$, hence, the generated distance value is a positive, real number.
-    \item The pair $(\domain_f,\symdist)$ usually constitutes a metric, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity properties.
+    \item $(\domain_f,\symdist)$ usually constitutes a metric, thus satisfying the non-negativity, identity of indiscernibles, symmetry and subadditivity properties.
 \end{enumerate}
 
 Upon closer examination and if we consider the use cases presented in \Cref{chapter:applications}, one must come to challenge some of these constraints. If, for example, we turn to \cref{example:mrf}, we realise that it is not reasonable to impose a general restriction of the domain of the distance function to $\symreal^{\mathtt{dim}}$ with $\mathtt{dim} \in \symnatural^{+}$
@@ -43,9 +41,7 @@ Upon closer examination and if we consider the use cases presented in \Cref{chap
     In \acrshort{mrf} (see \cref{section:application_mrf}), we try to obtain the signal vector $a_{i \in \mathbb{N}} \in \domain_f \subset \symcomplex^{\mathtt{dim}}$ so that it maximizes the inner product to a signal (query) vector $q \in \symcomplex^{\mathtt{dim}}$. In this case, the distance function $\symdist$ has the form $\symdist \colon \symcomplex^{\mathtt{dim}} \times \symcomplex^{\mathtt{dim}} \to \symreal_{\geq 0}$. Hence, the domain of $\symdist$ is a complex vector space.
 \end{example}
 
-Obviously, this limitation of the definition of $\symdist$ can be easily remediated simply by extending the set of supported data domains $\domainset$ by $\symcomplex^{\mathtt{dim}}$ similarily to how it was done for $\symreal^{\mathtt{dim}}$ as proposed by \cite{Giangreco:2018Database}. Nevertheless, we have to acknowledge, that the text-book definition of a distance function is obviously too limited for some real-world applications, and that the query and probing arguments of a distance function could be any type of value supported by the \acrshort{dbms}. Another, similar example could be the \emph{Levenshtein distance}~\cite{Levensthtein:1965Binary} -- often used in computer linguistics -- which is a distance metric on string values.
-
-If now in addition, we consider \cref{example:svmdistance}, we see that restricting oneself to binary functions with $\symreal_{\geq 0}$ is also too limiting when facing certain practical scenarios.
+Obviously, this limitation of the definition of $\symdist$ can be easily remediated simply by extending the set of supported data domains $\domainset$ by $\symcomplex^{\mathtt{dim}}$ similarily to how it was done for $\symreal^{\mathtt{dim}}$ as proposed by \cite{Giangreco:2018Database}. Nevertheless, we have to acknowledge, that the text-book definition of a distance function is obviously too limited for some real-world applications, and that the query and probing arguments of a distance function could be any type of value supported by the \acrshort{dbms}. Another, similar example could be the \emph{Levenshtein distance}~\cite{Levensthtein:1965Binary} -- often used in computer linguistics -- which is a distance metric on string values. If now in addition, we consider \cref{example:svmdistance}, we see that restricting oneself to binary functions with $\symreal_{\geq 0}$ is also too limiting when facing certain practical scenarios.
 
 \begin{example}[label=example:svmdistance]{Distance Between a Vector and a Hyperplane}{}
     To find positive and negative examples $a_{i} \in \domain_f \subset \symreal^{\mathtt{dim}}$ given a linear classifier, e.g., provided by a SVM, we evaluate the distances between the attributes and a (query-)hyperplane described as $\mathbf{q}^T\mathbf{x} - b = 0$ with $\mathbf{q},\mathbf{x} \in \symreal^{\mathtt{dim}}$ and $b \in \symreal$. The distance function is then given by:
@@ -57,14 +53,11 @@ If now in addition, we consider \cref{example:svmdistance}, we see that restrict
     $\symdist$ now has the form $\symdist \colon \symreal^{\mathtt{dim}} \times \symreal^{\mathtt{dim}} \times \symreal \to \symreal$. Hence, $\symdist$ is no longer a binary but a ternay function with arguments $\mathbf{a_{i}}$, $\mathbf{q}$ and $b$. Furthermore, the distance may take negative values depending on whether a result is considered a positive or negative example.
 \end{example}
 
-
-Again, we are confronted with an example that violates the text-book definition of a distance function. While the idealized idea that distance functions used in proximity based queries must always constitute a metric on some real-valued vector space may be very common~\cite{Zezula:2006Similarity}, we see in practice that this assumption is often violated~\cite{Skopal:2011Nonmetric,Bernhauer:2019Nonmetric} and that many functions used to calculate proximity between objects are not actual metrics. Even though, this can be a disadvantage when considering high-dimensional index structures that exploit the geometric properties of metric spaces, it is obvious that such functions exist and must thus be considered in any generalised multimedia database application supporting proximity based queries. 
+Again, we are confronted with an example that violates the text-book definition of a distance function. While the idealised idea that distance functions used in proximity based queries must always constitute a metric on some real-valued vector space may be very common~\cite{Zezula:2006Similarity}, we see in practice that this assumption is often violated~\cite{Skopal:2011Nonmetric,Bernhauer:2019Nonmetric} and that many functions used to calculate proximity between objects are not actual metrics. Even though this can be a disadvantage when considering high-dimensional index structures that exploit the geometric properties of metric spaces, it is obvious that such functions exist and must thus be considered in any generalised multimedia database application supporting proximity based queries. 
 
 In contrast, there is actually good reason to assume the codomain of a distance function  $\symdist$ to lie in $\symreal$. On the one hand, it is convenient both for the underlying mathematics as well as from an implementation prespective. More importantly, however, real numbers -- unlike, for example, complex numbers or vectors -- come with a natural, total ordering, which is required for downstream operations such as sorting, ranking or clustering.
 
-To summarize, we have established that, on the one hand, we require a proper definition of what is considered to be a valid distance function so as to be able to efficiently plan and execute queries that use them, while on the other hand we must keep that definition open enough to accomodate the many different, applications.
-
-To address the aforementioned limitations while still accomodating classical, metric distances, we propose the extension of a the distance function to the more general notion of a \acrfull{dfc} following \cref{definition:dfc}.
+To summarize, we have established that, on the one hand, we require a proper definition of what is considered to be a valid distance function so as to be able to efficiently plan and execute queries that use them, while on the other hand we must keep that definition open enough to accomodate the many different, applications. To address the aforementioned limitations while still accomodating classical, metric distances, we propose the extension of a the distance function to the more general notion of a \acrfull{dfc} following \cref{definition:dfc}.
 
 \begin{definition}[label=definition:dfc]{\acrlong{dfc}}{}
     A \acrshort{dfc} $\symdfc \colon \domain_f \times \domain_f \times \domain_{1} \ldots \times \domain_{N} \to \symreal$ is an N-ary but at least binary function $\symdfc(p,q,s_1,\ldots,s_n)$ that outputs a distance $d \in \symreal$ between a probing argument $p \in \domain_f$ and a query argument $q \in \domain_f$ using a defined number of \emph{support arguments} $s_{k \in \mathbb{N}}$ from any of the data domains in $\domainset$.
@@ -88,14 +81,13 @@ To address the aforementioned limitations while still accomodating classical, me
        \symdist_{L2}(\mathbf{p},\mathbf{q}) =\symdfc_M(\mathbf{p},\mathbf{q}, 2) = \sqrt{\sum_{i=1}^{n} \mid p_i - q_i \mid^2}
     \end{equation}
     
-    However, using the idea of a \acrshort{dfc}, we can express many different types of much more complex distance functions in a simple yet powerful framework. For example, the following distance function is used to obtain a dissimilarity between poses using the joint locations of an 18-keypoint skeleton (details presented in \cite{Heller:2022Multi}):
+    However, using the idea of a \acrshort{dfc}, we can express many different types of much more complex distance functions in a simple yet powerful framework. For example, the following distance function is used to obtain a dissimilarity between poses using the joint locations of an 18-keypoint skeleton (more details are presented in \cite{Heller:2022Multi}):
 
     \begin{equation}
         \hat{\delta}(\mathbf{p},\mathbf{q},\mathbf{w}_q,\mathbf{w}_f, s) = \sum_{i=1}^{n} \mid (p_i - q_i) \mid \min(w_{q,i}, w_{f,i}) + 2\pi (s - \sum_{i=1}^{n} \min(w_{q,i}, w_{f,i}))
     \end{equation}
 
     The query and support arguments $\mathbf{p}$ and $\mathbf{q}$ are the actual, normalised keypoints and are accompanied by two weight-vectors $\mathbf{w}_q$ and $\mathbf{w}_f$, that encode the presence or absence of a joint in a scene. To normalise for missing joints, a normalisation factor based on the weight-sum $s$ is employed.
-
 \end{example}
 
 
@@ -118,14 +110,12 @@ With this idea of a \acrshort{dfc} and its (partial) implementations in mind, we
 \begin{description}
     \item[\acrshort{dfc} and Proximity Based Queries] In extension to \cref{definition:pbq}, we realise that any query execution plan that involves the evaluation of a (partial) implementation of a \acrshort{dfc}, falls into the category of a proximity based query.
 
-    \item[Variable and Constant Arguments] In the context of a proximity based query, every attribute of a \acrshort{dfc} can either be regarded as \emph{constant} or \emph{variable}. That is, as elements in the database are iterated during query execution, they either remain the same or assume new values. 
+    \item[Variable and Constant Arguments] In the context of a proximity based query, every attribute of a \acrshort{dfc} can either be regarded as \emph{constant} or \emph{variable}. That is, as elements in the database are iterated during query execution, they either remain the same or assume new values. This can be used for optimisation.
     
     \item[Purity of Domain] Since the purpose of a \acrshort{dfc} is to quantify proximity between a probing argument $p$ and a query argument $q$, we can assume that $p, q \in \domain_f$. Furthermore, we require that the query argument is always constant, wheras the probing argument is always variable.
 
-    \item[Scalarity of Codomain] A \acrshort{dfc} and its implementations always produce a single, scalar output $d \in \symreal$ to quantify the distance. This could be a special type to allow for downstream operations.
+    \item[Scalarity of Codomain] A \acrshort{dfc} and its implementations always produce a single, scalar output $d \in \symreal$ to quantify the distance. Depending on whether a function generates a distance or a similarity score, a \acrshort{dbms} could use special, annotated types (e.g., \texttt{DISTANCE} or \texttt{SCORE}) to allow for specialised downstream operations.
 \end{description}
-
-All the aforementioned properties can be put to explicit use when planning for the execution of a query, be it for index selection, optimisation of execution through caching as well as other measures.
 
 As an aside, we must address the role of dimensionality $\mathtt{dim}$ in the case of data domains that are subsets of vector spaces, i.e.,  $\domain_f \subset \symreal^{\mathtt{dim}}$ or $\domain_f \subset \mathbb{C}^{\mathtt{dim}}$. One could argue, that the dimensionality of such a vector space can also be seen as a parameter of the \acrshort{dfc}. Irrespective of the merits such an argument might have, we consider the dimensionality of the vector space to be a strictly structural property of the underlying data domain $\domain_f$ and thus a constant in the context of a query.
 
@@ -198,9 +188,9 @@ If now we assume any DFC supported by the \acrshort{dbms} to be member of $\math
     \end{center}
 \end{example}
 
-The evaluation of multiple \acrshort{dfc}s in a single, extended projection or the combination of simple attribute projections with the evaluation of \acrshort{dfc}s are also allowed.
+From \Cref{definition:dfc_rel}, we can follow that the evaluation of multiple \acrshort{dfc}s in an extended projection (e.g., to support aggregate \acrshort{nns} \cite{Papadias:2005Aggregate}) or the combination of attribute projections with the evaluation of \acrshort{dfc}s are also allowed.
 
-With the proposed, extended projection, the obtained distance value becomes an explicit attribute $\attribute_d$ in the relation $ \relation^{\prime} = \projection_{\symdfc(\cdot)}(\relation)$, which can then be used by downstream, relational operators and/or be returned by the query to any calling system. This makes sense, for example, in \acrshort{nns}, because the distance is usually converted to a similarity score by some correspondence function.
+With the proposed, extended projection, the obtained distance value becomes an explicit attribute $\attribute_d$ in the relation $ \relation^{\prime} = \projection_{\symdfc(\cdot)}(\relation)$, which can then be used by downstream, relational operators and/or be returned by the query to any calling system. This makes sense, for example, in \acrshort{nns}, where the distance is often converted to a similarity score by some additional correspondence function.
 
 \subsubsection{Ranked Relations}
 
@@ -359,7 +349,7 @@ The proposed operations can now be freely combined to form proximity based queri
     \acrshort{knn}-search can be expressed as $\limit_k(\order_{\attribute_d\uparrow}(\projection_{P} (\relation)))$ with $k = 2$. This is the relational algebra equivalent to the following SQL query and leads to $\relation_{\mathtt{result}}$ (assuming $ \symdist$ to be the Manhattan distance).
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title, d(feature, [0.0,0.0,0.0]) from paintings order by d limit 2
+        select title, d(feature, [0.0,0.0,0.0]) as dst from paintings order by dst limit 2
     \end{lstlisting}
 
     \begin{center}
@@ -377,7 +367,7 @@ The proposed operations can now be freely combined to form proximity based queri
     Range search (or $\epsilon$NN) can be expressed as $\selection_{\attribute_d > \epsilon}(\projection_{P} (\relation))$ with and $\epsilon = 15.0$. This is the relational algebra equivalent to the following SQL query and leads to $\relation_{\mathtt{result}}$ (assuming $ \symdist$ to be the Manhattan distance).
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title, d(feature, [0.0,0.0,0.0]) from paintings where d > 15.0 order by d
+        select title, d(feature, [0.0,0.0,0.0]) as dst from paintings where dst > 15.0 order by dst
     \end{lstlisting}
 
     \begin{center}
@@ -392,19 +382,23 @@ The proposed operations can now be freely combined to form proximity based queri
 \end{example}
 
 \begin{table}[bt]
-    \caption{Proximity based queries supported by extended, relational algebra.}
+    \caption{Proximity based queries supported by the extended relational algebra.}
     \label{table:proximity_based_queries}
-    \begin{tabular}{||l l r ||} 
+    \begin{tabular}{||p{4cm} l r ||} 
      \hline
-     Name & Result & Algebraic Form \\
+     \textbf{Name} & \textbf{Result} & \textbf{Algebraic Form} \\
      \hline\hline
-     \acrshort{nns} / \acrshort{knn} & $\relation^{\mathcal{A}_d\uparrow}$ & $\lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})}  ( \relation_p)))$  \\ 
+     \acrshort{nns} / \acrshort{knn} & $\relation^{\mathcal{A}_d\uparrow}$ & $\limit_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})}  ( \relation_p)))$  \\ 
      \hline
-     \acrshort{fns} / \acrshort{kfn}& $\relation^{\mathcal{A}_d\downarrow}$ & $\lambda_k (\order_{\mathcal{A}_d\downarrow} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})}  ( \relation_p)))$   \\
+     \acrshort{fns} / \acrshort{kfn}& $\relation^{\mathcal{A}_d\downarrow}$ & $\limit_k (\order_{\mathcal{A}_d\downarrow} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})}  ( \relation_p)))$   \\
      \hline
-     $\epsilon$NN~\cite{Giangreco:2018Database} / Range Search & $\relation^{\mathcal{A}_d\uparrow}$ & $\order_{\mathcal{A}_d\uparrow} ( \sigma_{\mathcal{A}_d \leq \epsilon} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})} ( \relation_p)) )$  \\
+     $\epsilon$NN / Range Search & $\relation^{\mathcal{A}_d\uparrow}$ & $\order_{\mathcal{A}_d\uparrow} ( \sigma_{\mathcal{A}_d \leq \epsilon} ( \pi_{\mathcal{A}_{y}, \symdist(\mathcal{A}_{p})} ( \relation_p)) )$  \\
      \hline
-     \acrshort{nns} w. Selection & $\relation^{\mathcal{A}_d\uparrow}$ &  $\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{p}, \symdist(\mathcal{A}_{p})} ( \sigma_{\mathcal{A}_{y} = 1889} ( \relation_p)) )$\\
+     \acrshort{nns} w. Selection & $\relation^{\mathcal{A}_d\uparrow}$ & $\limit_k(\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{p}, \symdist(\mathcal{A}_{p})} ( \sigma_{\mathcal{A}_{y} = 1889} ( \relation_p))))$\\
+     \hline
+     Group NNS \& Aggregate NNS \cite{Papadias:2004Group,Papadias:2005Aggregate} & $\relation^{\mathcal{A}_{d}\uparrow}$ & $\limit_k(\order_{\mathcal{A}_{d}\uparrow} ( \pi_{f(\symdist_1(\mathcal{A}_{p}), \ldots, \symdist_n(\mathcal{A}_{p}))}  ( \relation_p)))$ \\ 
+     \hline
+     Batch NNS \cite{Shao:2008Batch} & $\relation^{\emptyset}$ & $\limit_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\symdist_1(\mathcal{A}_{p})} (\relation_p))) \cup \limit_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\symdist_2(\mathcal{A}_{p})} (\relation_p)))$ \\ 
      \hline
      Multi Order & $\relation^{\mathcal{A}_{d1}\uparrow,\mathcal{A}_{d2}\uparrow}$ & $\order_{\mathcal{A}_{d1}\uparrow,\mathcal{A}_{d2}\uparrow} ( \pi_{\symdist_1(\mathcal{A}_{p}), \symdist_2(\mathcal{A}_{p})}  ( \relation_p))$ \\ 
      \hline
@@ -418,11 +412,11 @@ The proposed operations can now be freely combined to form proximity based queri
 Since a query optimiser of a multimedia \acrshort{dbms} must be able to manipulate the operators that were introduced before, there is a series of algebraic properties that must be taken into account. For unary operators, we must consider \emph{commutativity}, i.e., whether changing the order of application leads to the same result. For binary operators, we must consider the \emph{commutativity of operands} and \emph{distributivity} with respect to other operations. The identities are provided in \Cref{equation:algebraic_properties}.
 
 \begin{align}
-    \label{equation:algebraic_properties}
     \symop_1 (\symop_2 ( \relation)) = \symop_2 (\symop_1 (\relation))   \tag{commutativity of operators} \\
     \symop_{1} (\symop_{2} (\relation_L,  \relation_R)) = \symop_{2} ( \symop_{1} ( \relation_L), \symop_{1} ( \relation_R))  \tag{distributivity of operators}\\
     \symop (\relation_L, \relation_R) = \symop(\relation_R, \relation_L)    \tag{commutativity of operands}\\
     \symop(\symop ( \relation)) = \symop (\relation)   \tag{idempotence of operators} \\
+    \label{equation:algebraic_properties}
 \end{align}
   
 In addition, to account for ranked relations, we must distinguish between relational operators that are either \emph{order retaining} (order of the input remains the same), \emph{order inducing} (order of the input is changed). Furthermore, we call operators that do not commute with order inducing operators \emph{order sensitive}. 
@@ -471,16 +465,16 @@ In addition, distributivity with all the order retaining binary operations is gi
     \order_{O} (\relation_L^{O_L} \Join_{P} \relation_R^{O_R}) = \order_{O} (\relation_L^{O_L}) \Join_{P} \order_{O} (\relation_R^{O_R}) = (\relation_L \Join_{P}\relation_R)^{O_L}
 \end{gather}
 
-However, the order operator does not distribute with the order inducing, binary operators $\cup$ and $\times$.
+However, the order operator does not distribute with the operators $\cup$ and $\times$.
 
 \begin{gather*}
     \order_{O} (\relation_L^{O_L} \cup \relation_R^{O_R}) = (\relation_L^{O_L} \cup \relation_R^{O_R})^{O} \stackrel{!}{\neq} \order_{O} (\relation_L^{O_L}) \cup \order_{O} (\relation_R^{O_R}) = (\relation_L \cup \relation_R)^{\emptyset} \\
     \order_{O} (\relation_L^{O_L} \times \relation_R^{O_R}) = (\relation_L^{O_L} \times \relation_R^{O_R})^{O} \stackrel{!}{\neq} \order_{O} (\relation_L^{O_L}) \times \order_{O} (\relation_R^{O_R}) = (\relation_L \times \relation_R)^{\emptyset}
 \end{gather*}
 
-When turning to the extended projection $\projection_{P}$, we can state that inherits all its properties from the normal projection $\projection$ if we require $f \in \mathcal{F}$ to be stateless and side-effect free, i.e., it must not influence the state of the \acrshort{dbms} in any other way than producing the desired output and it must not maintain an internal state itself. Irrespective of $\projection_{P}$, this is a reasonable assumption also from an implementation perspective.
+The extended projection $\projection_{P}$ inherits all its properties from the normal projection $\projection$ if we require $f \in \mathcal{F}$ to be stateless and side-effect free, i.e., it must not influence the state of the \acrshort{dbms} in any other way than producing the desired output and it must not maintain an internal state itself. Irrespective of $\projection_{P}$, this is a reasonable assumption. However, it is important to note that operators may rely on attributes introduced by a projection $\projection_{P}$ and therefore commutativity is limited to cases, where no such interdependency exists.
 
-Finally, the s,k-selection operator $\limit$ is also idempotent and commutes with most $\rename$ and \projection. However, it does neither commute with the selection operator $\selection$ nor the order operator $\order$.
+Finally, the s,k-selection operator $\limit$ is also idempotent and commutes with most $\rename$ and $\projection$. However, it does neither commute with the selection operator $\selection$ nor the order operator $\order$.
 
 \begin{gather*}
     \limit(\order(\relation)) \neq \order(\limit(\relation)) \\
@@ -528,11 +522,11 @@ Lack of commutativity of $\limit$ with $\order$ follows directly from its defini
 \subsection{\texorpdfstring{\acrshort{dfc}s}{DFCs} and Query Optimisation}
 \label{section:dfc_and_planning}
 
-In addition to the algebraic properties of the extended relational algebra, we can also leverage the requirements imposed on the structure of a function $f \in \mathcal{F}$ to enable a \acrshort{dbms} to plan and optimize the execution of a proximity based query by altering the execution plan in terms of \acrshort{dfc} implementations that should be employed. To do so, we must make a few assumptions as to how queries are being executed: 
+In addition to the algebraic properties of the extended relational algebra, we can also leverage the requirements imposed on the structure of a function $f \in \mathcal{F}$ to enable a \acrshort{dbms} to plan and optimise the execution of a proximity based query by altering the execution plan in terms of \acrshort{dfc} implementations that should be employed. To do so, we must make a few assumptions as to how queries are being executed: 
 
 \begin{enumerate}
     \item We assume that a \acrshort{dbms} maintains the collection of functions $\mathcal{F}$. Since every function can be identified by its signature $\mathtt{SIG}(f)$, $\mathcal{F}$ can be used for obtaining the correct function implementation given the specification of the query. We refer to this data structure as \emph{function registry}, which can also be used to store additional properties and metadata.
-    \item We assume that the execution of a (proximity based) query takes place in a \emph{query context}, which remains constant as the query is being evaluated, with the exception of the tuples that are being loaded and pushed into the operator tree, which happens one by one (iterator model).
+    \item We assume that the execution of a (proximity based) query takes place in a \emph{query context}, which remains constant as the query is being evaluated, with the exception of the tuples that are being loaded and pushed into the operator tree.
     \item We require all $f \in \mathcal{F}$ to be stateless and side-effect free with respect to that query context. 
 \end{enumerate}
 
@@ -556,7 +550,7 @@ In addition, we propose the notion of a \emph{function hierarchy} depicted in \C
 
 Optimising implementations of DFCs and general function invocations can be achieved in multiple ways. First, it is reasonable to provide and select implementations that are specific for the data type of the function arguments, so as to avoid type conversion in a tight loop over a large amount of data. This is especially true for \acrshort{dfc}s that operate on complex datatypes, such as vectors. This goes into the direction of \Cref{requirement:complex_data_types}. 
 
-Another aspect that can be optimised is the use of vectorized implementations for computations that involve vectors or matrices, i.e., exchanging a scalar implementation of a \acrshort{dfc} by an implementation that uses \acrshort{simd} instructions. This can be beneficial both for a multimedia \acrshort{dbms} that employs the iteratore model and even more so for a batched processing model. However, for the iterator model it is to expected that one challenge lies in finding the threshold at which usage of such an optimised version pays off. If we take real-valued vectors as an example, it is likely that vectorised execution will not benefit low-dimensional vectors (e.g., $\text{dim} = 3$) while it will greatly benefit high-dimensional vectors (e.g., $\text{dim} = 2048$). Finding this threshold poses challenge in and by itself, which could be subject for future research.
+Another aspect that can be optimised is the use of vectorised implementations for computations that involve vectors or matrices, i.e., exchanging a scalar implementation of a \acrshort{dfc} by an implementation that uses \acrshort{simd} instructions. This can be beneficial both for a multimedia \acrshort{dbms} that employs the iterator model and even more so for a batched processing model. However, for the iterator model it is to expected that one challenge lies in finding the threshold at which usage of such an optimised version pays off. If we take real-valued vectors as an example, it is likely that vectorised execution will not benefit low-dimensional vectors (e.g., $\text{dim} = 3$) while it will greatly benefit high-dimensional vectors (e.g., $\text{dim} = 2048$). Finding this threshold poses challenge in and by itself, which could be subject for future research.
 
 Finally, one can try to match constellations of functions and replace them with an optimised version. A simple example could be the expression $a * b + c$, i.e., $\mathtt{add}(\mathtt{mul}(\mathtt{a},\mathtt{b}), \mathtt{c})$, which can be replaced by a single \emph{fused multiply-add} function $\mathtt{fma}(\mathtt{a},\mathtt{b},\mathtt{c})$ to avoid loss of precission. Replacing the evaluation of a \acrshort{dfc} with a lookup in a high-dimensional index also falls into this category, however, this transformation depends on more than just the function itself.
 
@@ -567,41 +561,41 @@ One identity that is particularly relevant for the execution of proximity based 
 \begin{enumerate*}[label=(\roman*)]
     \item High-dimensional indexes are always derived from a feature attribute $\attribute_f \in \schema(\relation)$. Therefore, an index can only replace a DFC if they operate on an unaltered version of $\attribute_f$. Changes to $\attribute_f$, e.g., through application of a nested function $\mathtt{fun}(\attribute_f)$, will render the index unusable unless the same alteration was applied when creating the index.
     \item High-dimensional indexes are sometimes trained for a specific distance function (e.g., Euclidean) or class of distance functions (e.g., Minkowski). Therefore, an index can only replace an expression if the DFC used in that expression coincides with the original function (-class).
-\end{enumerate*} Using these constraints, we can now formalise the replacement of a relational expression by an $\mathtt{INDEX}^{\relation}_{I}$ which, for high-dimensional indexes and depending on what expression is matched, falls into one of three classes given by to Definitions \ref{definition:dfc_index_class_1}, \ref{definition:dfc_index_class_2} or \ref{definition:dfc_index_class_3}.
+\end{enumerate*} Using these constraints, we can now formalise the replacement of a relational expression by an $\symindex^{\relation}_{I}$ which, for high-dimensional indexes and depending on what expression is matched, falls into one of three classes given by to Definitions \ref{definition:dfc_index_class_1}, \ref{definition:dfc_index_class_2} or \ref{definition:dfc_index_class_3}.
 
 \begin{definition}[label=definition:definition:index_replacement_exact]{Exact Index Replacement}{}
-    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression (i.e., an execution plan) involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{exact index replacement} if $\symplan \equiv \mathtt{INDEX}^{\relation}_{I}$.
+    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression (i.e., an execution plan) involving $\relation$ and $\symindex^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\symindex^{\relation}_{I}$ an \emph{exact index replacement} if $\symplan \equiv \symindex^{\relation}_{I}$.
 \end{definition}
 
 \begin{definition}[label=definition:dfc_index_class_1]{High-Dimensional Index Replacement of Class 1}{}
-    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist = \symdfc(\attribute_f, q, \ldots) \in P$. We call a replacement with a high-dimensional index $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdist} \equiv \projection_{\symdist}(\relation)$ \emph{class 1}, if:
+    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist = \symdfc(\attribute_f, q, \ldots) \in P$. We call a replacement with a high-dimensional index $\symindex^{\relation}_{\attribute_f, \symdist} \equiv \projection_{\symdfc}(\relation)$ \emph{class 1}, if:
 
     \begin{equation*}
-        \projection_{P} (\relation) = \projection_{\symdist}(\relation) \Join_{\mathtt{TID}} \projection_{P \setminus \symdist}(\relation) = \mathtt{INDEX}^{\relation}_{\attribute_f, \symdist} \Join_{\mathtt{TID}} \projection_{P \setminus \symdist}(\relation)
+        \projection_{P} (\relation) = \projection_{\symdfc}(\relation) \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc}(\relation) = \symindex^{\relation}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc}(\relation)
     \end{equation*}
 \end{definition}
 
-Class 1 index replacements constitute the simplest and most versatile case but also the least common. The index acts as a drop-in replacement for the distance calculation. One high-dimensional index-structures that can provide this functionality it the simplest variant of the \acrshort{pq} index, namely, the exhaustive SDC and ADC algorithms described in \cite{Jegou:2010Product} .
+Class 1 index replacements constitute the simplest and most versatile case. The index acts as a drop-in replacement for the distance calculation. One high-dimensional index-structures that can provide this functionality it the simplest variant of the \acrshort{pq} index, namely, the exhaustive SDC and ADC algorithms described in \cite{Jegou:2010Product} .
 
 \begin{definition}[label=definition:dfc_index_class_2]{High-Dimensional Index Replacement of Class 2}{}
-    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist =\symdfc(\attribute_f, q, \ldots) \in P$ and $\order_{\attribute_{d\updownarrow}}$ be an order operation involving the derived distance attribute $\attribute_{d}$. We call a replacement with a high-dimensional index  $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc} \equiv\order_{\attribute_{d\updownarrow}} (\projection_{\symdist}(\relation)) $ \emph{class 2} if:
+    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist =\symdfc(\attribute_f, q, \ldots) \in P$ and $\order_{\attribute_{d\updownarrow}}$ be an order operation involving the derived distance attribute $\attribute_{d}$. We call a replacement with a high-dimensional index  $\symindex^{\relation}_{\attribute_f, \symdfc} \equiv\order_{\attribute_{d\updownarrow}} (\projection_{\symdfc}(\relation)) $ \emph{class 2} if:
 
     \begin{equation*}
-        \order_{\attribute_{d\updownarrow}}(\projection_{P} (\relation)) = \order_{\attribute_{d\updownarrow}}(\projection_{\symdist}(\relation)) \Join_{\mathtt{TID}} \projection_{P \setminus \symdist}(\relation) = \mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{P \setminus \symdist}(\relation)
+        \order_{\attribute_{d\updownarrow}}(\projection_{P} (\relation)) = \order_{\attribute_{d\updownarrow}}(\projection_{\symdfc}(\relation)) \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc}(\relation) = \symindex^{\relation}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc}(\relation)
     \end{equation*}
 \end{definition}
 
-Class 2 index replacements return a ranked relation that comes pre-sorted according to the derived distance in addition to obtaining the actual distance value. This can be convenient for certain use cases but it is also a rare trait.
+Class 2 index replacements return a ranked relation that comes pre-sorted according to the derived distance in addition to obtaining the actual distance value. This can be convenient for certain use cases but it is also a rare trait and we do not have a concrete example for these types of indexes.
 
 \begin{definition}[label=definition:dfc_index_class_3]{High-Dimensional Index Replacement of Class 3}{}
-    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist =\symdfc(\attribute_f, q, \ldots) \in P$, $\order_{\attribute_{d\updownarrow}}$ an order operation involving the derived distance attribute $\attribute_{d}$ and $\limit_k$ a $k$-selection. We call a replacement with a high-dimensional index $\mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc} \equiv \limit_k(\order_{\attribute_{d\updownarrow}} (\projection_{\symdist}(\relation)))$ \emph{class 3} if:
+    Let $\relation$ be a relation, $\attribute_f \in \schema (\relation)$ an attribute of $\relation$ , $\symdfc$ a \acrshort{dfc}, $q \in \domain_f$ a query and $\projection_{P}$ the extended projection involving execution of that \acrshort{dfc} using the query, i.e., $\symdist =\symdfc(\attribute_f, q, \ldots) \in P$, $\order_{\attribute_{d\updownarrow}}$ an order operation involving the derived distance attribute $\attribute_{d}$, $\limit_k$ a $k$-selection and $\selection_{S}$ a selection involving a comparison of the distance attribute $\attribute_d$. We call a replacement with a high-dimensional index $\symindex^{\relation}_{\attribute_f, \symdfc} \equiv \texttt{OP}(\order_{\attribute_{d\updownarrow}} (\projection_{\symdist}(\relation)))$ with $\texttt{OP} \in \lbrace \limit_k, \selection_{S} \rbrace$ \emph{class 3} if:
 
     \begin{equation*}
-        \limit_k(\order_{\attribute_{d\updownarrow}}(\projection_{P} (\relation))) = \limit_k(\order_{\attribute_{d\updownarrow}}(\projection_{\symdfc}(\relation))) \Join_{\mathtt{TID}} \projection_{P \setminus \symdist}(\relation) =  \mathtt{INDEX}^{\relation}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{P \setminus \symdist }(\relation)
+        \texttt{OP}(\order_{\attribute_{d\updownarrow}}(\projection_{P} (\relation))) = \texttt{OP}(\order_{\attribute_{d\updownarrow}}(\projection_{\symdfc}(\relation))) \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc}(\relation) =  \symindex^{\relation}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{P \setminus \symdfc }(\relation)
     \end{equation*}
 \end{definition}
 
-Class 3 replacements constitute an optimisation of a specific edge-case, which is that of \acrshort{knn} and/or \acrshort{kfn} search. It is probably the most common since it allows for most optimisation but is also the least versatile type of index replacement, since it merely supports one specific type of search. An example of such an index replacement is provided in \Cref{example:index_replacement}
+Class 3 replacements constitute an optimisation of a specific edge-case, which is that of \acrshort{knn}, \acrshort{kfn} and or $\epsilon$NN search. It is probably the most common since it allows for most optimisation but is also the least versatile type of index replacement, since it merely supports one specific type of search. An example of such an index replacement is provided in \Cref{example:index_replacement}
 
 \begin{example}[label=example:index_replacement]{Index Replacement for \acrshort{knn} Search}{}
     The following table lists the schema, extent and rank of $\relation^{\emptyset}_{\mathtt{painting}}$, with their title $\mathcal{A}_{\mathtt{(t)itle}}$, the year of their creation $\mathcal{A}_{\mathtt{(p)ainted}}$ and some arbitrary feature vector $\mathcal{A}_{\mathtt{(f)eature}}$. Let further $\symdfc$ be the Manhattan distance.
@@ -624,33 +618,27 @@ Class 3 replacements constitute an optimisation of a specific edge-case, which i
         \end{tabular}
     \end{center}
 
-    The result of the \acrshort{knn}-search
+    The result of the \acrshort{knn}-search can be produced by a class 3 index replacement with $\symindex^{\relation_{p}}_{\attribute_f, \symdfc}$.
     
     \begin{equation*}
-        \relation^{\mathcal{A}_d\uparrow}_{\mathtt{result}} = \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p)))
-    \end{equation*}
-
-    can be produced by a class 3 index replacement with $\mathtt{INDEX}^{\relation_{p}}_{\attribute_f, \symdfc}$ and therefore
-
-    \begin{equation*}
-        \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p))) = \mathtt{INDEX}^{\relation_{\mathtt{p}}}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{\attribute_{t}} (\relation_p)
+        \relation^{\mathcal{A}_d\uparrow}_{\mathtt{result}} = \lambda_k (\order_{\mathcal{A}_d\uparrow} ( \pi_{\mathcal{A}_{t}, \symdist(\mathcal{A}_{f})} ( \relation_p))) = \symindex^{\relation_{\mathtt{p}}}_{\attribute_f, \symdfc} \Join_{\mathtt{TID}} \projection_{\attribute_{t}} (\relation_p)
     \end{equation*}
     
-    A potential index structure could be the \acrshort{vaf} index \cite{Weber:1998Va}.
+    An index structure could be employed here is the \acrshort{vaf} index \cite{Weber:1998Va}.
 \end{example}
 
 With the aforementioned definitions and restrictions, we have defined the basic relationship and rules that can be applied by a multimedia \acrshort{dbms}, when deciding whether or not to use a high-dimensional index structure. However, the definitions so far consider the replacement an exact transformation, i.e., the result of the original expression and the index is supposed to be identical. In practice, this is often not the case, which leads to \Cref{definition:index_replacement_approximate}.
 
 \begin{definition}[label=definition:index_replacement_approximate]{Approximate Index Replacement}{}
-    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression involving $\relation$ and $\mathtt{INDEX}^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\mathtt{INDEX}^{\relation}_{I}$ an \emph{approximate index replacement} if $\symplan \approx_{b} \mathtt{INDEX}^{\relation}_{I}$ with:
+    Let $\relation$ be a relation, $\symplan$ a relational (sub-)expression involving $\relation$ and $\symindex^{\relation}_{I}$ an index on $\relation$. We call the replacement of $\symplan$ with $\symindex^{\relation}_{I}$ an \emph{approximate index replacement} if $\symplan \approx_{b} \symindex^{\relation}_{I}$ with:
     \begin{equation*}
-        \symplan \approx_{b} \symindex \leftrightarrow Q(\symplan,\symindex) \geq b, b \in [0, 1]
+        \symplan \approx_{b} \symindex^{\relation}_{I} \leftrightarrow Q(\symplan,\symindex^{\relation}_{I}) \geq b, b \in [0, 1]
     \end{equation*}
 
-     $Q$ is a \emph{quality estimator} that derives a score between zero and one by comparing $symplan$ and $\symindex$.
+     $Q$ is a \emph{quality estimator} that derives a score between zero and one by comparing the results of $\symplan$ and $\symindex$.
 \end{definition}  
 
-In a manner of speaking, $\symplan$ acts a groundtruth and is compared to the approximate results produced by $\mathtt{INDEX}^{\relation}_{I}$. The choice of quality metric $Q$ is implementation specific. One could, for example, pick recall if one is primarily interested in set-based overlap rather than the ranking of individual items, which is enough for unranked query plans:
+In a manner of speaking, $\symplan$ acts a groundtruth and is compared to the approximate results produced by $\symindex^{\relation}_{I}$. The choice of quality metric $Q$ is implementation specific. One could, for example, pick recall if one is primarily interested in set-based overlap rather than the ranking of individual items, which is enough for unranked query plans:
 
 \begin{equation*}
         Q_1(\symplan,\symindex) = \frac{|\symplan \cap \symindex|}{|\symplan|}
@@ -662,7 +650,7 @@ An alternative could be the use of a normalised \acrfull{dcg} \cite{Jarvelin:200
     Q_2(\symplan,\symindex) = \frac{\mathtt{DCG}(\symplan,\symindex)}{\mathtt{iDCG}(\symplan)}
 \end{equation*}
 
-Regardless of the choice of metric, the challenge lies in predicting its value for a query prior to its execution. Since the result of $Q$ can only be produced in hindsight once a query has been executed, we require techniques to anticipate its value for an incoming query so that the \acrshort{dbms} can use this downstream to make decision about query execution. This provides an excelent segue to \Cref{section:cost_model}.
+Regardless of the choice of metric, the challenge lies in predicting its value for a query prior to its execution. Since the result of $Q$ can only be produced in hindsight once a query has been executed, we need techniques to anticipate its value for an incoming query so that the \acrshort{dbms} can use this downstream to make decision about query execution. This provides an excellent segue to \Cref{section:cost_model}.
 
 \section{Cost Model for Multimedia Databases}
 \label{section:cost_model}
@@ -672,14 +660,14 @@ As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} re
 \begin{description}
     \item[Disk Access (IO)] Persistent storage and the access to information residing on disk is the factor that contributes the most to long query execution times and is thus a factor to minimise \cite{Selinger:1979Access}. This is also true for proximity based queries, where part of the optimisation lies in reducing access to vectors through compression and/or early filtering, e.g., \cite{Weber:1998Va, Chierichetti:2007Finding}.
     \item[CPU] Due to the computational complexity of proximity based operations, especially when the evaluation of functions on high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and must thus be taken into account as well. In fact, several index structures achieve speed-up by reducing the computational complexity of the distance calculation \cite{Jegou:2010Product} or by avoiding it alltogether \cite{Weber:1998Va}.
-    \item[Memory] Some algorithms, e.g., for sorting, can benefit greatly from pure in-memory processing as opposed to writing intermediate results to disk. While memory used to be a scarce resource, some environments allow for complete in-memory processing even for very large datasets. This is exploited by systems like Milvus \cite{Wang:2021Milvus}, that load entire data collections into memory.
-    \item[Quality] The quality of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. This is common practice in approximate \acrshort{nns} and should be made transparent to the system and user for reasons explained in \Cref{requirement:quality_model}.
+    \item[Memory] Some algorithms can benefit greatly from pure in-memory processing. While memory used to be a scarce resource, some environments allow for complete in-memory processing even for very large datasets. This is exploited by systems like Milvus \cite{Wang:2021Milvus}, that load entire data collections into memory.
+    \item[Quality] The quality of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. This is common practice in approximate \acrshort{nns} and should be made transparent to the system and user for reasons explained in \Cref{requirement:quality_model}, especially since this trade is not always viable (see \Cref{section:application_mrf}).
 \end{description}
 
-These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, the cost incurred by data and message exchange must be considered as well. While this is not in scope for the work presented in this Thesis, the proposed model can be easily extended to accomodate those types of costs as well. The aforementioned factors lead us to \Cref{definition:op_cost} and \Cref{definition:plan_cost} for the cost incurred by an operator $\symop$ and query execution plan $\mathcal{P}$.
+These four factors can be used to characterise query workloads in a purely local setup consisting of a single node. For distributed databases, the cost incurred by data and message exchange must obviously be considered as well. While this is not in scope for the work presented in this Thesis, the proposed model can be easily extended to accomodate those (and other) types of costs as well. The aforementioned factors lead us to \Cref{definition:op_cost} and \Cref{definition:plan_cost} for the cost incurred by an operator $\symop$ and query execution plan $\mathcal{P}$.
 
 \begin{definition}[label=definition:op_cost]{Cost of a Relational Operator $\symop$}{}
-    Let $\symop$ be a (relational) database operator. We call the 4-tuple $C_{\symop} = (c_{\mathtt{IO}}, c_{\mathtt{CPU}}, c_{\mathtt{MEM}},c_{\mathtt{Q}})$ the \emph{cost} of $\symop$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and quality (Q).
+    Let $\symop$ be a (relational) operator. We call the 4-tuple $C_{\symop} = (c_{\mathtt{IO}}, c_{\mathtt{CPU}}, c_{\mathtt{MEM}},c_{\mathtt{Q}})$ the \emph{cost} of $\symop$, which captures the atomic costs in terms of disk access (IO), CPU usage (CPU), memory usage (MEM) and quality (Q).
 \end{definition}
 
 \begin{definition}[label=definition:plan_cost]{Cost of a Query Exection Plan $\mathcal{P}$}{}
@@ -706,7 +694,7 @@ These four factors can be used to characterise query workloads in a purely local
 
 The role of $C_{\symplan}$ is twofold: First, its absolute values can be used by the \acrshort{dbms} to determine hard constraints imposed for query execution. For example, if there is a fixed limit on memory that can be used by a query, an execution plan may be discarded simply based on exceeding that memory limit regardless of other factors. Similarily, a hard constraint on quality could be imposed. Second, it can be used to compare execution plans relatively to one another. \Cref{example:cost_model} illustrates cost calculation for a simple execution plan.
 
-The values of the atomic costs per operator can be determined in many ways and the model does not assume any specific approach with the exception for $c_{\mathtt{Q}}$, which will be described in \Cref{section:quality_cost_estimation}. However, we do require that the method for determining the atomic costs must be internally consistent and should not change so as to keep costs comparable. For illustrative purposes, we outline the following, rough methods to estimate $c_{\mathtt{IO}}$, $c_{\mathtt{CPU}}$, $c_{\mathtt{MEM}}$.
+The values of the atomic costs per operator can be determined in many ways and the model does not assume any specific approach with the exception for $c_{\mathtt{Q}}$, which will be described in \Cref{section:quality_cost_estimation}. However, we do require that the method for determining the atomic costs must be internally consistent and should not change so as to keep costs comparable. For illustrative purposes, we outline the following, rough metrics to estimate $c_{\mathtt{IO}}$, $c_{\mathtt{CPU}}$, $c_{\mathtt{MEM}}$ and refer to prior work \cite{}.
 
 \begin{description}
     \item[IO Cost] can be estimated by the number of pages or the number of bytes that must be read / written by an operator.
@@ -779,25 +767,25 @@ In order to complete the cost model, we must generate an estimate of how the qua
     \end{equation*}
 \end{definition}
 
-For proximity based queries, $\symplan_1$, $\symplan_2$ are two equivalent query plans that do and don't involve the evaluation of an approximate, high-dimensional index. In practice, the obtained numbers for $c_{Q,k}$ can be stored in a lookup-table and updated on a regular basis (e.g., when querying the index anyway). In case no observation is available, one can provide a \emph{cost prior}, which is constant estimate of the cost or one can pre-calculate certain costs based on the known classes of high-dimensional index replacements described \Cref{section:dfc_and_planning}. When a query is being planned, the \acrshort{dbms} can use the lookup table to derive the estimate.
+For proximity based queries, $\symplan_1$, $\symplan_2$ are two equivalent query plans that do and don't involve the evaluation of an approximate, high-dimensional index. In practice, the obtained numbers for $c_{Q,k}$ can be stored in a lookup-table and updated on a regular basis (e.g., when querying the index anyway). In case no observation is available, one can provide a \emph{cost prior}, which is an index-dependent estimate of the cost and one can pre-calculate certain costs based on the known classes of high-dimensional index replacements described \Cref{section:dfc_and_planning}. When a query is being planned, the \acrshort{dbms} can lookup the estimates.
 
 As indicated by the index $k$, we estimate $c_{Q,k}$ at multiple levels. We propose a logarithmic progression of these ranking levels, e.g., $k= \{ 1, 2, 4, 8, \ldots \}$ for two reasons: Firstly, the probability of an extreme value is higher for lower than for higher levels. This is also visualised in \Cref{figure:index_quality}. And secondly, items with a lower rank are often considered more relevant than items exhibiting a high rank \cite{Jarvelin:2002Cumulated}, i.e., we require a more accurate estimate for lower levels.
 
-While the model is very simple it obviously only provides a rough estimate. Furthermore, there are some important implicit assumptions we operate upon: Firstly, we assume that the quality of an execution plan on average does not depend on the query parameters provided by the user (e.g., the vectors used for proximity based search). The underlying assumption is that the query parameters are being drawn from the same, (albeit unknown) probability distribution that has produced the indexed data. We believe this to be a reasonable assumption, because as we have argued in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, these vectors are usually produced by some well-defined feature transformation. To illustrate this, we plot the average recall and normalised \acrshort{dcg} for the results produced by a \acrshort{pq}-based index implementation over a $1000$ different queries in \Cref{figure:index_quality} \footnote{We used the Yandex Deep 1B dataset \cite{Babenko:2016Efficient} and the provided groundtruth query vectors to generate this plot.}. We can observe that the mean remains more or less constant over different levels approaching $1.0$ as the level is being increased. However, the minimum and maximum show a much larger spread for lower levels which is a purely stochastical phenomenon. The second assumption is, that the quality of the results at lower, constrained ranking levels provides a valid estimator for qualit at higher levels, i.e., that the agreement is continued indefinitely. Both assumptions require some ``well-behavedness'' of the index structure, which may not necessarily be a given.
+While the model is very simple it obviously only provides a rough estimate. Furthermore, there are some important implicit assumptions we operate upon: Firstly, we assume that the quality of an execution plan on average does not depend on the query parameters provided by the user (e.g., the vectors used for proximity based search). The underlying assumption is that the query parameters are being drawn from the same, (albeit unknown) probability distribution that has produced the indexed data. We believe this to be a reasonable assumption, because as we have argued in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, these vectors are usually produced by some well-defined feature transformation. To illustrate this, we plot the average recall and normalised \acrshort{dcg} for the results produced by a \acrshort{pq}-based index implementation over a $1000$ different queries in \Cref{figure:index_quality} \footnote{Based on the Yandex Deep 1B dataset \cite{Babenko:2016Efficient} and the provided groundtruth query vectors.}. We can observe that the mean remains more or less constant over different levels approaching $1.0$ as the level is being increased. However, the minimum and maximum show a much larger spread for lower levels which is a purely stochastical phenomenon. The second assumption is, that the quality of the results at lower, constrained ranking levels provides a valid estimator for qualit at higher levels, i.e., that the agreement is continued indefinitely. Both assumptions require some ``well-behavedness'' of the index structure, which may not necessarily be a given.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figures/index-quality-pq}
-    \caption{Quality of results produced by a \acrshort{pq} index in a \acrshort{nns} query in terms of recall and normalised \acrshort{dcg} at different levels observed and averaged over a $1000$ queries. The mean value remains more or less constant while minimum and maximum exhibit a large spread for smaller levels.}
+    \caption{Quality of results produced by a \acrshort{pq} index in a \acrshort{nns} query in terms of recall and normalised \acrshort{dcg} at different levels observed and averaged over a $1000$ queries using different query vector. The mean value remains more or less constant while minimum and maximum exhibit a large spread for smaller levels.}
     \label{figure:index_quality}
 \end{figure}
 
 \section{Adaptive Index Maintenance}
 \label{section:adaptive_index_maintenance}
 
-Maintining a consistent and predictable behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level. While the problem of keeping traditional index structures (e.g., the $B^{+}$-tree index) up-to-date is well understood \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not, with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index,Lu:2020VHP}. In addition to practical conisderations, e.g., how data structures designed for use in main memory can be optimised for disk access, there is the very fundamental problem of an index's ability to cope with changes to the data. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own characteristics in terms of maintenance. Since the problem of dynamic data has not been widely considered in literature, there is very litte information on this issue.
+Maintining a consistent and predictable behaviour of (high-dimensional) index structures is imperative for a multimedia \acrshort{dbms} to guarantee a constant quality of service level. While the problem of keeping traditional index structures (e.g., the $B^{+}$-tree index) up-to-date is well understood \cite{Garcia:2009Database,Petrov:2019Database}, the maintainance of high-dimensional indexes is not, with the exception of a few, isolated examples \cite{Olafsson:2011Dynamic,Hojsgaard:2019Index,Lu:2020VHP}. In addition to practical considerations, e.g., how data structures designed for use in main memory can be optimised for disk access, there is the very fundamental problem of an index's ability to cope with changes to the data. What makes the issue challenging is that, as we have demonstrated in \Cref{section:hd_index_structures}, many different types of indexing algorithms exists, all of which come with their own characteristics in terms of maintenance. Since the problem of dynamic data has not been widely considered in literature, there is very litte information on this issue.
 
-In this section, we propose a general mechanism to accomodate and maintain different types of index structures in the face of dynamic data. This mechanism consists of a series of models an index must adhere to, based on which a \acrshort{dbms} can make informed decisions as to how a query should be executed at a given point in time. To lay the groundwork, we formalise the notion of a change to the data in the form of three operations listed in \Cref{definition:change}.
+In this section, we propose a general mechanism to accomodate and maintain different types of index structures in the face of dynamic data. This mechanism consists of a series of models an index must provide, based on which a \acrshort{dbms} can make informed decisions as to how a query should be executed at a given point in time. To lay the groundwork, we formalise the notion of a change to the data in the form of three operations listed in \Cref{definition:change}.
 
 \begin{definition}[label=definition:change]{Change Operations to Relation $\relation$}{}
     Let $\relation$ be a relation and $t \in \relation$, $t^{\prime} \in \relation^{\prime}$ tuples with $\schema(\relation) = \schema(\relation^{\prime})$. We call $\symchangeop(\relation,\cdot) \in [ \mathtt{INSERT}(\relation, \cdot), \mathtt{DELETE}(\relation, \cdot), \mathtt{UPDATE}(\relation, \cdot) ]$ a change operation on $\relation$ and the quadruple $\symchange = (\symchangeop, \relation, t, t^{\prime})$ a \emph{change}.
@@ -808,7 +796,7 @@ In this section, we propose a general mechanism to accomodate and maintain diffe
         \mathtt{UPDATE}(\relation, t, t^{\prime}) &= ((\relation \setminus \lbrace t \rbrace) \cup \lbrace t^{\prime} \rbrace)\\
     \end{align*}
 
-    That is, $\symchangeop(\relation,\cdot)$ can be used to add, remove or replace tuples it $\relation$. These operations correspond to the basic \acrshort{crud} operations available to a \acrshort{dbms}. It is worth noting that formally, according to \Cref{definition:change}, we can decompose any update operation into an insert and a delete.
+    That is, $\symchangeop(\relation,\cdot)$ can be used to add, remove or replace tuples it $\relation$. These operations correspond to the basic \acrshort{crud} operations available to a \acrshort{dbms}. It is worth noting that formally, we can decompose any \texttt{UPDATE} operation into a consequtive \texttt{INSERT} and \texttt{DELETE}.
 \end{definition}
 
 The first basic assumption and prerequisite is that all the high-dimensional index structures offered by the \acrshort{dbms} always act as secondary indexes. Consequently, the primary data is always organised in a way that allows for seamless propagation of changes, e.g., as index or heap-organised tables in the case of a relational database. The fallback strategy that the \acrshort{dbms} therefore can always resort to is that of a (sequential) access to the original data (which results in longer response times for reasons discussed in \Cref{section:multimedia_retrieval}, and should therefore be avoided). Furthermore, the primary data files can be used by an index to correct missing or outdated information on the fly during query time.
