@@ -140,6 +140,7 @@ To prepare for intra-query parallelism, part of the operator pipeline is partiti
 With an operator pipeline prepared in this fashion, it again remains up to the dispatcher to allocate parts of the pipeline to concrete threads. \cottontail{} only declares how allocation should take place by chosing the appropriate type of dispatcher. Scheduling then depends on available hardware and system load. Consequently, the number of partitions is merely an upper bound on parallelism without guarantee, that every strand will be processed in its own thread. 
 
 \subsection{Query Planner}
+\label{section:cottontail_query_planner}
 
 The goal of \emph{query planning} is to find a cost-optimal execution plan for a query given any \emph{policy} valid for the current query context and \cottontail{}'s cost model outlined in \Cref{section:cost_model}. The input into the query planner is a logical representation of the operators that should be executed as part of the operator pipeline, which we call the \emph{canonical operator node tree}. It results directly from the \emph{query binding} stage.
 
