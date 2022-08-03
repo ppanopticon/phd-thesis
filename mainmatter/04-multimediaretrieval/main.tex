@@ -291,15 +291,15 @@ Nevertheless, the issue of index structures that allow for more efficient \acrsh
         \hline
         $R^{*}$-Tree \cite{Beckmann:1990RTree} & exact & tree & data partitioning \\ 
         \hline
-        \acrshort{vaf} \& VA+ \cite{Weber:1998Va,Ferhatosmanoglu:2000Vector} & exact & list & quantisation \\ 
+        \acrshort{vaf} \& VA+ \cite{Weber:1998Va,Ferhatosmanoglu:2000Vector} & exact & list & scalar quantisation \\ 
         \hline
         \acrshort{lsh} \cite{Indyk1998:Approximate, Wang:2017ASurvey} & approximate, probabilistic & hash table i.a.  & hashing \\ 
         \hline
-        \acrshort{pq} \cite{Jegou:2010Product} & approximate & list / inverted file & clustering / quantisation \\
+        \acrshort{pq} \cite{Jegou:2010Product} & approximate & list / inverted file & vector quantisation \\
         \hline 
         \acrshort{cp} \& e\acrshort{cp} \cite{Chierichetti:2007Finding,Gudmundsson:2010Large} & approximate & inverted file & clustering \\ 
         \hline
-        NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & quantisation \\ 
+        NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & scalar quantisation \\ 
         \hline
         NGT \cite{Iwasaki2016:Pruned} & approximate & graph / tree & proximity graph \\ 
         \hline
@@ -321,7 +321,7 @@ Recent research focuses on the use of graphs \cite{Shimomura:2021Survey}, for ex
 \subsubsection{\texorpdfstring{\acrfull{vaf}}{Vector Approximation File (VAF)}}
 \label{section:index_vaf}
 
-VA-files were proposed by Weber et al. \cite{Weber:1998Va} to address the problem of the dimensionality curse and were later refined by \cite{Ferhatosmanoglu:2000Vector}. The basic idea of a \acrshort{vaf} is the division of the data space into $2^b$ cells, as illustrated in \Cref{fig:vaf}, where $b$ denotes a fixed number of bits. Typically, one choses a specific number of bits per dimension $b_d$ and uniformly partitions the vector space along each dimension, i.e., $b = b_dd$. A feature's position in the grid is concatenated into a compact \emph{signature} of size $b$ and the VA-file constitutes a list of those signatures. 
+VA-files were proposed by Weber et al. \cite{Weber:1998Va} to address the problem of the dimensionality curse. The basic idea of a \acrshort{vaf} is the division of the data space into $2^b$ cells, as illustrated in \Cref{fig:vaf}, where $b$ denotes a fixed number of bits. Typically, one choses a specific number of bits per dimension $b_d$ and uniformly partitions the vector space along each dimension, i.e., $b = b_dd$. A feature's position in the resulting lattice is concatenated into a compact \emph{signature} of size $b$ and the VA-file constitutes a list of those signatures. 
 
 \begin{figure}[tb]
 \centering
@@ -330,9 +330,9 @@ VA-files were proposed by Weber et al. \cite{Weber:1998Va} to address the proble
 \label{fig:vaf}
 \end{figure}
 
-\acrshort{nns} is then realised as a linear scan of the VA-file. Speed-up over a brute-force scan of the original vectors is achieved in two ways: Firstly, the signatures are more compact than the original representation, which reduces IO cost through compression. Secondly, the signatures can be used to obtain approximate bounds that are computationally less expensive than the actual distance calculation. These bounds can be used to filter out a majority of the points in the file, further reducing IO and CPU costs. Experimental results presented in \cite{Weber:1998Va} demonstrate that more than 90\% of all features can be skipped and thus a distance must only be obtained for the remaining 10\%. However, VA-files remain linear in nature and \cite{Echihabi:2021High} determine theoretically that for \acrshort{vaf}, a degeneration is still to be expected for high dimensions. However, a huge advantage if the  \acrshort{vaf} index is, that it does neither sacrifice precision nor recall to obtain speed-up.
+\acrshort{nns} is then realised as a linear scan of the VA-file. Speed-up over a brute-force scan of the original vectors is achieved in two ways: Firstly, the signatures are more compact than the original representation ($b$ bits per dimension), which reduces IO cost through quantisation. Secondly, the signatures can be used to obtain approximate bounds that are computationally less expensive than the actual distance calculation. These bounds can be used to filter out a majority of the points in the file, further reducing IO and CPU costs. Experimental results presented in \cite{Weber:1998Va} demonstrate that more than 90\% of all features can be skipped and thus a distance must only be obtained for the remaining 10\%. However, VA-files remain linear in nature and \cite{Echihabi:2021High} determine theoretically that for \acrshort{vaf}, a degeneration is still to be expected for high dimensions. However, a huge advantage of the \acrshort{vaf} index is, that it does neither sacrifice precision nor recall to obtain speed-up.
 
-The VA+-files described by \cite{Ferhatosmanoglu:2000Vector} introduce a few optimisations to the original algorithm, which implicitly assumes independence of the individual dimensions within a feature (which is often not a given). They suggest a prior decorellation of the individual dimensions by applying a \acrfull{klt}. Furthermore, they propose a non-uniform assignment of bits per dimension, based on data distribution, as opposed to a uniform distribution employed in the original paper. This leads to an independent quantiser per transformed dimension. Results suggest that these adjustments lead to a better estimation of lower- and upper-bounds, which improves the VA-file's filtering capabilities and thus further reduces IO cost.
+The VA+-files described by \cite{Ferhatosmanoglu:2000Vector} are an extension to the VAF-file and introduce a few optimisations to the original algorithm, which implicitly assumes independence of the individual dimensions within a feature (which is often not a given). They suggest a prior decorellation of the individual dimensions by applying a \acrfull{klt}. Furthermore, they propose a non-uniform assignment of bits per dimension, based on data distribution, as opposed to a uniform distribution employed in the original paper. This leads to an independent quantiser per transformed dimension. Results suggest that these adjustments lead to a better estimation of lower- and upper-bounds, which improves the VA-file's filtering capabilities and thus further reduces IO cost.
 
 \subsubsection{\texorpdfstring{\acrfull{lsh}}{Locality Sensitive Hashing (LSH)}}
 
