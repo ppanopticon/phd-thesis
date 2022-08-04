@@ -154,38 +154,15 @@ We run all the queries against the V3C-based collections listed in \Cref{table:d
 
 For the benchmark, we prepared the following indexes on the respective entities in \cottontail{}: The \acrshort{pq} index variant for exhaustive search ($8$ subspaces (if possible), $2048$ centroids) and a \acrshort{vaf} index ($35$ marks per vector component). In addition to the obtained metrics, we also let \cottontail{} report the execution plan it selected for a given query using its \emph{explain query} endpoint. These execution plans are illustrated for the purpose of discussion.
 
-\subsection{Benchmark 1: Influence of Parallelism \& Use of Indexes}
-For these measurements, we nudge \cottontail{} into using specific, high-dimensional index structures in order to be able to compare them directly. Furthermore, we fix the level parallelism to a given value between $2$ and $32$. Both can be done by providing \emph{hints} with the query, which are respected by the query planner. The results of these measurements are depicted in \Cref{figure:analytics_cottontail_runtime}. Unsurprisingly, the total execution time for the entire workload goes up as dimensionality increases. There is one anomaly for \emph{inceptionresnetv2} ($d = 1536$) and \emph{conceptmasksade20k} ($d = 2048$), where a sequential scan seems to be faster for the latter for all three types of proximity based queries (i.e., Q3, Q4 and Q5). We will discuss this in \Cref{section:discussion}. We can also see from the graph, that all the workloads, with the exception of the Fetch (Q1) and the Select (Q5) query, benefit from increasing the level of parallelism both for full entity scans as well as index scans. The two exceptions are rather simple queries that cannot be parallelised effectively because they are either inherently sequential (Q1) or the partitioning mode of \cottontail{} does not allow for parallelisation (Q5). 
+\subsection{Experiment 1: Influence of Parallelism \& Use of Indexes}
+For the first experiment, we nudge \cottontail{} into using specific, high-dimensional index structures in order to be able to compare them directly. Furthermore, we fix the level parallelism to a given value between $2$ and $32$. Both can be done by providing \emph{hints} with the query, which are respected by the query planner as far as possible given the solution space. The results of these measurements are presented in \Cref{figure:analytics_cottontail_runtime}. Unsurprisingly, the total execution time for the entire workload goes up as dimensionality increases. There is one anomaly for \emph{inceptionresnetv2} ($d = 1536$) and \emph{conceptmasksade20k} ($d = 2048$), where a sequential scan seems to be faster for the latter for all three types of proximity based queries (i.e., Q3, Q4 and Q5). While somewhat counterintuitive, this can be explained by the structure of the data itself: The vectors contained in \emph{conceptmasksade20k} are very spare and can therefore be compressed very efficiently by \cottontail{}'s rather naive compression scheme. In a quick follow-up experiment, we observed a compression to \SI{550}{\byte} on average, which is a reduction of roughly 95\%. In contrast, \emph{inceptionresnetv2} contains very dense vectors and compression is not possible at all. Therefore, the full \SI{6144}{\byte} plus an additional \SI{5}{\byte} overhead introduced by the compression must be read from disk. While this is a glitch in the implementation that is not optimal, its impact on query performance demonstrates the importance of IO and efficient on-disk representations.
 
-An interesting aspect that we would like to highlight is the influence of index structures: The Mean (Q2), Range (Q3) and \acrshort{nns} (Q4) queries all seem to benefit from the presence of a PQ index, which provides the lowest latency across all entities and for all degrees of parallelisation. This is confirmed when cross-examining the query plans produced by \cottontail{}, which are listed in \Cref{figure:cottontail_analytics_plans}. The plans for the Q2 (\ref{figure:cottontail_analytics_mean}), Q3 (\ref{figure:cottontail_analytics_range}) and Q4 (\ref{figure:cottontail_analytics_nns}) confirm, that the \acrshort{pq} index is used if the respective hint is present. This is possible because \acrshort{pq} can be used to perform a class 1 replacement in accordance with \Cref{definition:dfc_index_class_1}. However, the speed-up must be traded for a non-negligible sacrifice of quality as can be seen in \Cref{figure:cottontail_analytics_quality}. Interestingly, the negative impact seems to be larger for range queries (Q3, \ref{figure:cottontail_analytics_quality_range}) than for \acrshort{nns} (Q4, \ref{figure:cottontail_analytics_quality_nns}) queries for both recall and n\acrshort{dcg}. Furthermore, we can observe that the same index configuration for \acrshort{pq} yields very different results for different dimensions. We will also discuss both aspects in \Cref{section:discussion}.
-
-In contrast, the \acrshort{vaf} index can only provide speed-up for \acrshort{nns} queries (Q4), since its use is limited to class 3 replacements (see \Cref{definition:dfc_index_class_3}) and the current implementation does not support range queries. Again, this is confirmed by the query plans shown in \Cref{figure:cottontail_analytics_plans}, where \cottontail{} resorts to a sequential scan in cases where the \acrshort{vaf} is not available. The speed-up gained by using \acrshort{vaf} is rather small. But on a positive note, the use of the \acrshort{vaf} index does not influence quality negatively.
-
-\begin{figure}[tb]
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-quality-range}
-        \caption{Quality for range query (Q3)}
-        \label{figure:cottontail_analytics_quality_range}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-quality-nns}
-        \caption{Quality for \acrshort{nns} query (Q4)}
-        \label{figure:cottontail_analytics_quality_nns}
-    \end{subfigure}
-    \caption{Quality of results in terms of recall (red) and n\acrshort{dcg} (mint) produced by \cottontail{} for the range (Q3) and \acrshort{nns} (Q4) query workloads during the first benchmark. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
-    \label{figure:cottontail_analytics_quality}
-\end{figure}
-
+We can also see from \Cref{figure:analytics_cottontail_runtime}, that all the workloads, with the exception of the Fetch (Q1) and the Select (Q5) query, clearly benefit from increasing the level of parallelism both for full entity scans as well as index scans, which confirms the need for an efficient parallelisation and distribution model \cite{Giangreco:2018Database}. The two only exceptions are rather simple queries that cannot be parallelised effectively because they are either inherently sequential (Q1) or because the partitioning model of \cottontail{} does not allow for parallelisation (Q5) \footnote{Q5 leverages a $B^+$-tree index, for which a scan cannot be parallelised in its current version.}. Unsurprisingly, the overall execution time of the workload seems to be determined by the proximity based queries.
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-runtime}
-    \caption {\cottontail{}'s latency in seconds (x-axis) on different entities using different access methods and levels of parallelisation (y-axis) for the analytics workloads during the first benchmark. The individual queries are highlighted in different colours. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
+    \caption {Latency in seconds (x-axis) on different entities using different access methods and levels of parallelisation (y-axis) for the analytics workloads during the first benchmark. The individual queries Q1-Q5 are highlighted in different colours. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
     \label{figure:analytics_cottontail_runtime}
 \end{figure}
 
@@ -213,46 +190,68 @@ In contrast, the \acrshort{vaf} index can only provide speed-up for \acrshort{nn
         \caption{Execution plans for \acrshort{nns} query (Q4)}
         \label{figure:cottontail_analytics_nns}
     \end{subfigure}
-    \caption{Execution plans produced by \cottontail{} for the mean (Q2), range (Q3) and \acrshort{nns} (Q4) query workloads during the first benchmark. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
+    \caption{Execution plans produced by \cottontail{} for the mean (Q2), range (Q3) and \acrshort{nns} (Q4) query workloads during the first experiment. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
     \label{figure:cottontail_analytics_plans}
 \end{figure}
 
-\subsection{Benchmark 2: Influence of Cost Policy}
+An aspect that we would like to the attention to is the influence of index structures: The Mean (Q2), Range (Q3) and \acrshort{nns} (Q4) queries all seem to benefit from the PQ index, which , according to \Cref{figure:analytics_cottontail_runtime}, provides the lowest latency across all entities and for every degree of parallelisation. This is confirmed when cross-examining the query plans produced by \cottontail{}, which are listed in \Cref{figure:cottontail_analytics_plans}. The plans for the Q2 (\ref{figure:cottontail_analytics_mean}), Q3 (\ref{figure:cottontail_analytics_range}) and Q4 (\ref{figure:cottontail_analytics_nns}) confirm, that the \acrshort{pq} index is used if the respective hint is present. This is possible because \acrshort{pq} can perform a class 1 index replacement (see \Cref{definition:dfc_index_class_1}). 
+
+However, the observed speed-up is traded for a non-negligible, negative impact on quality in terms of recall and n\acrshort{dcg}, as can be seen in \Cref{figure:cottontail_analytics_quality}. Slightly better values for n\acrshort{dcg} provide us with an indication that mismatches occur further down in the ranking and may therefore be less relevant in practice. What is striking, though, is the very large spread for both recall and n\acrshort{dcg} across all collection, which indicates that the outcome is highly dependent on the concrete query vector and thus hard to predict. Furthermore, we can observe that the negative impact on quality seems to be larger for range (Q3, \ref{figure:cottontail_analytics_quality_range}) than for \acrshort{nns} (Q4, \ref{figure:cottontail_analytics_quality_nns}) queries for both recall and n\acrshort{dcg}. This can be explained by the distortion of the approximate distance value reported by \cite{Jegou:2010Product}, which is obviously very relevant for range queries. We see this as a confirmation of our proposition that quality metrics should be obtained for a type of plan rather than globally (see \Cref{section:cost_model}). Additionally, we can observe that the same index configuration for \acrshort{pq} yields very different results for the different collections. Unfortunately, we do not see an apparent connection between the dimensionality and the quality of \acrshort{pq} index results. We therefore conclude that there is an inter-dependence between size and, more importantly, the structure of the collection as well as the choice of hyperparameters.
+
+In contrast, the \acrshort{vaf} index can only provide speed-up for \acrshort{nns} queries (Q4), since its use is limited to class 3 replacements (see \Cref{definition:dfc_index_class_3}) and the current implementation does not support range queries \footnote{ The latter is a limitation of our implementation and could be added, according to \cite{Weber:1998Va}}. Again, this is confirmed by the query plans shown in \Cref{figure:cottontail_analytics_plans}, where \cottontail{} resorts to a sequential scan in cases where the \acrshort{vaf} cannot be used. The speed-up gained by using \acrshort{vaf} seems rather small. We find, that its efficiency is highly dependent on the choice of parameters and the structure of the data collection. Over the different runs, we observe \acrshort{vaf} pre-filtering values of between $80\%$ and $99\%$. Again, there is no apparent connection between dimensionality and the effectiveness of the filtering step.
+
+\begin{figure}[tb]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-quality-range}
+        \caption{Quality for range query (Q3)}
+        \label{figure:cottontail_analytics_quality_range}
+    \end{subfigure}
+    \hfill
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-quality-nns}
+        \caption{Quality for \acrshort{nns} query (Q4)}
+        \label{figure:cottontail_analytics_quality_nns}
+    \end{subfigure}
+    \caption{Quality of results (x-axis) in terms of recall (mint) and \acrshort{dcg} (red) on different entities using different access methods (y-axis) for the range (Q3) and \acrshort{nns} (Q4) query workloads during the first experiment. The use of the \acrshort{vaf} and \acrshort{pq} index was enforced using query hints.}
+    \label{figure:cottontail_analytics_quality}
+\end{figure}
+
+We must assume, that the quality of all the tested index structures can be fine-tuned by chosing appropriate values for the hyperparameters. Since these values seem to depend on a multitude of factors, this may not be a straightforward undertaking, though. We see this as an interesting research direction for the future, which goes into the direction of self-adaptiveness. \cite{Kraska:2018Case}
+
+\subsection{Experiment 2: Influence of Cost Policy}
 
 So far, we have forced \cottontail{} into using one index over another by giving query hints that make an explicit choice. For the third benchmark, we delegate the decision to \cottontail{} and observe how changing parameters in the cost policy influence plan selection. The idea behind the cost policies was explained in \Cref{section:cost_model}. Basically, they assign weight to the parameters of the cost model, that is, cost of IO, CPU, memory use and quality. We fixed the values of $w_{\mathtt{CPU}} = 0.3$, $w_{\mathtt{IO}} = 0.6$ and $ w_{\mathtt{MEM}} = 0.0$ (\cottontail{}'s default values) respectively and used the explain endpoint to print the query plans as we increased the weight of the quality parameter $w_{\mathtt{Q}}$ from $0.1$ to $0.9$ in steps of $0.1$. The results are depicted in \Cref{figure:cottontail_analytics_costs} for the mean (Q2, \ref{figure:cottontail_analytics_cost_mean}), range (Q3, \ref{figure:cottontail_analytics_cost_range}) and \acrshort{nns} (Q4, \ref{figure:cottontail_analytics_cost_nns}) queries, where we show the scores and the ranking assigned to the individual plans by \cottontail{}'s query planner. Only the top three ranked queries are considered.
 
+
 For Q2 (\Cref{figure:cottontail_analytics_cost_mean}) we see that at least three different options exists and that by default, i.e., for $w_{\mathtt{Q}} = 0.0$, the option involving the \acrshort{pq} index ($P_1$) is favoured. This is consistent with the findings from our first benchmark, where we demonstrated that \acrshort{pq} is always the fastest of the available options. As long as the quality weight parameter is low ($w_{\mathtt{Q}} = [0.1, 0.2]$), $P_1$ is the plan with the lowest score and thus the selected candidate. As $w_Q$ increases, the score of $P_1$ increases as well and it moves up in the ranking and plan $P_2$, which involves a full table scan, takes over the lead. The two alternatives $P_2$ and $P_3$ are almost equivalent with the only difference that $P_3$ includes the \texttt{id} column in the original scan, which is not required to calculate the mean and can therefore be optimised out (those are the deferral rules described in \Cref{section:cottontail_query_planner}). Consequently, $P_3$ is slightly more expensive and $P_2$ is selected instead. 
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-mean-annotated}
+    \caption{Score and rank for different query plany layed out for the mean query (Q2)}
+    \label{figure:cottontail_analytics_cost_mean}
+\end{figure}
 
 A very similary behaviour can be observed for Q3 (\Cref{figure:cottontail_analytics_cost_range}). Over the course of the measurements, six options appear in the top $3$ ranks. Again, we start with  $w_{\mathtt{Q}} = 0.0$, where $P_1$ is the fastest option and again, it involves a scan of the \acrshort{pq} index. $P_2$ and $P_3$ are different variants involving the same index scan but using different intermediate operations and therefore differ in the fetching of required columns and sort algorithms (application of the deferral and implementations rules described in \Cref{section:cottontail_query_planner}). As $w_Q$ increases, $P_1$, $P_2$ and $P_3$ disappear from the top $3$ ranks, since all three plans use the same index and therefore result in impaired quality. $P4$ -- which is the query plan involving the evaluation of a full table scan-- takes over and keeps the lowest rank. Again, $P5$ and $P6$ are less optimal variants of $P4$ and are therefore not considered.
 
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-range-annotated}
+    \caption{Score and rank for range query (Q3)}
+    \label{figure:cottontail_analytics_cost_range}
+\end{figure}
+
 For both Q2 and Q3 using \acrshort{pq} or a full table scan were the only available options due to the constraints discussed in \Cref{section:dfc_and_indexes}. For Q4 (\Cref{figure:cottontail_analytics_cost_nns}) we see a third option appear, which is the use of a \acrshort{vaf} index ($P3$). As $w_{\mathtt{Q}}$ exceeds $0.1$, the scan of the \acrshort{vaf} index becomes the prefered candidate and $P_1$ and $P_2$ become the second and third options. As  $w_{\mathtt{Q}}$ moves beyond $0.2$, $P_1$ and $P_2$ disappear from the top 3 and again, a fallback to an entity scan are the prefered alternatives to the \acrshort{vaf} index scan.
 
-\begin{figure}[p]
+\begin{figure}[tb]
     \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-mean}
-        \caption{Score and rank for mean query (Q2)}
-        \label{figure:cottontail_analytics_cost_mean}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-range}
-        \caption{Score and rank for range query (Q3)}
-        \label{figure:cottontail_analytics_cost_range}
-    \end{subfigure}
-    \hfill
-    \centering
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-nns}
-        \caption{Score and rank for \acrshort{nns} query (Q4)}
-        \label{figure:cottontail_analytics_cost_nns}
-    \end{subfigure}
-    \caption{Score and rank assigned by the query planner to different execution plans for mean (Q2), range (Q3) and \acrshort{nns} (Q4) query workloads during the third benchmark. Different plans are indicated by colours. We show only the first three candidates in the ranking.}
-    \label{figure:cottontail_analytics_costs}
+    \includegraphics[width=\textwidth]{figures/analytics/analytics-cottontail-cost-nns-annotated}
+    \caption{Score and rank for \acrshort{nns} query (Q4)}
+    \label{figure:cottontail_analytics_cost_nns}
 \end{figure}
 
 \subsection{Benchmark 3: Influence of Planner Rules}
@@ -396,10 +395,3 @@ Furthermore, we have observed that as Milvus uses up all the memory during colle
 \label{section:discussion}
 
 With this evaluation, we have demonstrated the applicability of the introduced concepts in real-world scenarios. The notion of generalised, proximity based operations described in \Cref{section:generalised_proximity_based_ops} provide us with the ability to construct and execute a wide range of query workloads in a much more flexible way then purpose built systems like Milvus. While our reference implementation \cottontail{} may not be able to compete in terms of raw query execution speed, it seemed fairly competitive against Milvus when data loading was considered as well. In the time that Milvus requires to load data from disk, \cottontail{} can query the same collection $15$ (VAF) to $34$ (PQ) all the while being able to switch between collections and using different indexes.
-
-
-\subsection{A Note on Anomalies}
-During the first analytics benchmark, we have encountered an anomaly in the data 
-
-\subsection{A Note on Index Quality}
-During the benchmark, we have noticed that the quality provided by the approximate indexes (or at least our implementation thereof) is highly dependent on various factors. \Cref{figure:cottontail_analytics_quality} clearly shows, that the quality of the \acrshort{pq} seems to be different for different collections. Howevere, there seems to be no apparent connection between the dimensionality and quality, hence, the structure of the collection themselves. Using the same, constant  depends a lot on 
