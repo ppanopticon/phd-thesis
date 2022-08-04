@@ -627,6 +627,7 @@ Index files enable faster data access, especially in the presence of predicates 
 In simple terms, an index $\symindex^{\relation}_{I}$ can logically be seen as a copy of $\relation$ with respect to the attribute $\mathtt{TID}$, i.e., every value of $\mathtt{TID}$ in $\relation$ is somehow contained in $\symindex^{\relation}_{I}$. For example, an index could cluster all $\mathtt{TID}$ based on the attributes in $I$. As a consequence, we can always use $\symindex^{\relation}_{I}$ instead of $\relation$ and we can always reconstruct the attibutes $A = \{ \attribute \colon \attribute \in \schema(\relation) \symand \attribute \not\in \schema(\symindex^{\relation}_{I}) \}$ that are contained in $\relation$ but not contained in $\symindex^{\relation}_{I}$ by considering the equi-join\footnote{This is merely a logical construct not related to how data access is implemented.}:
 
 \begin{equation}
+    \label{equation:index_attribute_reconstruction}
    \relation \equiv \symindex^{\relation}_{I} \Join_{\mathtt{TID}} \projection_{A}(\relation)
 \end{equation}
 
