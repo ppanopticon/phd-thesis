@@ -1,4 +1,4 @@
-excelent\chapter{Modelling a Database for Dynamic Multimedia Data}
+\chapter{Modelling a Database for Dynamic Multimedia Data}
 \label{chapter:system_model}
 
 We have argued in \Cref{chapter:applications} that multimedia retrieval, analysis and analytics workloads (and workloads that exhibit similiar characteristics) pose specific requirements on a database system. In this chapter, we focus on four aspects and derive a formal model to accomodate them on a systems level:
@@ -964,4 +964,4 @@ Similarily, for deletes, the entry associated with the deleted \texttt{TID} can 
 
 Again, formally, the ability to apply an update can be directly expressed as a combination of $\symwritem(\mathtt{INSERT}, \relation, t^{\prime})$ and $ \symwritem(\mathtt{DELETE}, \relation, t)$, as outlined in \Cref{definition:change}. In practice, the two steps would probably be merged into a dedicated operation, to optimise performance.
 
-The failure model of a \acrshort{pq}
+The failure model of a \acrshort{pq} must potentially take multiple aspects into account. Firstly, a quantiser learned for a given size of the collection may become non-representative of the collection as it grows, especially if the growth exceeds orders of magnitude (e.g., from $100000$ to $1000000$ entries). Secondly, a growing number of potentially very similar vectors may lead to a degeneration of the indexes ability to distinguish between vectors. And lastly, for IVF\acrshort{pq}, the different clusters constructed by coarse quantisation may become imbalanced over time. In all these cases, complete re-indexing with potentially different parameters may be required\footnote{It is to be noted, that finding the optimal choice of parameters given a collection is still a poorly understood problem \cite{Ge:2014Optimized}.}.
