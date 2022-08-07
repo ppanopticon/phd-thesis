@@ -3,22 +3,15 @@
 
 \label{chapter:cottontaildb}
 
-\cottontail{}~\cite{Gasser:2020Cottontail} is our reference implementation for the query, cost and index-models described in \Cref{chapter:system_model}. Starting out as a drop-in replacement for ADAMpro \cite{Giangreco:2016Adam}, it has grown to be a full fledged \acrshort{dbms} with support for both classical Boolean retrieval as well as proximity based search used in multimedia retrieval and analytics applications. Both aspects are combined in a unified query and execution model and many explicit and implicit decisions, which are described in this chapter, went into its conception and design.
+\cottontail{}~\cite{Gasser:2020Cottontail} is our reference implementation for the query, cost and index maintenance models described in \Cref{chapter:system_model}. Starting out as a drop-in replacement for ADAMpro \cite{Giangreco:2016Adam}, it has grown to be a full fledged \acrshort{dbms} with support for classical Boolean, fulltext\footnote{Powered by Apache Lucene, See https://lucene.apache.org/} as well as proximity based search used in multimedia retrieval and analytics applications in the \vitrivr{} \cite{Rossetto:2016Vitrivr,Gasser:2019Multimodal} context. All three aspects are combined in a unified query and execution model and many explicit and implicit decisions, which are described in this chapter, went into its conception and design.
 
 \cottontail{} is written in Kotlin\footnote{See: https://kotlinlang.org/} and runs on the \acrfull{jvm}. \cottontail{}'s source code can be downloaded from GitHub\footnote{See: https://github.com/vitrivr/cottontaildb}. It is freely available under a permissive open source license and can be used as standalone application, Docker container or in an embedded mode.
 
 \section{Data Model and Nomenclature} 
 
-\cottontail{} uses a data model very similar to that of other relational \acrshort{dbms}': All data is organized into \emph{entities} -- which correspond to tables or relations. Every entity consists of individual, strongly typed \emph{columns}. The different data types currently supported are listed in \Cref{table:cottontail_types}. Columns can hold values of the declared type or \texttt{NULL} to indicate the absence of information (if the column has been declared as being nullable). To support the features used in multimedia retrieval applications, vector types are first-class members the type system.
+\cottontail{} uses a data model very similar to that of other relational \acrshort{dbms}': All data is organized into \emph{entities} -- which correspond to tables or relations. Every entity consists of individual, strongly typed \emph{columns}. The different data types currently supported are listed in \Cref{table:cottontail_types}. Columns can hold values of the declared type or \texttt{NULL} to indicate the absence of information, if the column has been declared as being nullable. To support the features used in multimedia retrieval applications, vector types are first-class members the type system.
 
-An entity can host multiple \emph{records}, which correspond to tuples in the relation. Since \cottontail{} is a column store, records are only logical constructs in memory and do not reflect the physical data representation on disk. Consequently, records are assembled on-the-fly as queries are being executed. Similarily to columns, every record is also strongly typed, wherein a record is a tuple type of its strongly typed elements. Internally, every record is uniquely identified by a \emph{tuple ID} (\texttt{TID}), which is a \texttt{long} value that can be used to address the record within an entity or an (in-memory) \emph{recordset}. This \texttt{TID} is not exposed to the outside because it remains at the discretion of the storage and execution engine to generate, assign, change and (re-)use them as data gets (re-)organized.
-
-Furthermore, \cottontail{} allows for multiple entities to be grouped into \emph{schemata}, which currently serves an organisational purpose only. Every entity can also host one or multiple secondary \emph{indexes} that index a single or multiple \emph{columns} for more efficient data access. In addition to indexes for Boolean and Fulltext search, \cottontail{} also hosts different types of high-dimensional index structures used for proximity based queries, for example, \acrshort{pq} \cite{Jegou:2010Product}, \acrshort{vaf} \cite{Weber:1998Va} and \acrshort{lsh}-based \cite{Indyk1998:Approximate} indexes.
-
-To address database objects, \cottontail{} uses a hierarchical namespace, i.e., every schema, entity, column and index must be uniquely named by a \emph{fully qualified name}. All the information about the database objects is tracked in an internal \emph{catalogue}, which is backed by the main storage engine.
-
-\begin{table}
-
+\begin{table}[bt]
     \caption{Data types supported by \cottontail{}. Types in the numeric, vector and complex class allow for domain specific arithmetics.}
     \label{table:cottontail_types}
 
@@ -28,6 +21,8 @@ To address database objects, \cottontail{} uses a hierarchical namespace, i.e., 
         \hline
         \hline
         String & \cmark & \xmark & \xmark & \xmark & \texttt{VARCHAR} \\ 
+        \hline
+        ByteString & \cmark & \xmark & \xmark & \xmark & \texttt{BLOB} \\ 
         \hline
         Date & \cmark & \xmark & \xmark & \xmark & \texttt{TIMESTAMP}\\
         \hline 
@@ -59,30 +54,37 @@ To address database objects, \cottontail{} uses a hierarchical namespace, i.e., 
         \hline
         Double Vector & \xmark & \xmark & \cmark & \xmark & \texttt{ARRAY[DOUBLE](1, d)}\\ 
         \hline
-        Complex32 Vector & \xmark & \xmark & \cmark & \xmark & - \\ 
+        Complex32 Vector & \xmark & \xmark & \cmark & \cmark & - \\ 
         \hline
-        Complex32 Vector & \xmark & \xmark & \cmark & \xmark & - \\ 
+        Complex32 Vector & \xmark & \xmark & \cmark & \cmark & - \\ 
         \hline
     \end{tabular}
-    
 \end{table}
+
+An entity can host multiple \emph{records}, which correspond to tuples in the relation. Since \cottontail{} is a column store, records are only logical constructs in memory and do not reflect the physical data representation on disk. Consequently, records are assembled on-the-fly as queries are being executed. Similarily to columns, every record is also strongly typed, wherein a record is a tuple type of its strongly typed elements. Internally, every record is uniquely identified by a \emph{tuple identifier} (\texttt{TID}), which is a \texttt{long} value that can be used to address the record within an entity or an (in-memory) \emph{recordset}. This \texttt{TID} is not exposed to the outside because it remains at the discretion of the storage and execution engine to generate, assign, change and (re-)use them as data gets (re-)organised.
+
+Furthermore, \cottontail{} allows for multiple entities to be grouped into \emph{schemata}, which currently serves an organisational purpose only. Every entity can also host one or multiple secondary \emph{indexes} that index a single or multiple \emph{columns} for more efficient data access. In addition to indexes for Boolean and fulltext search, \cottontail{} also hosts different types of high-dimensional index structures used for proximity based queries, for example, \acrshort{pq} \cite{Jegou:2010Product}, \acrshort{vaf} \cite{Weber:1998Va} and \acrshort{lsh}-based \cite{Indyk1998:Approximate} indexes.
+
+To address database objects, \cottontail{} uses a hierarchical namespace, i.e., every schema, entity, column and index must be uniquely named by a \emph{fully qualified name}. All the information about the database objects -- including all column and index statistics  -- is tracked in an internal \emph{catalogue}, which is backed by the main storage engine.
+
+
 \section{Architecture} 
 
 The main components of \cottontail{} are depicted in \Cref{figure:cottontail_architecture}. We use the path a query takes within the system, as indicated by the directed arrows, to illustrate the components involved in its implementation.
 
-At a high level, every query must undergo \emph{parsing}, \emph{binding}, \emph{planning} and \emph{execution} in that order, even though, planning may be skipped for certain types of queries (e.g. \acrshort{ddl} statements). Starting with the binding step, all the information required for query processing is accumulated in a \emph{query context} object, which is passed between the steps. In the following sections, we will describe the aforementioned steps in reverse order, since important concepts can be introduced more naturally that way.
+At a high level, every query must undergo \emph{parsing}, \emph{binding}, \emph{planning} and \emph{execution} in that order, even though, planning may be skipped for certain types of queries (e.g. \acrshort{ddl} statements) or upon request. Starting with the binding step, all the information required for query processing is accumulated in a \emph{query context} object, which is passed between the steps. In the following sections, we will describe the aforementioned steps in reverse order, since important concepts can be introduced more naturally that way.
 
 \begin{figure}[bt]
     \centering
     \includegraphics[width=\textwidth]{figures/architecture.eps}
-    \caption{Architecture diagram of \cottontail{}'s main components. The directed arrows indicate the path a query takes within the system. The dashed, double arrows indicate interactions between components.}
+    \caption{Architecture diagram of \cottontail{}'s main components. The directed arrows indicate the path a query takes within the system (dashed for a potential SQL interface). The dashed, double arrows indicate interactions between components.}
     \label{figure:cottontail_architecture}
 \end{figure}
 
 
 \subsection{Query Implementation and Execution}
 
-\cottontail{} implements an \emph{iterator model} for query execution. This means that an implemented query is a pipeline of operators, wherein each operator processes single records it receives from its upstream (input) operator(s) and passes single records to the next operator in the pipeline. Most operators have a direct correspondence to the relational operators (\Cref{chapter:theory_databases}) and extensions (\Cref{chapter:system_model}) introduced thus far. However, not all operators behave exactly as required by the model due to implementation details. For example the \texttt{FETCH} operation corresponds to projection $\projection$. However, instead of projecting onto a subset of the incoming attributes, it extends them, by looking up values in the database, i.e. logically, it corresponds to the operation $\symop(\relation) \Join_{\mathtt{TID}} \projection_{\attribute_{+}}(\relation)$ for the additional attribute $\attribute_{+} \in \schema(\relation)$. This can be beneficial, because \cottontail{} allows for access to individual columns and thus it reduces the amount if IO.
+\cottontail{} implements an \emph{iterator model} for query execution. This means that an implemented query is a pipeline of operators, wherein each operator processes single records it receives from its upstream (input) operator(s) and passes single records to the next operator in the pipeline. Most operators have a direct correspondence to the relational operators (\Cref{chapter:theory_databases}) and extensions (\Cref{chapter:system_model}) introduced thus far. However, not all operators behave exactly as required by the model due to implementation details. For example, the \texttt{FETCH} operation corresponds to a variant of the projection $\projection$ but instead of projecting onto a subset of the incoming attributes, it extends them, by looking up values in the database, i.e. logically (logically, \texttt{FETCH} corresponds to the operation $\symop(\relation) \Join_{\mathtt{TID}} \projection_{\attribute_{+}}(\relation)$ for the additional attribute $\attribute_{+} \in \schema(\relation)$, wherein the join acts on the tuple identifier). Such an operation can be beneficial since \cottontail{} allows for access to individual columns and thus it can reduce the cost of IO to defer access to certain columns.
 
 Conceptually, \cottontail{} distinguishes between \emph{Nullary}, \emph{Unary}, \emph{Binary} and \emph{N-Ary} operators, which differ in the number of inputs they can accept (0, 1, 2 or N). Furthermore, some operators require materialization of intermediate resultsets and therefore act as pipeline breakers since they must collect all inbound records before they can start handing them down (e.g., sort operator). The most important types of operators implemented by \cottontail{} along with their correspondence to the relational operators are listed in \Cref{table:cottontail_operators}. Every operator is implemented in Kotlin and pre-compiled to byte code.
 
