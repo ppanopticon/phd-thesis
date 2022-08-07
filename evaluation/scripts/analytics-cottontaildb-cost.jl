@@ -35,7 +35,7 @@ plans = Dict([
     (8752041231929455712, "P5: ScanEntity[feature]")
 ])
 
-theme1 = Theme(
+theme = Theme(
     major_label_font="Helvetica Neue Bold",
     major_label_font_size=16pt, 
     minor_label_font="Helvetica Neue",
@@ -47,21 +47,8 @@ theme1 = Theme(
     point_label_font="Helvetica Neue Light",
     point_label_font_size=18pt,
     line_style=[:dot],
+    point_size=6pt,
     key_position=:none
-)
-
-theme2 = Theme(
-    major_label_font="Helvetica Neue Bold",
-    major_label_font_size=16pt, 
-    minor_label_font="Helvetica Neue",
-    minor_label_font_size=12pt, 
-    key_title_font="Helvetica Neue Bold",
-    key_title_font_size=14pt,
-    key_label_font="Helvetica Neue",
-    key_label_font_size=12pt, 
-    point_label_font="Helvetica Neue Light",
-    point_label_font_size=18pt,
-    point_size=6pt
 )
 
 
@@ -76,14 +63,14 @@ data1 = df |> @filter(_.Query == "Mean"  && _.CPUW == 0.3 && _.IOW  == 0.6 && _.
 p1 = plot(data1, x=:QW, color = :Plan, y=:Score, Geom.smooth,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
-    theme1
+    theme
 )
 
 p2 = plot(data1, x=:QW, color = :Plan, y=:Rank, Geom.point,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
     Scale.y_discrete,
-    theme2
+    theme
 )
 
 
@@ -92,14 +79,14 @@ data2= df |> @filter(_.Query == "Range" && _.CPUW == 0.3 && _.IOW  == 0.6 && _.R
 p3 = plot(data2, x=:QW, color = :Plan, y=:Score, Geom.line,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
-    theme1
+    theme
 )
 
 p4 = plot(data2, x=:QW, color = :Plan, y=:Rank, Geom.point,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
     Scale.y_discrete,
-    theme2
+    theme
 )
 
 data3 = df |> @filter(_.Query == "NNS" && _.CPUW == 0.3 && _.IOW  == 0.6 && _.Rank <= 3) |> DataFrame
@@ -107,14 +94,14 @@ data3 = df |> @filter(_.Query == "NNS" && _.CPUW == 0.3 && _.IOW  == 0.6 && _.Ra
 p5 = plot(data3, x=:QW, color = :Plan, y=:Score, Geom.line,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
-    theme1
+    theme
 )
 
 p6 = plot(data3, x=:QW, color = :Plan, y=:Rank, Geom.point,
     Scale.color_discrete_manual("#A5D7D2","#D20537","#2D373C","#D2EBE9","#DD879B","#46505A"),
     Guide.xlabel("wQ"),
     Scale.y_discrete,
-    theme2
+    theme
 )
 
 draw(PDF("./mainmatter/08-evaluation/figures/analytics/analytics-cottontail-cost-mean.pdf",28cm,10cm),hstack(p1,p2));
