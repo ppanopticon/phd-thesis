@@ -31,10 +31,10 @@ theme = Theme(
 entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding", 25), ("features_hogmf25k512", 512), ("features_inceptionresnetv2", 1536), ("features_conceptmasksade20k", 2048)])
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
 
-df1 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
+df1 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
 dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness~measurements.json"))
-for (timestamp, count, insert, delete, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df1, (timestamp, count, insert, delete, runtime, ndcg, recall))
+for (timestamp, count, insert, delete, oob, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["runtime"], dict["dcg"], dict["recall"])
+    push!(df1, (timestamp, count, insert, delete, oob, runtime, ndcg, recall))
 end
 
 df2 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
@@ -62,6 +62,7 @@ count_pq = plot(df2, x=:Timestamp,
 operations_vaf = plot(df1, x=:Timestamp,
     layer(y=:Insert, Geom.line, color=["Inserts"]),
     layer(y=:Delete, Geom.line,  color=["Deletes"]),
+    layer(y=:OOB, Geom.line,  color=["Tombstones"]),
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Operations"),
     Scale.color_discrete_manual("#A5D7D2","#D20537"),
