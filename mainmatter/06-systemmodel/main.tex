@@ -1,10 +1,11 @@
 \chapter{Modelling a Database for Dynamic Multimedia Data}
 \label{chapter:system_model}
+\epiquote{The science of operations, as derived from mathematics more especially, is a science of itself, and has its own abstract truth and value.}{Ada Lovelace, 1843}
 
 We have argued in \Cref{chapter:applications} that multimedia retrieval, analysis and analytics workloads (and workloads that exhibit similiar characteristics) pose specific requirements on a database system. In this chapter, we focus on four aspects and derive a formal model to accomodate them on a systems level:
 
 \begin{description}
-    \item[Support for Complex Data Types] Multimedia workloads process features, which are often real-valued, high-dimensional vectors but can be any type of mathematical object (e.g., complex numbers). A multimedia \acrshort{dbms} must support these objects as first-class citizens (see \Cref{requirement:complex_data_types}).
+    \item[Support for Complex Data Types] Multimedia workloads process features that are often real-valued, high-dimensional vectors but can be any type of mathematical object (e.g., complex numbers). A multimedia \acrshort{dbms} must support these objects as first-class citizens (see \Cref{requirement:complex_data_types}).
     \item[Support for Distance Computation] The notion of proximity between features plays a crucial role in all types of multimedia workloads, which involves the evaluation of functions. A multimedia \acrshort{dbms} must be able to execute these funcitons efficiently, using the available data structures and execution methods (see \Cref{requirement:functions}).
     \item[Dynamic Data] Data is usually subject to constant change and a multimedia \acrshort{dbms} must be able to propagate these changes to all the relevant data structures while maintaining an internal consistency model (see \Cref{requirement:big_data} and \Cref{requirement:classical_dbms}).
     \item[Quality vs. Time] Multimedia queries often trade retrieval quality against speed or vice-versa, e.g., when using a high-dimensional indexes. A multimedia \acrshort{dbms} must make these decisions explicit and allow the user to express their perference at different levels of the system (see \Cref{requirement:quality_model}).
