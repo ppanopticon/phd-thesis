@@ -32,13 +32,13 @@ entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding"
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
 
 df1 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness~measurements.json"))
+dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild~measurements.json"))
 for (timestamp, count, insert, delete, oob, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["runtime"], dict["dcg"], dict["recall"])
     push!(df1, (timestamp, count, insert, delete, oob, runtime, ndcg, recall))
 end
 
 df2 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness~measurements.json"))
+dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness-with-rebuild~measurements.json"))
 for (timestamp, count, insert, delete, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["runtime"], dict["dcg"], dict["recall"])
     push!(df2, (timestamp, count, insert, delete, runtime, ndcg, recall))
 end
@@ -55,7 +55,7 @@ count_pq = plot(df2, x=:Timestamp,
     layer(y=:Count, Geom.line),
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Collection Size"),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     theme
 )
 
@@ -66,7 +66,7 @@ operations_vaf = plot(df1, x=:Timestamp,
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Operations"),
     Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     theme
 )
 operations_pq = plot(df2, x=:Timestamp,
@@ -75,7 +75,7 @@ operations_pq = plot(df2, x=:Timestamp,
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Operations"),
     Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     theme
 )
 
@@ -84,7 +84,7 @@ runtime_vaf = plot(df1, x=:Timestamp, y=:Runtime,
     layer(Geom.line),
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     theme
 )
 runtime_pq = plot(df2, x=:Timestamp, y=:Runtime,
@@ -92,7 +92,7 @@ runtime_pq = plot(df2, x=:Timestamp, y=:Runtime,
     layer(Geom.line),
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     theme
 )
 
@@ -102,7 +102,7 @@ quality_vaf = plot(df1, x=:Timestamp,
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Quality"),
     Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     Scale.color_discrete_manual("#A5D7D2","#D20537"),
     theme
 )
@@ -112,7 +112,7 @@ quality_pq = plot(df2, x=:Timestamp,
     Guide.xlabel("Ellapsed Time [s]"),
     Guide.ylabel("Quality"),
     Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=3600),
+    Coord.cartesian(xmin=0, xmax=7200),
     Scale.color_discrete_manual("#A5D7D2","#D20537"),
     theme
 )

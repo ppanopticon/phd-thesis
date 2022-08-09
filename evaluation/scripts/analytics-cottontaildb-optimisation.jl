@@ -31,27 +31,28 @@ theme = Theme(
 entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding", 25), ("features_hogmf25k512", 512), ("features_inceptionresnetv2", 1536), ("features_conceptmasksade20k", 2048)])
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
 queries = Dict([("Fetch", 1), ("Mean", 2), ("Range", 3), ("NNS", 4), ("Select", 5)])
+query_names = Dict([("Fetch", "Fetch (Q1a)"), ("Mean", "Mean (Q1b)"), ("Range", "Range (Q1c)"), ("NNS", "NNS (Q1d)"), ("Select", "Select (Q1e)")])
 
 df1 = DataFrame(Entity = String[], Dimension = Int32[], Query = String[], QueryOrder = Int32[], Type = String[], Runtime = Float64[])
 dict = read_json(joinpath("./evaluation/data/analytics/","analytics-opt~measurements.json"))
 for (entity, query, runtime) in zip(dict["entity"], dict["query"], dict["runtime"])
-    push!(df1, (replace(entity,"features_" => ""), entities[entity], query, queries[query], "With Optimisation", runtime))
+    push!(df1, (replace(entity,"features_" => ""), entities[entity], query_names[query], queries[query], "With Optimisation", runtime))
 end
 
 dict = read_json(joinpath("./evaluation/data/analytics/","analytics-no-opt~measurements.json"))
 for (entity, query, runtime) in zip(dict["entity"], dict["query"], dict["runtime"])
-    push!(df1, (replace(entity,"features_" => ""), entities[entity], query, queries[query], "Without Optimisation", runtime))
+    push!(df1, (replace(entity,"features_" => ""), entities[entity], query_names[query], queries[query], "Without Optimisation", runtime))
 end
 
 df2 = DataFrame(Entity = String[], Dimension = Int32[], Query = String[], QueryOrder = Int32[], Type = String[], Runtime = Float64[])
 dict = read_json(joinpath("./evaluation/data/analytics/","analytics-opt-lowmem~measurements.json"))
 for (entity, query, runtime) in zip(dict["entity"], dict["query"], dict["runtime"])
-    push!(df2, (replace(entity,"features_" => ""), entities[entity], query, queries[query], "With Optimisation", runtime))
+    push!(df2, (replace(entity,"features_" => ""), entities[entity], query_names[query], queries[query], "With Optimisation", runtime))
 end
 
 dict = read_json(joinpath("./evaluation/data/analytics/","analytics-no-opt-lowmem~measurements.json"))
 for (entity, query, runtime) in zip(dict["entity"], dict["query"], dict["runtime"])
-    push!(df2, (replace(entity,"features_" => ""), entities[entity], query, queries[query], "Without Optimisation", runtime))
+    push!(df2, (replace(entity,"features_" => ""), entities[entity], query_names[query], queries[query], "Without Optimisation", runtime))
 end
 
 # Prepare data for plotting
