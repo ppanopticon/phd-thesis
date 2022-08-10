@@ -53,12 +53,28 @@ nnsr = df1 |>
         Index=key(_).Index,
         Parallel=key(_).Parallel,
         Type="$(key(_).Index) (p=$(key(_).Parallel))",
-        RuntimeMean=Statistics.mean(_.Runtime)
+        RuntimeMean=Statistics.mean(_.Runtime),
+        RuntimeStd=Statistics.std(_.Runtime)
+    }) |> DataFrame
+
+nns_sum = nnsr |>
+    @groupby({_.Dimension, _.Index, _.Parallel}) |> 
+    @map({
+        Dimension=key(_).Dimension, 
+        Index=key(_).Index,
+        Parallel=key(_).Parallel,
+        Type="$(key(_).Index) (p=$(key(_).Parallel))",
+        Label="$(round(sum(_.RuntimeMean), digits=2))±$(round(sum(_.RuntimeStd), digits=2))",
+        LabelPosition=minimum([sum(_.RuntimeMean) + 2, 28])
     }) |> DataFrame
 
 runtime_normal = plot(nnsr,
     color=:Query, x=:RuntimeMean, y=:Type, ygroup=:Dimension,
-    Geom.subplot_grid(Geom.bar(orientation = :horizontal), Guide.xticks(ticks = [0, 5, 10, 15, 20, 25, 30])),
+    Geom.subplot_grid(
+        layer(nns_sum, x=:LabelPosition, y=:Type, ygroup=:Dimension, label=:Label, Geom.label(position=:centered), Stat.dodge(position=:stack)),
+        layer(Geom.bar(orientation = :horizontal)),
+        Guide.xticks(ticks = [0, 5, 10, 15, 20, 25, 30])
+    ),
     Guide.xlabel("Latency [s]"),
     Guide.ylabel(nothing),
     Guide.colorkey(title="Query", labels=["Fetch (Q1a)","Mean (Q1b)","Range (Q1c)","NNS (Q1d)","Select (Q1e)"], pos=[0.8,-0.4]),
