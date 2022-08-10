@@ -150,7 +150,7 @@ quality_nns = plot(nnsq |> @filter(_.Query == "NNS") |> DataFrame,
         Guide.yticks(ticks=[0.0, 0.25, 0.5, 0.75, 1.0]),
         Coord.cartesian(ymin=0.0, xmin=1.0)
     ),
-    Guide.xlabel(),
+    Guide.xlabel(nothing),
     Guide.ylabel("Quality"),
     Scale.x_discrete,
     Scale.color_discrete_manual("#D2EBE9","#DD879B"),
