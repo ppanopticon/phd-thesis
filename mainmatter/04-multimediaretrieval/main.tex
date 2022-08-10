@@ -279,7 +279,7 @@ As we have argued in \Cref{section:multimedia_retrieval}, even the simple \acrsh
 
 In addition, for search in high-dimensional vector spaces, the dependency on $d$ has a huge impact on the execution performance of any \acrshort{nns} algorithm, due to what is known as the \emph{curse of dimensionality} \cite{Indyk1998:Approximate,Zezula:2006Similarity}. The impact of this ``curse'' is twofold: First, the execution time of a brute-force algorithm is directly proportional to the size of the feature vector. With a tendency towards more complex and thus higher-dimensional vectors, there is a direct, negative effect on runtime. Second, and more importantly, research has shown that the task of indexing high-dimensional vectors for more efficient access is not trivial and that traditional approaches, e.g., based on partitioning or classical tree structures, degenerate as dimensionality increases \cite{Indyk1998:Approximate,Weber:1998Va} with the consequence, that they only yield marginal or no improvement over executing a linear scan. In fact, it was formally proven by \cite{Shaft:2006Theory} in their \emph{Theory of Nearest Neighbor Indexability} that the performance of almost all known index structures at that time deteriorate to that of a linear scan if $d$ becomes large enough.
 
-Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the quality of the results, wherein quality is often measured in terms of precission and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice quality for speed \cite{Siguroardottir:2005Quality}, this is also known as \acrfull{anns}. Second, based on their \emph{organisation structure} \cite{Shaft:2006Theory}, e.g., \emph{list}, \emph{tree}, \emph{graph}, \emph{hash table} and \emph{inverted file}. And finally, by the method that is employed, e.g., \emph{quantisation}, \emph{hashing}, \emph{partitioning} or \emph{clustering}. An overview of different algorithms is provided in \Cref{table:index_structures}.
+Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: First, based on whether they provide any guarantees w.r.t. to the quality of the results, wherein quality is often measured in terms of precission and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice quality for speed \cite{Siguroardottir:2005Quality}, this is also known as \acrfull{anns}. Second, based on their \emph{organisation structure} \cite{Shaft:2006Theory}, e.g., graph and inverted index \cite{Sivic:2003Video} or multi-index \cite{Babenko:2014Inverted}. And finally, by the method that is employed, e.g., \emph{quantisation}, \emph{hashing}, \emph{partitioning} or \emph{clustering}. An overview of different algorithms is provided in \Cref{table:index_structures}.
 
 \begin{table}
     \begin{tabular}{ | l | c | c | c |}
@@ -293,11 +293,11 @@ Nevertheless, the issue of index structures that allow for more efficient \acrsh
         \hline
         \acrshort{vaf} \& VA+ \cite{Weber:1998Va,Ferhatosmanoglu:2000Vector} & exact & list & scalar quantisation \\ 
         \hline
-        \acrshort{lsh} \cite{Indyk1998:Approximate, Wang:2017ASurvey} & approximate, probabilistic & hash table i.a.  & hashing \\ 
+        \acrshort{lsh} \cite{Indyk1998:Approximate, Wang:2017ASurvey} & approximate, probabilistic & inverted index & hashing \\ 
         \hline
-        \acrshort{pq} \cite{Jegou:2010Product} & approximate & list / inverted file & vector quantisation \\
+        \acrshort{pq} \cite{Jegou:2010Product} & approximate & list / inverted index & vector quantisation \\
         \hline 
-        \acrshort{cp} \& e\acrshort{cp} \cite{Chierichetti:2007Finding,Gudmundsson:2010Large} & approximate & inverted file & clustering \\ 
+        \acrshort{cp} \& e\acrshort{cp} \cite{Chierichetti:2007Finding,Gudmundsson:2010Large} & approximate & inverted index & clustering \\ 
         \hline
         NV-tree \cite{Lejsek:2009NVTree} & approximate & tree & scalar quantisation \\ 
         \hline
