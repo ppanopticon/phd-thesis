@@ -6,7 +6,7 @@
 
 \subsection*{Configuration Parameters}
 
-\begin{lstlisting}[language=json, caption={Cottontail DB configuration used during evaluation (config.json).}, label=listing:cottontail_config, numbers=none]
+\begin{lstlisting}[language=json, caption={Cottontail DB configuration used during the evaluation (config.json).}, label=listing:cottontail_config, numbers=none]
 {
     /* Path to data folder. */
     "root":"/mnt/raid0/evaluation/cottontail-data",
@@ -132,23 +132,24 @@
     \end{tabular}
 \end{table}
 
+\newpage
+
 \section*{Additional Results}
 
-
-\begin{figure}[p]
+\begin{figure}[bt]
     \includegraphics[width=\linewidth]{figures/bignns-cottontail-quality-NNS}
     \caption{Quality metrics for Cottontail DB during the simple \acrshort{nns} large-scale retrieval evaluation presented in \Cref{section:evaluation_bignns_cottontail}. Recall and \acrshort{dcg} are 1.0 for all execution strategies other than \acrshort{pq}, for which they exhibit rather low values with a large spread.}
     \label{figure:appendix_bignns_cottontail_nns_quality}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[bt]
     \includegraphics[width=\linewidth]{figures/bignns-cottontail-quality-NNS + Fetch}
     \caption{Quality metrics for Cottontail DB during the \acrshort{nns} + fetch large-scale retrieval evaluation presented in \Cref{section:evaluation_bignns_cottontail}. Recall and \acrshort{dcg} are 1.0 for all execution strategies other than \acrshort{pq}, for which they exhibit rather low values with a large spread.}
     \label{figure:appendix_bignns_cottontail_nns_fetch_quality}
 \end{figure}
 
 
-\begin{figure}[p]
+\begin{figure}[bt]
     \includegraphics[width=\linewidth]{figures/bignns-cottontail-quality-Hybrid}
     \caption{Quality metrics for Cottontail DB during the hybrid query large-scale retrieval evaluation presented in \Cref{section:evaluation_bignns_cottontail}. Recall and \acrshort{dcg} are 1.0 for all execution strategies other than \acrshort{pq}, for which they exhibit rather low values with a large spread.}
     \label{figure:appendix_bignns_cottontail_hybrid_quality}
