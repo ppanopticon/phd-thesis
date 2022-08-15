@@ -31,25 +31,24 @@ theme = Theme(
 entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding", 25), ("features_hogmf25k512", 512), ("features_inceptionresnetv2", 1536), ("features_conceptmasksade20k", 2048)])
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
 
-df_vaf = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
+df_vaf = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
 dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_vaf, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
+for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
+    push!(df_vaf, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
 end
 rebuild_df_vaf = (df_vaf |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
 
-df_vaf_jitter_5 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
+df_vaf_jitter_5 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
 dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild-and-jitter-5~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_vaf_jitter_5, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
+for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
+    push!(df_vaf_jitter_5, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
 end
 rebuild_df_vaf_jitter_5 = (df_vaf_jitter_5 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
 
-
-df_vaf_jitter_10 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
+df_vaf_jitter_10 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
 dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild-and-jitter-10~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_vaf_jitter_10, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
+for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
+    push!(df_vaf_jitter_10, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
 end
 rebuild_df_vaf_jitter_10 = (df_vaf_jitter_10 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
 
@@ -66,6 +65,18 @@ for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in z
     push!(df_pq_jitter_10, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
 end
 rebuild_df_pq_jitter_10 = (df_pq_jitter_10 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
+
+# Prepare plot (VAF Score)
+score_vaf = plot(
+    layer(df_vaf, x=:Timestamp, y=:Score, color=["No Jitter"], Geom.line),
+    layer(df_vaf_jitter_5, x=:Timestamp, y=:Score, color=["Jitter 5"], Geom.line),
+    layer(df_vaf_jitter_10, x=:Timestamp, y=:Score, color=["Jitter 10"], Geom.line),
+    Guide.xlabel("Ellapsed Time [s]"),
+    Guide.ylabel("Score"),
+    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
+    Coord.cartesian(xmin=0, xmax=7200),
+    theme
+)
 
 # Prepare plot  (Count)
 count_vaf = plot(df_vaf, x=:Timestamp,
@@ -277,3 +288,4 @@ draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-with-j
 draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-with-jitter-10.pdf",30cm,20cm),vstack(hstack(count_vaf_jitter_10, operations_vaf_jitter_10), hstack(runtime_vaf_jitter_10, quality_vaf_jitter_10)));
 draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness.pdf",30cm,20cm),vstack(hstack(count_pq, operations_pq), hstack(runtime_pq, quality_pq)));
 draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness-with-jitter-10.pdf",30cm,20cm),vstack(hstack(count_pq_jitter_10, operations_pq_jitter_10), hstack(runtime_pq_jitter_10, quality_pq_jitter_10)));
+draw(PDF("./mainmatter/08-evaluation/figures/index/score_vaf.pdf",30cm,20cm),score_vaf);
