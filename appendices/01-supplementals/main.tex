@@ -2,11 +2,8 @@
 \label{chapter:appendix_supplementals}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\cottontail{} Entities \& Configuration}
 
-\subsection*{Configuration Parameters}
-
-\begin{lstlisting}[language=json, caption={Cottontail DB configuration used during the evaluation (config.json).}, label=listing:cottontail_config, numbers=none]
+\begin{lstlisting}[language=json, caption={Cottontail DB configuration used during the entire evaluation (config.json).}, label=listing:cottontail_config, numbers=none]
 {
     /* Path to data folder. */
     "root":"/mnt/raid0/evaluation/cottontail-data",
@@ -20,20 +17,16 @@
 
       /* Portion of \acrshort{io} costconsidered parallelisable. */
       "parallelisableIO": 0.9
-    },
-    "execution": {
-      /* Activate SIMD support through Vector API. */
-      "simd": true
     }
 } 
 \end{lstlisting}
 
-\subsection*{Entities}
+\newpage
 
 \begin{table}[h]
-    \caption{State of the entity yandex\_deep5m used during the evaluation.}
+    \caption{State of the entity \emph{yandex\_deep5m} used during the evaluation.}
     \label{table:entity_yandex_deep5m}
-    \begin{tabular}{| l | l | l | l | l | l |} 
+    \begin{tabular}{| l | c | c | c | c | c |} 
      \hline
      \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
      \hline\hline
@@ -57,9 +50,9 @@
 \end{table}
 
 \begin{table}[h!]
-    \caption{State of the entity yandex\_deep10m used during the evaluation.}
+    \caption{State of the entity \emph{yandex\_deep10m} used during the evaluation.}
     \label{table:entity_yandex_deep10m}
-    \begin{tabular}{| l | l | l | l | l | l |} 
+    \begin{tabular}{| l | c | c | c | c | c |} 
      \hline
      \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
      \hline\hline
@@ -83,9 +76,9 @@
 \end{table}
 
 \begin{table}[h!]
-    \caption{State of the entity yandex\_deep100m used during the evaluation.}
+    \caption{State of the entity \emph{yandex\_deep100m} used during the evaluation.}
     \label{table:entity_yandex_deep100m}
-    \begin{tabular}{|l | l | l | l | l | l |} 
+    \begin{tabular}{| l | c | c | c | c | c |} 
      \hline
      \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
      \hline\hline
@@ -109,9 +102,9 @@
 \end{table}
 
 \begin{table}[h!]
-    \caption{State of the entity yandex\_deep1b used during the evaluation.}
+    \caption{State of the entity \emph{yandex\_deep1b} used during the evaluation.}
     \label{table:entity_yandex_deep1b}
-    \begin{tabular}{|l | l | l | l | l | l |} 
+    \begin{tabular}{| l | c | c | c | c | c |} 
      \hline
      \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
      \hline\hline
@@ -130,4 +123,104 @@
      yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e9}{} & - & CLEAN \\
      \hline
     \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \caption{State of the entity \emph{averagecolor} used during the evaluation.}
+  \label{table:entity_averagecolor}
+  \begin{tabular}{| l | c | c | c | c | c |} 
+   \hline
+   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+   \hline\hline
+   averagecolor & ENTITY & - & \SI{2512715}{} & - & - \\
+   \hline
+   averagecolor.id & COLUMN & STRING & \SI{2512715}{} & 1 & NOT NULL\\
+   \hline
+   averagecolor.feature & COLUMN & FLOATVEC & \SI{2512715}{} & 3 &  NOT NULL \\
+   \hline
+   averagecolor.idx\_feature\_vaf & INDEX & VAF & \SI{2512715}{} & - & CLEAN \\
+   \hline
+   averagecolor.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
+   \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \caption{State of the entity \emph{visualtextcoembedding} used during the evaluation.}
+  \label{table:entity_visualtextcoembedding}
+  \begin{tabular}{| l | c | c | c | c | c |} 
+   \hline
+   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+   \hline\hline
+   visualtextcoembedding & ENTITY & - & \SI{2506273}{} & - & - \\
+   \hline
+   visualtextcoembedding.id & COLUMN & STRING & \SI{2506273}{} & 1 & NOT NULL\\
+   \hline
+   visualtextcoembedding.feature & COLUMN & FLOATVEC & \SI{2506273}{} & 256 &  NOT NULL \\
+   \hline
+   visualtextcoembedding.idx\_feature\_vaf & INDEX & VAF & \SI{2506273}{} & - & CLEAN \\
+   \hline
+   visualtextcoembedding.idx\_feature\_pq & INDEX & PQ & \SI{2506273}{} & - & CLEAN \\
+   \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \caption{State of the entity \emph{hogmf25k512} used during the evaluation.}
+  \label{table:entity_hogmf25k512}
+  \begin{tabular}{| l | c | c | c | c | c |} 
+   \hline
+   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+   \hline\hline
+   hogmf25k512 & ENTITY & - & \SI{2512715}{} & - & - \\
+   \hline
+   hogmf25k512.id & COLUMN & STRING & \SI{2512715}{} & 1 & NOT NULL\\
+   \hline
+   hogmf25k512.feature & COLUMN & FLOATVEC & \SI{2512715}{} & 512 &  NOT NULL \\
+   \hline
+   hogmf25k512.idx\_feature\_vaf & INDEX & VAF & \SI{2512715}{} & - & CLEAN \\
+   \hline
+   hogmf25k512.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
+   \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \caption{State of the entity \emph{inceptionresnetv2} used during the evaluation.}
+  \label{table:entity_features_inceptionresnetv2 }
+  \begin{tabular}{| l | c | c | c | c | c |} 
+   \hline
+   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+   \hline\hline
+   inceptionresnetv2 & ENTITY & - & \SI{2508358}{} & - & - \\
+   \hline
+   inceptionresnetv2.id & COLUMN & STRING & \SI{2508358}{} & 1 & NOT NULL\\
+   \hline
+   inceptionresnetv2.feature & COLUMN & FLOATVEC & \SI{2508358}{} & 1536 &  NOT NULL \\
+   \hline
+   inceptionresnetv2.idx\_feature\_vaf & INDEX & VAF & \SI{2508358}{} & - & CLEAN \\
+   \hline
+   inceptionresnetv2.idx\_feature\_pq & INDEX & PQ & \SI{2508358}{} & - & CLEAN \\
+   \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \caption{State of the entity \emph{conceptmasksade20k} used during the evaluation.}
+  \label{table:entity_features_conceptmasksade20k}
+  \begin{tabular}{| l | c | c | c | c | c |} 
+   \hline
+   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+   \hline\hline
+   conceptmasksade20k & ENTITY & - & \SI{2469844}{} & - & - \\
+   \hline
+   conceptmasksade20k.id & COLUMN & STRING & \SI{2469844}{} & 1 & NOT NULL\\
+   \hline
+   conceptmasksade20k.feature & COLUMN & FLOATVEC & \SI{2469844}{} & 2048 &  NOT NULL \\
+   \hline
+   conceptmasksade20k.idx\_feature\_vaf & INDEX & VAF & \SI{2469844}{} & - & CLEAN \\
+   \hline
+   conceptmasksade20k.idx\_feature\_pq & INDEX & PQ & \SI{2469844}{} & - & CLEAN \\
+   \hline
+  \end{tabular}
 \end{table}
