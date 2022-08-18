@@ -41,17 +41,17 @@ for i in ["pq","vaf"]
             layer(y=:Count, Geom.line),
             Guide.xlabel("Ellapsed Time [s]"),
             Guide.ylabel("Collection Size"),
-            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=4000000),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=5000000),
             theme
         )
         operations = plot(df, x=:Timestamp,
             layer(y=:Insert, Geom.line, color=["Inserts"]),
             layer(y=:Delete, Geom.line,  color=["Deletes"]),
-            layer(y=:Delete, Geom.line,  color=["OOB"]),
+            layer(y=:OOB, Geom.line,  color=["OOB"]),
             Guide.xlabel("Ellapsed Time [s]"),
             Guide.ylabel("Operations"),
             Scale.color_discrete_manual("#A5D7D2","#D20537"),
-            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=3000000),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=4000000),
             theme
         )
         runtime = plot(df, x=:Timestamp, y=:Runtime,
@@ -61,8 +61,7 @@ for i in ["pq","vaf"]
             layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
             Guide.xlabel("Ellapsed Time [s]"),
             Guide.ylabel("Latency (NNS) [s]"),
-            Guide.yticks(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]),
-            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=1.0),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=6.0),
             theme
         )
         quality = plot(df, x=:Timestamp, 
@@ -89,7 +88,7 @@ for i in ["pq","vaf"]
     for r in ["90-10"]
 
     df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-    dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-with-rebuild~measurements.json"))
+    dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-with-rebuild-jitter~measurements.json"))
     for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
         push!(df, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
     end
@@ -106,32 +105,39 @@ for i in ["pq","vaf"]
     operations = plot(df, x=:Timestamp,
         layer(y=:Insert, Geom.line, color=["Inserts"]),
         layer(y=:Delete, Geom.line,  color=["Deletes"]),
+        layer(y=:OOB, Geom.line,  color=["OOB"]),
         layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Operations"),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
-        Coord.cartesian(xmin=0, xmax=3600),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=4000000),
         theme
     )
     runtime= plot(df, x=:Timestamp, y=:Runtime,
         layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
         layer(Geom.line),
         layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        layer(yintercept=[maximum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+        layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Latency (NNS) [s]"),
-        Coord.cartesian(xmin=0, xmax=3600),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=6.0),
         theme
     )
     quality = plot(df, x=:Timestamp, 
         layer(y=:NDCG, color=["nDCG"], Geom.line),
         layer(y=:Recall, color=["Recall"], Geom.line),
         layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        layer(yintercept=[maximum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
+        layer(yintercept=[minimum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
+        layer(yintercept=[maximum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+        layer(yintercept=[minimum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Quality (NNS)"),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=1.0),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         theme
     ) 
-    draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
+    draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild-and-jitter.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
 end
 end
