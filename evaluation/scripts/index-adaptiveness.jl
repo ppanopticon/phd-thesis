@@ -29,417 +29,109 @@ theme = Theme(
 # Load data files
 entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding", 25), ("features_hogmf25k512", 512), ("features_inceptionresnetv2", 1536), ("features_conceptmasksade20k", 2048)])
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
+for i in ["pq","vaf"]
+    for r in ["90-10", "50-50"]
+        df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
+        dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-no-rebuild~measurements.json"))
+        for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
+            push!(df, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
+        end
 
-df_vaf = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-    push!(df_vaf, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
-end
-rebuild_df_vaf = (df_vaf |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
+        count = plot(df, x=:Timestamp,
+            layer(y=:Count, Geom.line),
+            Guide.xlabel("Ellapsed Time [s]"),
+            Guide.ylabel("Collection Size"),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=4000000),
+            theme
+        )
+        operations = plot(df, x=:Timestamp,
+            layer(y=:Insert, Geom.line, color=["Inserts"]),
+            layer(y=:Delete, Geom.line,  color=["Deletes"]),
+            layer(y=:Delete, Geom.line,  color=["OOB"]),
+            Guide.xlabel("Ellapsed Time [s]"),
+            Guide.ylabel("Operations"),
+            Scale.color_discrete_manual("#A5D7D2","#D20537"),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=3000000),
+            theme
+        )
+        runtime = plot(df, x=:Timestamp, y=:Runtime,
+            layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
+            layer(Geom.line),
+            layer(yintercept=[maximum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            Guide.xlabel("Ellapsed Time [s]"),
+            Guide.ylabel("Latency (NNS) [s]"),
+            Guide.yticks(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=1.0),
+            theme
+        )
+        quality = plot(df, x=:Timestamp, 
+            layer(y=:NDCG, color=["nDCG"], Geom.line),
+            layer(y=:Recall, color=["Recall"], Geom.line),
+            layer(yintercept=[maximum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
+            layer(yintercept=[minimum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
+            layer(yintercept=[maximum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            layer(yintercept=[minimum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            Guide.xlabel("Ellapsed Time [s]"),
+            Guide.ylabel("Quality (NNS)"),
+            Guide.yticks(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=1.0),
+            Scale.color_discrete_manual("#A5D7D2","#D20537"),
+            theme
+        )
 
-df_vaf_no_rebuild = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-no-rebuild~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-    push!(df_vaf_no_rebuild, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
-end
-
-df_vaf_jitter_5 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild-and-jitter-5~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-    push!(df_vaf_jitter_5, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
-end
-rebuild_df_vaf_jitter_5 = (df_vaf_jitter_5 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
-
-df_vaf_jitter_10 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-with-rebuild-and-jitter-10~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-    push!(df_vaf_jitter_10, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
-end
-rebuild_df_vaf_jitter_10 = (df_vaf_jitter_10 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
-
-df_vaf_jitter_10_no_rebuild = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-vaf-adaptiveness-no-rebuild-and-jitter-10~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-    push!(df_vaf_jitter_10_no_rebuild, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
-end
-
-df_pq = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness-with-rebuild~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_pq, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
-end
-rebuild_df_pq = (df_pq |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
-
-df_pq_no_rebuild = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_pq_no_rebuild, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
-end
-
-df_pq_jitter_10 = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness-with-rebuild-and-jitter-10~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_pq_jitter_10, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
-end
-rebuild_df_pq_jitter_10 = (df_pq_jitter_10 |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
-
-df_pq_jitter_10_no_rebuild = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[])
-dict = read_json(joinpath("./evaluation/data/index/","index-pq-adaptiveness-no-rebuild-and-jitter-10~measurements.json"))
-for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"])
-    push!(df_pq_jitter_10_no_rebuild, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall))
+        draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-no-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
+    end
 end
 
-# Prepare plot (VAF Score)
-score_vaf = plot(
-    layer(df_vaf, x=:Timestamp, y=:Score, color=["No Jitter"], Geom.line),
-    layer(df_vaf_jitter_5, x=:Timestamp, y=:Score, color=["Jitter 5"], Geom.line),
-    layer(df_vaf_jitter_10, x=:Timestamp, y=:Score, color=["Jitter 10"], Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Score"),
-    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
+# With Jitter 10
+for i in ["pq","vaf"]
+    for r in ["90-10"]
 
-# Prepare plot  (Count)
-count_vaf = plot(df_vaf, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_vaf_no_rebuild = plot(df_vaf_no_rebuild, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_vaf_jitter_5 = plot(df_vaf_jitter_5, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    layer(xintercept=[rebuild_df_vaf_jitter_5], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_vaf_jitter_10 = plot(df_vaf_jitter_10, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    layer(xintercept=[rebuild_df_vaf_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_vaf_jitter_10_no_rebuild = plot(df_vaf_jitter_10_no_rebuild, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_pq = plot(df_pq, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    layer(xintercept=[rebuild_df_pq_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_pq_no_rebuild = plot(df_pq_no_rebuild, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_pq_jitter_10 = plot(df_pq_jitter_10, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    layer(xintercept=[rebuild_df_pq], Geom.vline(color=["#46505A"], style=[:dot])),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-count_pq_jitter_10_no_rebuild = plot(df_pq_jitter_10_no_rebuild, x=:Timestamp,
-    layer(y=:Count, Geom.line),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Collection Size"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
+    df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
+    dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-with-rebuild~measurements.json"))
+    for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
+        push!(df, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
+    end
 
-# Prepare plot (Ops)
-operations_vaf = plot(df_vaf, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_vaf_no_rebuild = plot(df_vaf_no_rebuild, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_vaf_jitter_5 = plot(df_vaf_jitter_5, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    layer(xintercept=[rebuild_df_vaf_jitter_5], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_vaf_jitter_10 = plot(df_vaf_jitter_10, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    layer(xintercept=[rebuild_df_vaf_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_vaf_jitter_10_no_rebuild = plot(df_vaf_jitter_10_no_rebuild, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_pq = plot(df_pq, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(xintercept=[rebuild_df_pq], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_pq_no_rebuild = plot(df_pq_no_rebuild, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_pq_jitter_10 = plot(df_pq_jitter_10, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    layer(xintercept=[rebuild_df_pq_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-operations_pq_jitter_10_no_rebuild = plot(df_pq_jitter_10_no_rebuild, x=:Timestamp,
-    layer(y=:Insert, Geom.line, color=["Inserts"]),
-    layer(y=:Delete, Geom.line,  color=["Deletes"]),
-    layer(y=:OOB, Geom.line,  color=["Out Of Bounds"]),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Operations"),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-
-# Prepare plot (Runtime)
-runtime_vaf = plot(df_vaf, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_vaf_no_rebuild = plot(df_vaf_no_rebuild, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_vaf_jitter_5 = plot(df_vaf_jitter_5, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    layer(xintercept=[rebuild_df_vaf_jitter_5], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_vaf_jitter_10 = plot(df_vaf_jitter_10, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99]), color=["Smooth"]),
-    layer(xintercept=[rebuild_df_vaf_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_vaf_jitter_10_no_rebuild = plot(df_vaf_jitter_10_no_rebuild, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_pq = plot(df_pq, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    layer(xintercept=[rebuild_df_pq], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_pq_no_rebuild = plot(df_pq_no_rebuild, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_pq_jitter_10 = plot(df_pq_jitter_10, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    layer(xintercept=[rebuild_df_pq_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-runtime_pq_jitter_10_no_rebuild = plot(df_pq_jitter_10_no_rebuild, x=:Timestamp, y=:Runtime,
-    layer(Geom.line, Geom.ribbon, Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Latency [s]"),
-    Coord.cartesian(xmin=0, xmax=7200),
-    theme
-)
-
-# Prepare plot (Quality)
-quality_vaf = plot(df_vaf, x=:Timestamp, 
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(xintercept=[rebuild_df_vaf], Geom.vline(color=["#46505A"], style=[:dot])),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_vaf_no_rebuild = plot(df_vaf_no_rebuild, x=:Timestamp, 
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_vaf_jitter_5 = plot(df_vaf_jitter_5, x=:Timestamp, 
-    layer(xintercept=[rebuild_df_vaf_jitter_5], Geom.vline(color=["#46505A"], style=[:dot])),
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_vaf_jitter_10 = plot(df_vaf_jitter_10, x=:Timestamp, 
-    layer(xintercept=[rebuild_df_vaf_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_vaf_jitter_10_no_rebuild = plot(df_vaf_jitter_10_no_rebuild, x=:Timestamp, 
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_pq = plot(df_pq, x=:Timestamp, 
-    layer(xintercept=[rebuild_df_pq], Geom.vline(color=["#46505A"], style=[:dot])),
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75, 0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_pq_no_rebuild = plot(df_pq_no_rebuild, x=:Timestamp, 
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_pq_jitter_10 = plot(df_pq_jitter_10, x=:Timestamp, 
-    layer(xintercept=[rebuild_df_pq_jitter_10], Geom.vline(color=["#46505A"], style=[:dot])),
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-quality_pq_jitter_10_no_rebuild = plot(df_pq_jitter_10_no_rebuild, x=:Timestamp,
-    layer(y=:NDCG, color=["nDCG"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    layer(y=:Recall, color=["Recall"], Stat.smooth(method=:lm, levels=[0.75,0.90, 0.99]), Geom.line, Geom.ribbon),
-    Guide.xlabel("Ellapsed Time [s]"),
-    Guide.ylabel("Quality"),
-    Scale.y_continuous(minvalue=0.0, maxvalue=1.0),
-    Coord.cartesian(xmin=0, xmax=7200),
-    Scale.color_discrete_manual("#A5D7D2","#D20537"),
-    theme
-)
-
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-no-rebuild.pdf",30cm,20cm),vstack(hstack(count_vaf_no_rebuild, operations_vaf_no_rebuild), hstack(runtime_vaf_no_rebuild, quality_vaf_no_rebuild)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-no-rebuild-and-jitter-10.pdf",30cm,20cm),vstack(hstack(count_vaf_jitter_10_no_rebuild, operations_vaf_jitter_10_no_rebuild), hstack(runtime_vaf_jitter_10_no_rebuild, quality_vaf_jitter_10_no_rebuild)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-with-rebuild.pdf",30cm,20cm),vstack(hstack(count_vaf, operations_vaf), hstack(runtime_vaf, quality_vaf)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-with-rebuild-and-jitter-5.pdf",30cm,20cm),vstack(hstack(count_vaf_jitter_5, operations_vaf_jitter_5), hstack(runtime_vaf_jitter_5, quality_vaf_jitter_5)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-vaf-adaptiveness-with-rebuild-and-jitter-10.pdf",30cm,20cm),vstack(hstack(count_vaf_jitter_10, operations_vaf_jitter_10), hstack(runtime_vaf_jitter_10, quality_vaf_jitter_10)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness-no-rebuild.pdf",30cm,20cm),vstack(hstack(count_pq_no_rebuild, operations_pq_no_rebuild), hstack(runtime_pq_no_rebuild, quality_pq_no_rebuild)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness-no-rebuild-and-jitter-10.pdf",30cm,20cm),vstack(hstack(count_pq_jitter_10_no_rebuild, operations_pq_jitter_10_no_rebuild), hstack(runtime_pq_jitter_10_no_rebuild, quality_pq_jitter_10_no_rebuild)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness-with-rebuild.pdf",30cm,20cm),vstack(hstack(count_pq, operations_pq), hstack(runtime_pq, quality_pq)));
-draw(PDF("./mainmatter/08-evaluation/figures/index/index-pq-adaptiveness-with-rebuild-and-jitter-10.pdf",30cm,20cm),vstack(hstack(count_pq_jitter_10, operations_pq_jitter_10), hstack(runtime_pq_jitter_10, quality_pq_jitter_10)));
+    rebuild_df = (df |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
+    count = plot(df, x=:Timestamp,
+        layer(y=:Count, Geom.line),
+        Guide.xlabel("Ellapsed Time [s]"),
+        Guide.ylabel("Collection Size"),
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=5000000),
+        theme
+    )
+    operations = plot(df, x=:Timestamp,
+        layer(y=:Insert, Geom.line, color=["Inserts"]),
+        layer(y=:Delete, Geom.line,  color=["Deletes"]),
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        Guide.xlabel("Ellapsed Time [s]"),
+        Guide.ylabel("Operations"),
+        Scale.color_discrete_manual("#A5D7D2","#D20537"),
+        Coord.cartesian(xmin=0, xmax=3600),
+        theme
+    )
+    runtime= plot(df, x=:Timestamp, y=:Runtime,
+        layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
+        layer(Geom.line),
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        Guide.xlabel("Ellapsed Time [s]"),
+        Guide.ylabel("Latency (NNS) [s]"),
+        Coord.cartesian(xmin=0, xmax=3600),
+        theme
+    )
+    quality = plot(df, x=:Timestamp, 
+        layer(y=:NDCG, color=["nDCG"], Geom.line),
+        layer(y=:Recall, color=["Recall"], Geom.line),
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
+        Guide.xlabel("Ellapsed Time [s]"),
+        Guide.ylabel("Quality (NNS)"),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=1.0),
+        Scale.color_discrete_manual("#A5D7D2","#D20537"),
+        theme
+    ) 
+    draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
+end
+end
