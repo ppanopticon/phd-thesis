@@ -1,6 +1,6 @@
 \chapter{Introduction}
 \label{chapter:introduction}
-\epiquote{At first I was afraid, I was petrified. (...)}{Gloria Gaynor, 1978}
+\epiquote{At first I was afraid, I was petrified. [...]}{Gloria Gaynor, 1978}
 
 The term \emph{multimedia} describes the combination of different forms of content -- sometimes called \emph{medium} or \emph{modality} -- into a single, sensory experience for the purpose of observation and interpretation. Those content formats include but are not limited to images and videos (visual), music, sound effects and speech (aural) or textual information. However, exotic content forms such signals produced by sensors can also be seen as modalities, even though experience by a consumer may depend on pre-processing by specialized hard- and software.
 
@@ -102,7 +102,7 @@ On a more general point, we argue that one cannot assume that all the query work
 In this thesis, we address the research gaps identified in \cref{section:research_gap} and thereby try to bridge the disparity between the fields of databases and multimedia retrieval systems. The contribution of this thesis can be summarized as follows:
 
 \begin{itemize}
-    \item We propose a \emph{generalised model for similarity search} as an extension to the relational data model and explore implications of such a model on aspects, such as, optimisation of query execution time and query planning.
+    \item We propose a \emph{generalised model for proximity based search} as an extension to the relational data model and explore implications of such a model on aspects, such as, optimisation of query execution time and query planning.
     \item We examine the impact of challenging the \emph{data staticity assumption} on index structures commonly used for similarity search and describe an \emph{high-dimensional index maintainence} model by which a multimedia database system can cope with and reason about changing index structures.
     \item We propose a \emph{cost-model that factors-in accuracy} of generated results in addition to common performance metrics, and, based on that model, derive mechanisms for the user to express their preference for either accuracy or speed at different levels of the system.
     \item We introduce the multimedia database \emph{Cottontail DB}~\cite{Gasser:2020Cottontail} that implements the aforementioned models and present an evaluation thereof.
@@ -113,6 +113,6 @@ This thesis is presented in four parts, each of which consists of several chapte
 \begin{description}
     \item[Part I] provides an introcution and problem statement (\cref{chapter:introduction}) and describes motivating use cases and the requirements they bring (\cref{chapter:applications}).
     \item[Part II] gives a brief summary of the theoretical foundation and state of the art in database (\cref{chapter:theory_databases}) and multimedia analysis \& retrieval (\cref{chapter:theory_multimedia_analysis_and_retrieval}) research and tries to combine the two aspects on a systems level in a brief survey of multimedia database systems (\Cref{chapter:theory_multimedia_database}). In addition to establishing a common foundation and framework for the remainder of this thesis, we also use this part to survey related work.
-    \item[Part III] formalises the theoretical models that make up the aforementioned contributions (\cref{chapter:system_model}) and introduces and describes our reference implementation Cottontail DB (\cref{chapter:cottontaildb}).
-    \item[Part IV] presents and discusses the evaluation of aforementioned contributions in Cottontail DB (\cref{chapter:evaluation}) and concludes (\cref{chapter:conclusion}).
+    \item[Part III] formalises the theoretical models that make up the contributions (\cref{chapter:system_model}) and introduces and describes our reference implementation Cottontail DB (\cref{chapter:cottontaildb}).
+    \item[Part IV] presents and discusses the evaluation of the contributions (\cref{chapter:evaluation}) and concludes (\cref{chapter:conclusion}).
 \end{description}
