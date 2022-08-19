@@ -95,45 +95,50 @@ for i in ["pq","vaf"]
 
     rebuild_df = (df |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
     count = plot(df, x=:Timestamp,
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(y=:Count, Geom.line),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Collection Size"),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=5000000),
         theme
     )
     operations = plot(df, x=:Timestamp,
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(y=:Insert, Geom.line, color=["Inserts"]),
         layer(y=:Delete, Geom.line,  color=["Deletes"]),
         layer(y=:OOB, Geom.line,  color=["OOB"]),
-        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Operations"),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=4000000),
         theme
     )
     runtime= plot(df, x=:Timestamp, y=:Runtime,
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
         layer(Geom.line),
-        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(yintercept=[maximum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Latency (NNS) [s]"),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=6.0),
         theme
     )
     quality = plot(df, x=:Timestamp, 
+        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(y=:NDCG, color=["nDCG"], Geom.line),
         layer(y=:Recall, color=["Recall"], Geom.line),
-        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(yintercept=[maximum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
         layer(yintercept=[minimum(df[!,:Recall])], Geom.hline(color=["#D20537"], style=[:dot])),
         layer(yintercept=[maximum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         layer(yintercept=[minimum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Quality (NNS)"),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=1.0),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         theme
