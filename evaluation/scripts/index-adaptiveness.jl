@@ -6,6 +6,7 @@ using Fontconfig
 using Query
 using Formatting
 using CSV
+using Printf
 
 include("./load-file.jl");
 include("./recall.jl");
@@ -31,17 +32,18 @@ entities = Dict([("features_averagecolor", 3), ("features_visualtextcoembedding"
 indexes = Dict([("SCAN", 1), ("VAF", 2), ("PQ", 3)])
 for i in ["pq","vaf"]
     for r in ["90-10", "50-50"]
-        df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
+        df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Speedup = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
         dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-no-rebuild~measurements.json"))
-        for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-            push!(df, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
+        for (timestamp, count, insert, delete, oob, rebuild, speedup, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["speedup_bf"], dict["dcg"], dict["recall"], dict["plan"])
+            push!(df, (timestamp, count, insert, delete, oob, rebuild, speedup, ndcg, recall, plan["second"]))
         end
 
         count = plot(df, x=:Timestamp,
             layer(y=:Count, Geom.line),
             Guide.xlabel("Ellapsed Time [s]"),
             Guide.ylabel("Collection Size"),
-            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=5000000),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=0, ymax=5000000),
+            Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
             theme
         )
         operations = plot(df, x=:Timestamp,
@@ -52,16 +54,17 @@ for i in ["pq","vaf"]
             Guide.ylabel("Operations"),
             Scale.color_discrete_manual("#A5D7D2","#D20537"),
             Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=4000000),
+            Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
             theme
         )
-        runtime = plot(df, x=:Timestamp, y=:Runtime,
+        speedup = plot(df, x=:Timestamp, y=:Speedup,
             layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
             layer(Geom.line),
-            layer(yintercept=[maximum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
-            layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            layer(yintercept=[maximum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+            layer(yintercept=[minimum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
             Guide.xlabel("Ellapsed Time [s]"),
-            Guide.ylabel("Latency (NNS) [s]"),
-            Coord.cartesian(xmin=0, xmax=1800, ymin=0.0, ymax=6.0),
+            Guide.ylabel("Speed-Up [s]"),
+            Coord.cartesian(xmin=0, xmax=1800, ymin=-4.0, ymax=4.0),
             theme
         )
         quality = plot(df, x=:Timestamp, 
@@ -79,7 +82,7 @@ for i in ["pq","vaf"]
             theme
         )
 
-        draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-no-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
+        draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-no-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(speedup, quality)));
     end
 end
 
@@ -87,10 +90,10 @@ end
 for i in ["pq","vaf"]
     for r in ["90-10"]
 
-    df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Runtime = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
+    df = DataFrame(Timestamp = Int32[], Count = Int32[], Insert = Int32[], Delete = Int32[], OOB = Int32[], Rebuild = Bool[], Speedup = Float64[], NDCG = Float64[], Recall = Float64[], Score=Float64[])
     dict = read_json(joinpath("./evaluation/data/index/","index-$(i)-adaptiveness-$(r)-with-rebuild-jitter~measurements.json"))
-    for (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["runtime"], dict["dcg"], dict["recall"], dict["plan"])
-        push!(df, (timestamp, count, insert, delete, oob, rebuild, runtime, ndcg, recall, plan["second"]))
+    for (timestamp, count, insert, delete, oob, rebuild, speedup, ndcg, recall, plan) in zip(dict["timestamp"],dict["count"],dict["insert"], dict["delete"], dict["oob"], dict["rebuilt"], dict["speedup_bf"], dict["dcg"], dict["recall"], dict["plan"])
+        push!(df, (timestamp, count, insert, delete, oob, rebuild, speedup, ndcg, recall, plan["second"]))
     end
 
     rebuild_df = (df |> @filter(_.Rebuild == true) |> DataFrame)[1,:Timestamp]
@@ -100,8 +103,8 @@ for i in ["pq","vaf"]
         Guide.xlabel("Ellapsed Time [s]"),
         Guide.ylabel("Collection Size"),
         Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
-        layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=5000000),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=0000000, ymax=5000000),
+        Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
         theme
     )
     operations = plot(df, x=:Timestamp,
@@ -113,19 +116,20 @@ for i in ["pq","vaf"]
         Guide.ylabel("Operations"),
         Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
+        Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
         Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=4000000),
         theme
     )
-    runtime= plot(df, x=:Timestamp, y=:Runtime,
+    speedup = plot(df, x=:Timestamp, y=:Speedup,
         layer(xintercept=[rebuild_df], Geom.vline(color=["#46505A"], style=[:dot])),
         layer(Geom.line, Stat.smooth(), Theme(default_color="#D20537")),
         layer(Geom.line),
-        layer(yintercept=[maximum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
-        layer(yintercept=[minimum(df[!,:Runtime])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+        layer(yintercept=[maximum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
+        layer(yintercept=[minimum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
         Guide.xlabel("Ellapsed Time [s]"),
-        Guide.ylabel("Latency (NNS) [s]"),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=6.0),
+        Guide.ylabel("Speed-Up [s]"),
+        Coord.cartesian(xmin=0, xmax=3600, ymin=-4.0, ymax=4.0),
         theme
     )
     quality = plot(df, x=:Timestamp, 
@@ -143,6 +147,6 @@ for i in ["pq","vaf"]
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         theme
     ) 
-    draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild-and-jitter.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(runtime, quality)));
+    draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild-and-jitter.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(speedup, quality)));
 end
 end
