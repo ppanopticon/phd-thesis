@@ -136,7 +136,7 @@ todonotes, % enables the todonotes package
   %\subincludefrom{frontmatter/handin/}{verso}
 
   %\subincludefrom{frontmatter/dedication/}{dedication}
-  %\subincludefrom{frontmatter/quote/}{quote}
+  \subincludefrom{frontmatter/quote/}{quote}
 
   \subincludefrom{frontmatter/abstract/}{zusammenfassung}
   \subincludefrom{frontmatter/abstract/}{abstract}
@@ -230,6 +230,7 @@ todonotes, % enables the todonotes package
 \ifdrft{}
   % No CV
 \else
+  \subincludefrom{backmatter/quote/}{quote}
   \subincludefrom{backmatter/cv/}{cv}
   \subincludefrom{backmatter/authorship/}{authorship}
 \fi

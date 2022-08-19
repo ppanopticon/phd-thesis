@@ -24,109 +24,82 @@
 \newpage
 
 \begin{table}[h]
-    \caption{State of the entity \emph{yandex\_deep5m} used during the evaluation.}
+    \caption{State of the Yandex Deep 1B \cite{Babenko:2016Efficient} shards used during the evaluation with \cottontail{}.}
     \label{table:entity_yandex_deep5m}
     \begin{tabular}{| l | c | c | c | c | c |} 
-     \hline
-     \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-     \hline\hline
-     yandex\_deep5m & ENTITY & - & \SI{5e6}{} & - & - \\
-     \hline
-     yandex\_deep5m.id & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
-     \hline
-     yandex\_deep5m.feature & COLUMN & FLOATVEC & \SI{5e6}{} & 96 & NOT NULL \\
-     \hline
-     yandex\_deep5m.category & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
-     \hline
-     yandex\_deep5m.idx\_feature\_vaf & INDEX & VAF & \SI{5e6}{} & - & CLEAN \\
-     \hline
-     yandex\_deep5m.idx\_category\_btree & INDEX & BTREE & \SI{5e6}{} & - & CLEAN \\
-     \hline
-     yandex\_deep5m.idx\_feature\_pq & INDEX & PQ & \SI{5e6}{} & -  & CLEAN \\
-     \hline
-     yandex\_deep5m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{5e6}{} & - & CLEAN \\
-     \hline
+      \hline
+      \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
+      \hline\hline
+      yandex\_deep5m & ENTITY & - & \SI{5e6}{} & - & - \\
+      \hline
+      yandex\_deep5m.id & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
+      \hline
+      yandex\_deep5m.feature & COLUMN & FLOATVEC & \SI{5e6}{} & 96 & NOT NULL \\
+      \hline
+      yandex\_deep5m.category & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
+      \hline
+      yandex\_deep5m.idx\_feature\_vaf & INDEX & VAF & \SI{5e6}{} & - & CLEAN \\
+      \hline
+      yandex\_deep5m.idx\_category\_btree & INDEX & BTREE & \SI{5e6}{} & - & CLEAN \\
+      \hline
+      yandex\_deep5m.idx\_feature\_pq & INDEX & PQ & \SI{5e6}{} & -  & CLEAN \\
+      \hline
+      yandex\_deep5m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{5e6}{} & - & CLEAN \\
+      \hline
+      \hline
+      yandex\_deep10m & ENTITY & - & \SI{1e7}{} & - & - \\
+      \hline
+      yandex\_deep10m.id & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
+      \hline
+      yandex\_deep10m.feature & COLUMN & FLOATVEC & \SI{1e7}{}  & 96 & NOT NULL \\
+      \hline
+      yandex\_deep10m.category & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
+      \hline
+      yandex\_deep10m.idx\_feature\_vaf & INDEX & VAF & \SI{1e7}{}  & -  & CLEAN \\
+      \hline
+      yandex\_deep10m.idx\_category\_btree & INDEX & BTREE & \SI{1e7}{}  & - & CLEAN \\
+      \hline
+      yandex\_deep10m.idx\_feature\_pq & INDEX & PQ & \SI{1e7}{}  & - & CLEAN \\
+      \hline
+      yandex\_deep10m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e7}{} & - & CLEAN \\
+      \hline
+      \hline
+      yandex\_deep100m & ENTITY & - & \SI{1e8}{} & - & - \\
+      \hline
+      yandex\_deep100m.id & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
+      \hline
+      yandex\_deep100m.feature & COLUMN & FLOATVEC & \SI{1e8}{}  & 96 & NOT NULL \\
+      \hline
+      yandex\_deep100m.category & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
+      \hline
+      yandex\_deep100m.idx\_feature\_vaf & INDEX & VAF & \SI{1e8}{}  &  - & CLEAN \\
+      \hline
+      yandex\_deep100m.idx\_category\_btree & INDEX & BTREE & \SI{1e8}{} &  - & CLEAN \\
+      \hline
+      yandex\_deep100m.idx\_feature\_pq & INDEX & PQ & \SI{1e8}{} & - & CLEAN \\
+      \hline
+      yandex\_deep100m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e8}{}  & - & CLEAN \\
+      \hline
+      \hline
+      yandex\_deep1b & ENTITY & - & \SI{1e9}{} & - & - \\
+      \hline
+      yandex\_deep1b.id & COLUMN & INTEGER & \SI{1e9}{} & 1 & NOT NULL\\
+      \hline
+      yandex\_deep1b.feature & COLUMN & FLOATVEC & \SI{1e9}{} & 96 &  NOT NULL \\
+      \hline
+      yandex\_deep1b.category & COLUMN & INTEGER & \SI{1e9}{}& 1 & NOT NULL \\
+      \hline
+      yandex\_deep1b.idx\_feature\_vaf & INDEX & VAF & \SI{1e9}{} & - & CLEAN \\
+      \hline
+      yandex\_deep1b.idx\_feature\_pq & INDEX & PQ & \SI{1e9}{} & - & CLEAN \\
+      \hline
+      yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e9}{} & - & CLEAN \\
+      \hline
     \end{tabular}
 \end{table}
 
 \begin{table}[h!]
-    \caption{State of the entity \emph{yandex\_deep10m} used during the evaluation.}
-    \label{table:entity_yandex_deep10m}
-    \begin{tabular}{| l | c | c | c | c | c |} 
-     \hline
-     \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-     \hline\hline
-     yandex\_deep10m & ENTITY & - & \SI{1e7}{} & - & - \\
-     \hline
-     yandex\_deep10m.id & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
-     \hline
-     yandex\_deep10m.feature & COLUMN & FLOATVEC & \SI{1e7}{}  & 96 & NOT NULL \\
-     \hline
-     yandex\_deep10m.category & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
-     \hline
-     yandex\_deep10m.idx\_feature\_vaf & INDEX & VAF & \SI{1e7}{}  & -  & CLEAN \\
-     \hline
-     yandex\_deep10m.idx\_category\_btree & INDEX & BTREE & \SI{1e7}{}  & - & CLEAN \\
-     \hline
-     yandex\_deep10m.idx\_feature\_pq & INDEX & PQ & \SI{1e7}{}  & - & CLEAN \\
-     \hline
-     yandex\_deep10m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e7}{} & - & CLEAN \\
-     \hline
-    \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-    \caption{State of the entity \emph{yandex\_deep100m} used during the evaluation.}
-    \label{table:entity_yandex_deep100m}
-    \begin{tabular}{| l | c | c | c | c | c |} 
-     \hline
-     \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-     \hline\hline
-     yandex\_deep100m & ENTITY & - & \SI{1e8}{} & - & - \\
-     \hline
-     yandex\_deep100m.id & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
-     \hline
-     yandex\_deep100m.feature & COLUMN & FLOATVEC & \SI{1e8}{}  & 96 & NOT NULL \\
-     \hline
-     yandex\_deep100m.category & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
-     \hline
-     yandex\_deep100m.idx\_feature\_vaf & INDEX & VAF & \SI{1e8}{}  &  - & CLEAN \\
-     \hline
-     yandex\_deep100m.idx\_category\_btree & INDEX & BTREE & \SI{1e8}{} &  - & CLEAN \\
-     \hline
-     yandex\_deep100m.idx\_feature\_pq & INDEX & PQ & \SI{1e8}{} & - & CLEAN \\
-     \hline
-     yandex\_deep100m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e8}{}  & - & CLEAN \\
-     \hline
-    \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-    \caption{State of the entity \emph{yandex\_deep1b} used during the evaluation.}
-    \label{table:entity_yandex_deep1b}
-    \begin{tabular}{| l | c | c | c | c | c |} 
-     \hline
-     \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-     \hline\hline
-     yandex\_deep1b & ENTITY & - & \SI{1e9}{} & - & - \\
-     \hline
-     yandex\_deep1b.id & COLUMN & INTEGER & \SI{1e9}{} & 1 & NOT NULL\\
-     \hline
-     yandex\_deep1b.feature & COLUMN & FLOATVEC & \SI{1e9}{} & 96 &  NOT NULL \\
-     \hline
-     yandex\_deep1b.category & COLUMN & INTEGER & \SI{1e9}{}& 1 & NOT NULL \\
-     \hline
-     yandex\_deep1b.idx\_feature\_vaf & INDEX & VAF & \SI{1e9}{} & - & CLEAN \\
-     \hline
-     yandex\_deep1b.idx\_feature\_pq & INDEX & PQ & \SI{1e9}{} & - & CLEAN \\
-     \hline
-     yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e9}{} & - & CLEAN \\
-     \hline
-    \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \caption{State of the entity \emph{averagecolor} used during the evaluation.}
+  \caption{State of the V3C-based \cite{Berns:2019V3C1,Rossetto:2021Insights} entities used during the evaluation with \cottontail{}.}
   \label{table:entity_averagecolor}
   \begin{tabular}{| l | c | c | c | c | c |} 
    \hline
@@ -142,16 +115,7 @@
    \hline
    averagecolor.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
    \hline
-  \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \caption{State of the entity \emph{visualtextcoembedding} used during the evaluation.}
-  \label{table:entity_visualtextcoembedding}
-  \begin{tabular}{| l | c | c | c | c | c |} 
    \hline
-   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-   \hline\hline
    visualtextcoembedding & ENTITY & - & \SI{2506273}{} & - & - \\
    \hline
    visualtextcoembedding.id & COLUMN & STRING & \SI{2506273}{} & 1 & NOT NULL\\
@@ -162,16 +126,7 @@
    \hline
    visualtextcoembedding.idx\_feature\_pq & INDEX & PQ & \SI{2506273}{} & - & CLEAN \\
    \hline
-  \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \caption{State of the entity \emph{hogmf25k512} used during the evaluation.}
-  \label{table:entity_hogmf25k512}
-  \begin{tabular}{| l | c | c | c | c | c |} 
    \hline
-   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-   \hline\hline
    hogmf25k512 & ENTITY & - & \SI{2512715}{} & - & - \\
    \hline
    hogmf25k512.id & COLUMN & STRING & \SI{2512715}{} & 1 & NOT NULL\\
@@ -182,16 +137,7 @@
    \hline
    hogmf25k512.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
    \hline
-  \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \caption{State of the entity \emph{inceptionresnetv2} used during the evaluation.}
-  \label{table:entity_features_inceptionresnetv2 }
-  \begin{tabular}{| l | c | c | c | c | c |} 
    \hline
-   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-   \hline\hline
    inceptionresnetv2 & ENTITY & - & \SI{2508358}{} & - & - \\
    \hline
    inceptionresnetv2.id & COLUMN & STRING & \SI{2508358}{} & 1 & NOT NULL\\
@@ -202,16 +148,7 @@
    \hline
    inceptionresnetv2.idx\_feature\_pq & INDEX & PQ & \SI{2508358}{} & - & CLEAN \\
    \hline
-  \end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \caption{State of the entity \emph{conceptmasksade20k} used during the evaluation.}
-  \label{table:entity_features_conceptmasksade20k}
-  \begin{tabular}{| l | c | c | c | c | c |} 
    \hline
-   \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
-   \hline\hline
    conceptmasksade20k & ENTITY & - & \SI{2469844}{} & - & - \\
    \hline
    conceptmasksade20k.id & COLUMN & STRING & \SI{2469844}{} & 1 & NOT NULL\\
