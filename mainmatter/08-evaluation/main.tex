@@ -155,7 +155,7 @@ The test protocol starts by obtaining a random vector from the test collection, 
     select id, euclidean(feature, <q>) as dst from <collection> order by dst asc limit 1000
 
     /* Q1e: Obtain segment entries associated with the IDs. */
-    select * from from cineast_segment where segmentid in <r1 + r2>
+    select * from cineast_segment where segmentid in <r1 + r2>
 \end{lstlisting}
 
 We run all the queries against the V3C-based collections listed in \Cref{table:datasets}, which is basically an instance of the dataset that has been prepared for \vitrivr{}'s \cite{Rossetto:2016Vitrivr,Gasser:2019Multimodal} participation to \acrshort{vbs} 2022 \cite{Heller:2022Multi}. vitrivr's data model has been explained in \Cref{section:media_data_model}. 
