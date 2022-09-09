@@ -102,8 +102,8 @@ for i in ["pq","vaf"]
         layer(y=:Count, Geom.line),
         Guide.xlabel("Elapsed Time [s]"),
         Guide.ylabel("Collection Size"),
-        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=0000000, ymax=5000000),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600, 4800]),
+        Coord.cartesian(xmin=0, xmax=5400, ymin=0000000, ymax=5000000),
         Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
         theme
     )
@@ -114,10 +114,10 @@ for i in ["pq","vaf"]
         layer(y=:OOB, Geom.line,  color=["OOB"]),
         Guide.xlabel("Elapsed Time [s]"),
         Guide.ylabel("Operations"),
-        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600, 4800]),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         Scale.y_continuous(labels=x -> @sprintf("%0.0fM", x / 1000000)),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=4000000),
+        Coord.cartesian(xmin=0, xmax=4800, ymin=0.0, ymax=4000000),
         theme
     )
     speedup = plot(df, x=:Timestamp, y=:Speedup,
@@ -126,10 +126,10 @@ for i in ["pq","vaf"]
         layer(Geom.line),
         layer(yintercept=[maximum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         layer(yintercept=[minimum(df[!,:Speedup])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
-        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600, 4800]),
         Guide.xlabel("Elapsed Time [s]"),
         Guide.ylabel("Speed-Up [s]"),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=-4.0, ymax=4.0),
+        Coord.cartesian(xmin=0, xmax=4800, ymin=-4.0, ymax=4.0),
         theme
     )
     quality = plot(df, x=:Timestamp, 
@@ -142,8 +142,8 @@ for i in ["pq","vaf"]
         layer(yintercept=[minimum(df[!,:NDCG])], Geom.hline(color=["#A5D7D2"], style=[:dot])),
         Guide.xlabel("Elapsed Time [s]"),
         Guide.ylabel("Quality (NNS)"),
-        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600]),
-        Coord.cartesian(xmin=0, xmax=3600, ymin=0.0, ymax=1.0),
+        Guide.xticks(ticks=[0, 900, 1800, 2700, 3600, 4800]),
+        Coord.cartesian(xmin=0, xmax=4800, ymin=0.0, ymax=1.0),
         Scale.color_discrete_manual("#A5D7D2","#D20537"),
         theme
     ) 
