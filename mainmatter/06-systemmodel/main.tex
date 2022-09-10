@@ -11,20 +11,20 @@ We have argued in \Cref{chapter:applications} that multimedia retrieval, analysi
     \item[Quality vs. Time] Multimedia queries often trade retrieval quality against speed or vice versa, e.g., when using high-dimensional indexes. A multimedia \acrshort{dbms} must make these decisions explicit and allow the user to express their preference at different levels of the system (see \Cref{requirement:quality_model}).
 \end{description}
 
-To address these requirements, we propose and formalise a set of functionalities, which will be specified in the next sections. Firstly, we propose a notion of \emph{generalised, proximity based queries} as an extension to the relational model. Secondly, we describe a \emph{cost model} that takes the quality of results into account. And finally, we introduce the formal requirements to enable high-dimensional indexes to cope with dynamic data and derive a model for maintaining such indexes. All these contributions can be seen as extensions to the functionality provided by a traditional \acrshort{dbms}. To establish a frame of reference, we assume the relational model and \acrshort{acid} properties for the model \acrshort{dbms}. However, the introduced concepts should generalise to other data and consistency models.
+To address these requirements, we propose and formalise a set of functionalities, which will be specified in the next sections. Firstly, we propose a notion of \emph{generalised, proximity-based queries} as an extension to the relational model. Secondly, we describe a \emph{cost model} that takes the quality of results into account. And finally, we introduce the formal requirements to enable high-dimensional indexes to cope with dynamic data and derive a model for maintaining such indexes. All these contributions can be seen as extensions to the functionality provided by a traditional \acrshort{dbms}. To establish a frame of reference, we assume the relational model and \acrshort{acid} properties for the model \acrshort{dbms}. However, the introduced concepts should generalise to other data and consistency models.
 
-\section{Generalised Proximity Based Operations}
+\section{Generalised Proximity-Based Operations}
 \label{section:generalised_proximity_based_ops}
 
-Starting with the vector space model for similarity search~\cite{Zezula:2006Similarity} presented in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we propose to extend the notion of distance-based similarity search to that of a more general \emph{proximity based query} following \cref{definition:pbq}.
+Starting with the vector space model for similarity search~\cite{Zezula:2006Similarity} presented in \Cref{chapter:theory_multimedia_analysis_and_retrieval}, we propose to extend the notion of distance-based similarity search to that of a more general \emph{proximity-based query} following \cref{definition:pbq}.
 
-\begin{definition}[label=definition:pbq]{Proximity Based Query}{}
-    Let $\relation$ be a relation. Any database query that relies on the evaluation of a distance function $\symdist: \domain_{f} \times \domain_{f} \rightarrow \symreal_{\geq 0}$ that calculates the distance between an attribute $\attribute_{f} \in \schema(\relation)$ and some query $q \in \domain_f$, is called a \emph{proximity based query}. We call $q$ the \emph{query} and $\attribute_{f}$ the \emph{probing argument}, which both share the same \emph{query data domain} $\domain_f$. It is to be noted, that $\domain_f \equiv \symfeatures$. 
+\begin{definition}[label=definition:pbq]{Proximity-Based Query}{}
+    Let $\relation$ be a relation. Any database query that relies on the evaluation of a distance function $\symdist: \domain_{f} \times \domain_{f} \rightarrow \symreal_{\geq 0}$ that calculates the distance between an attribute $\attribute_{f} \in \schema(\relation)$ and some query $q \in \domain_f$, is called a \emph{proximity-based query}. We call $q$ the \emph{query} and $\attribute_{f}$ the \emph{probing argument}, which both share the same \emph{query data domain} $\domain_f$. It is to be noted, that $\domain_f \equiv \symfeatures$. 
 \end{definition}
 
 \cref{definition:pbq} simply requires a notion of proximity between an attribute and a query to be obtained by evaluating a distance function. The definition does not make any assumptions as to what data domains $\domain_f$ the query and probing attribute belong to, nor how the distance is being used within the query. 
 
-It is obvious, that similarity search falls into the broader category of a proximity based query, wherein the distance is used to rank a relation and subsequently limit its cardinality. In addition to this common application, the definition of proximity based queries also includes operations such as evaluating a distance function followed by some filtering (e.g., range search) or aggregation based on the computed value (e.g., clustering). That is, we are not limited to mere \acrshort{nns}, since we consider obtaining the distance as one step, which can be freely combined with all other operations supported by the underlying algebra.
+It is obvious, that similarity search falls into the broader category of a proximity-based query, wherein the distance is used to rank a relation and subsequently limit its cardinality. In addition to this common application, the definition of proximity-based queries also includes operations such as evaluating a distance function followed by some filtering (e.g., range search) or aggregation based on the computed value (e.g., clustering). That is, we are not limited to mere \acrshort{nns}, since we consider obtaining the distance as one step, which can be freely combined with all other operations supported by the underlying algebra.
 
 \subsection{Revisiting Distance Computation}
 
@@ -99,17 +99,17 @@ A \acrshort{dfc} (and any function for that matter) is uniquely defined by its \
     \texttt{SIG}(\symdfc) = (\mathtt{NAME}, \domain_f, \domain_f, \domain_1,... \domain_{N-2})
 \end{equation}
 
-In the context of a concrete execution plan for a proximity based query, we observe that the query argument effectively remains constant, while the probing argument changes as tuples are being evaluated. The support arguments may or may not be subject to change. For example, for simple \acrshort{nns}, there is a single, constant query vector that is compared against all the vectors in the \acrshort{dbms}, i.e., the probing argument. Hence, irrespective of the arity of the \acrshort{dfc}, the function used during query execution comes with an arity of at most $N-1$. We call this the \emph{implementation} of $\symdfc$ as denoted by \cref{equation:dfc_implementation}.
+In the context of a concrete execution plan for a proximity-based query, we observe that the query argument effectively remains constant, while the probing argument changes as tuples are being evaluated. The support arguments may or may not be subject to change. For example, for simple \acrshort{nns}, there is a single, constant query vector that is compared against all the vectors in the \acrshort{dbms}, i.e., the probing argument. Hence, irrespective of the arity of the \acrshort{dfc}, the function used during query execution comes with an arity of at most $N-1$. We call this the \emph{implementation} of $\symdfc$ as denoted by \cref{equation:dfc_implementation}.
 
 \begin{equation}
     \label{equation:dfc_implementation}
     \symdist = \texttt{IMP}(\symdfc) \ni \texttt{SIG}(\symdist) \subset \texttt{SIG}(\symdfc)
 \end{equation}
 
-With this idea of a \acrshort{dfc} and its (partial) implementations in mind, we can start to reason about its properties in the broader context of database operations in general and proximity based queries in particular:
+With this idea of a \acrshort{dfc} and its (partial) implementations in mind, we can start to reason about its properties in the broader context of database operations in general and proximity-based queries in particular:
 
 \begin{description}
-    \item[\acrshort{dfc} and Proximity Based Queries] In extension to \cref{definition:pbq}, we realise that any query execution plan that involves the evaluation of a (partial) implementation of a \acrshort{dfc}, falls into the category of a proximity based query.
+    \item[\acrshort{dfc} and Proximity-Based Queries] In extension to \cref{definition:pbq}, we realise that any query execution plan that involves the evaluation of a (partial) implementation of a \acrshort{dfc}, falls into the category of a proximity-based query.
 
     \item[Variable and Constant Arguments] In the context of a proximity-based query, every attribute of a \acrshort{dfc} can either be regarded as \emph{constant} or \emph{variable}. That is, as elements in the database are iterated during query execution, they either remain the same or assume new values. This can be used for optimisation.
     
@@ -223,7 +223,7 @@ It is to be noted, that the ranking $O$ is an inherent property of a ranked rela
 
 \begin{example}[label=example:rel_alg_order]{Applying Order using the Order Operation $\order_{O}$}{}
 
-    The following table lists the schema, extent, and rank of ranked relation $\relation^{\emptyset}_{\mathtt{painting}}$, which now contains an attribute $\attribute_{\mathtt{distance}}$ (e.g., obtained by executing a proximity based query) and does not exhibit an explicit ordering.
+    The following table lists the schema, extent, and rank of ranked relation $\relation^{\emptyset}_{\mathtt{painting}}$, which now contains an attribute $\attribute_{\mathtt{distance}}$ (e.g., obtained by executing a proximity-based query) and does not exhibit an explicit ordering.
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
@@ -273,7 +273,7 @@ On a practical note, it must be mentioned, that until a query is evaluated, the 
 The ranking function assigns a position $m \in \left[ 1, M \right]$ to a tuple based on $O$, i.e., the first tuple $t_1$ gets position $1$, second tuple $t_2$ position $2$ etc. Unordered relations also exhibit an internal ordering of tuples -- the \emph{natural ordering} of $\relation$ -- which is not necessarily related to any observable property. Consequently, $\mathtt{RANK}$ is also defined for such relations, even though positions may appear arbitrary.
 
 \subsubsection{s,k-selection}
-To be able to execute a specific type of proximity based query -- namely, \acrshort{knn} or \acrshort{kfn} -- we require one last extension to the relational algebra in the form of the \emph{s,k-selection} operator $\limit_{s,k}(\relation)$, which skips $s$ tuples and limits the cardinality to $k$ tuples according to \Cref{definition:rel_alg_sk_selection} and as demonstrated in \Cref{example:sk_selection}.
+To be able to execute a specific type of proximity-based query -- namely, \acrshort{knn} or \acrshort{kfn} -- we require one last extension to the relational algebra in the form of the \emph{s,k-selection} operator $\limit_{s,k}(\relation)$, which skips $s$ tuples and limits the cardinality to $k$ tuples according to \Cref{definition:rel_alg_sk_selection} and as demonstrated in \Cref{example:sk_selection}.
 
 \begin{definition}[label=definition:rel_alg_sk_selection]{s,k-selection Operation $\limit_{s,k}$}{}
     Let $\relation$ be a N-ary relation over attributes $\attribute \in \schema (\relation)$ and let $s,k \in \symnatural$ and $s < k$. The s,k-selection operation $\limit_{s,k}$ selects tuples based on ranking as follows:
@@ -656,7 +656,7 @@ As we have explained in \Cref{chapter:theory_databases}, most \acrshort{dbms} re
 
 \begin{description}
     \item[Disk Access (IO)] Persistent storage and access to information residing on disk is the factor that contributes the most to long query execution times and is thus a factor to minimise \cite{Selinger:1979Access}. This is also true for proximity-based queries, where part of the optimisation lies in reducing access to vectors through compression and/or early filtering, e.g., \cite{Weber:1998Va, Chierichetti:2007Finding}.
-    \item[CPU] Due to the computational complexity of proximity based operations, especially when the evaluation of functions on high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and thus must be taken into account as well. In fact, several index structures achieve speed-up by reducing the computational complexity of the distance calculation \cite{Jegou:2010Product} or by avoiding it altogether \cite{Weber:1998Va}.
+    \item[CPU] Due to the computational complexity of proximity-based operations, especially when the evaluation of functions on high-dimensional vectors are involved, the processing time on CPU is a factor that can no longer be ignored and thus must be taken into account as well. In fact, several index structures achieve speed-up by reducing the computational complexity of the distance calculation \cite{Jegou:2010Product} or by avoiding it altogether \cite{Weber:1998Va}.
     \item[Memory] Some algorithms can greatly benefit from pure in-memory processing. While memory used to be a scarce resource, some environments allow for complete in-memory processing even for very large datasets. This is exploited by systems like Milvus \cite{Wang:2021Milvus}, that load entire data collections into memory.
     \item[Quality] The quality of a result incurred, e.g., by the choice of a certain high-dimensional index structure \cite{Indyk1998:Approximate,Jegou:2010Product}, is a price that can be paid to attain speed-up. This is common practice in approximate \acrshort{nns} and should be made transparent to the system and user for reasons explained in \Cref{requirement:quality_model}, especially since this trade-off is not always viable (see \Cref{section:application_mrf}).
 \end{description}
@@ -924,7 +924,7 @@ We illustrate the idea of the storage, write and failure model using two index s
 
 \subsubsection{\texorpdfstring{\acrfull{vaf}}{VAF}}
 
-The \acrshort{vaf} index (see \Cref{section:index_vaf}) generates a signature $\mathtt{SIG}$ for every entry in a relation and an index search always results in a scan of all signatures $\mathtt{SIG} \in \symindex_{\mathtt{VAF}}$. Therefore, those signatures can be easily organised in a list or a tree-structure, e.g., by mapping $\mathtt{TID}$ to $\mathtt{SIG}$ in a $B^{+}$-tree, which makes insertions and deletions straightforward. Alternatively, one can also map another primary key to the signature. A completely different type of \acrshort{vaf} index could also try to map any other attribute to the signatures, to allow for the fast evaluation of proximity based queries that restrict themselves to a subset of the data based on filtering.
+The \acrshort{vaf} index (see \Cref{section:index_vaf}) generates a signature $\mathtt{SIG}$ for every entry in a relation and an index search always results in a scan of all signatures $\mathtt{SIG} \in \symindex_{\mathtt{VAF}}$. Therefore, those signatures can be easily organised in a list or a tree-structure, e.g., by mapping $\mathtt{TID}$ to $\mathtt{SIG}$ in a $B^{+}$-tree, which makes insertions and deletions straightforward. Alternatively, one can also map another primary key to the signature. A completely different type of \acrshort{vaf} index could also try to map any other attribute to the signatures, to allow for the fast evaluation of proximity-based queries that restrict themselves to a subset of the data based on filtering.
 
 To generate the signature from a vector, the \acrshort{vaf} algorithm assigns that vector to a cell in a high-dimensional lattice that is determined by a partitioning of the vector space. That lattice -- which acts as a scalar quantiser that must be stored with the index metadata -- is derived from the component-wise minimum and maximum $f_{l}$ and $f_{u}$ of all feature vectors $f \in \domain_f$. From this we can derive the write model for a relation $\relation$ with the attribute $\attribute_f$ of data domain $\domain_f \subset \symreal^d$ with $d \in \symnatural_{>0}$. The \texttt{INSERT} is given by \Cref{equation:write_model_insert_vaf} and illustrated in \Cref{figure:write_model_insert_vaf}.
 
