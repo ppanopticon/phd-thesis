@@ -85,22 +85,22 @@
 %% C group (the group is specified in the sort field)
 \newcommand*{\Cgroupname}{Multimedia Retrieval}
 
-\newglossaryentry{symmediacol}{sort={CAsymmediacol},name=\ensuremath{\mathbb{O}},symbol=\ensuremath{\mathbb{O}},type={symbols},description={The media collection domain \(\symmediacol = \lbrace o_1, o_2 , \ldots, o_N \rbrace \).}}
+\newglossaryentry{symmediacol}{sort={CAsymmediacol},name=\ensuremath{\mathbb{O}},symbol=\ensuremath{\mathbb{O}},type={symbols},description={The media collection domain \(\symmediacol = \lbrace o_1, o_2 , \ldots, o_N \rbrace \)}}
 \newcommand{\symmediacol}{\glssymbol{symmediacol}}
 
-\newglossaryentry{symfeatures}{sort={CBsymfeatures},name=\ensuremath{\mathbb{F}},symbol=\ensuremath{\mathbb{F}},type={symbols},description={The feature domain \(\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace \).}}
+\newglossaryentry{symfeatures}{sort={CBsymfeatures},name=\ensuremath{\mathbb{F}},symbol=\ensuremath{\mathbb{F}},type={symbols},description={The feature domain \(\symfeatures = \lbrace f_1, f_2, \ldots f_M \rbrace \)}}
 \newcommand{\symfeatures}{\glssymbol{symfeatures}}
 
 \newglossaryentry{symfeaturetransform}{sort={CCsymfeaturetransform},name=\ensuremath{\mathfrak{t}},symbol=\ensuremath{\mathfrak{t}},type={symbols},description={Feature transformation function \(\symfeaturetransform \colon \symmediacol \rightarrow \symfeatures \)}}
 \newcommand{\symfeaturetransform}{\glssymbol{symfeaturetransform}}
 
-\newglossaryentry{symdist}{sort={CDsymdist},name=\ensuremath{\mathfrak{d}},symbol=\ensuremath{\mathfrak{d}},type={symbols},description={Dissimilarity or distance function \(\symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal \).}}
+\newglossaryentry{symdist}{sort={CDsymdist},name=\ensuremath{\mathfrak{d}},symbol=\ensuremath{\mathfrak{d}},type={symbols},description={Dissimilarity or distance function \(\symdist \colon \symfeatures \times \symfeatures \rightarrow \symreal \)}}
 \newcommand{\symdist}{\glssymbol{symdist}}
 
-\newglossaryentry{symsim}{sort={CEsymsim},name=\ensuremath{\mathfrak{s}},symbol=\ensuremath{\mathfrak{s}},type={symbols},description={Similarity function \(\symsim \colon \symfeatures \times \symfeatures \rightarrow [0, 1.]\).}}
+\newglossaryentry{symsim}{sort={CEsymsim},name=\ensuremath{\mathfrak{s}},symbol=\ensuremath{\mathfrak{s}},type={symbols},description={Similarity function \(\symsim \colon \symfeatures \times \symfeatures \rightarrow [0, 1.]\)}}
 \newcommand{\symsim}{\glssymbol{symsim}}
 
-\newglossaryentry{symcorr}{sort={CFsymcorr},name=\ensuremath{\mathfrak{c}},symbol=\ensuremath{\mathfrak{c}},type={symbols},description={A correspondence function \(\symcorr \colon \symreal \rightarrow [0, 1]\).}}
+\newglossaryentry{symcorr}{sort={CFsymcorr},name=\ensuremath{\mathfrak{c}},symbol=\ensuremath{\mathfrak{c}},type={symbols},description={A correspondence function \(\symcorr \colon \symreal \rightarrow [0, 1]\)}}
 \newcommand{\symcorr}{\glssymbol{symcorr}}
 
 %% C group (the group is specified in the sort field)
@@ -109,13 +109,13 @@
 \newglossaryentry{symdfc}{sort={DAsymdfc},name=\ensuremath{\hat{\mathfrak{d}}},symbol=\ensuremath{\hat{\mathfrak{d}}},type={symbols},description={A \gls{dfc} \( \symdfc \colon \domain_q \times \domain_q \times \domain_{1} \cdot \times \domain_{n} \to \symnatural \)}}
 \newcommand{\symdfc}{\glssymbol{symdfc}}
 
-\newglossaryentry{symindex}{sort={DEsymindex},name=\ensuremath{\mathcal{I}},symbol=\ensuremath{\mathcal{I}},type={symbols},description={An index on relation \( \relation \) indexing attributes \( I \subset \schema(\relation) \).}}
+\newglossaryentry{symindex}{sort={DEsymindex},name=\ensuremath{\mathcal{I}},symbol=\ensuremath{\mathcal{I}},type={symbols},description={An index  \( \symindex_{I} \) on relation \( \relation \) indexing attributes \( I \subset \schema(\relation) \).}}
 \newcommand{\symindex}{\glssymbol{symindex}}
 
 \newglossaryentry{symop}{sort={DFsymop},name=\ensuremath{\mathtt{OP}},symbol=\ensuremath{\mathtt{OP}},type={symbols},description={A (relational) database operation, typically acting on a relation \( \relation \).}}
 \newcommand{\symop}{\glssymbol{symop}}
 
-\newglossaryentry{symplan}{sort={DGsymplan},name=\ensuremath{\mathcal{P}},symbol=\ensuremath{\mathcal{P}},type={symbols},description={A query execution plan, i.e., a concatenation of \( N \)operators \(\mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N \).}}
+\newglossaryentry{symplan}{sort={DGsymplan},name=\ensuremath{\mathcal{P}},symbol=\ensuremath{\mathcal{P}},type={symbols},description={A query execution plan, i.e., a concatenation of \( N \) operators \(\mathtt{OP}_1 \circ \mathtt{OP}_2, \ldots \circ \mathtt{OP}_N \).}}
 \newcommand{\symplan}{\glssymbol{symplan}}
 
 \newglossaryentry{symtrans}{sort={DHsymtrans},name=\ensuremath{\mathcal{T}},symbol=\ensuremath{\mathcal{T}},type={symbols},description={A transaction, which is used to executed multiple queries. Subscript is typically used to indicate a point in time, e.g., \( \symtrans_1 \).}}
@@ -124,19 +124,19 @@
 \newglossaryentry{symsnap}{sort={DIsymsnap},name=\ensuremath{\mathcal{S}},symbol=\ensuremath{\mathcal{S}},type={symbols},description={A consistent snapshot of the database and all objects it contains (e.g., relations and indexes). Subscript is typically used to indicate a point in time, e.g., \( \symsnap_1 \).}}
 \newcommand{\symsnap}{\glssymbol{symsnap}}
 
-\newglossaryentry{symchangeop}{sort={DJsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\) that can either be an insert, update or delete.}}
+\newglossaryentry{symchangeop}{sort={DJsymchangeop},name=\ensuremath{\mathtt{OP}_c},symbol=\ensuremath{\mathtt{OP}_c},type={symbols},description={A change operation \( \mathtt{OP}_c(\relation, \cdot)\), which can either be an insert, update or delete.}}
 \newcommand{\symchangeop}{\glssymbol{symchangeop}}
 
 \newglossaryentry{symchange}{sort={DKsymchange},name=\ensuremath{\mathcal{C}},symbol=\ensuremath{\mathcal{C}},type={symbols},description={A change on relation \( \relation \) with \( \symchange = (\symchangeop, \relation, t, t^{\prime})\).}}
 \newcommand{\symchange}{\glssymbol{symchange}}
 
-\newglossaryentry{symwritem}{sort={DLsymwritem},name=\ensuremath{\mathtt{WRITEM}},symbol=\ensuremath{\mathtt{WRITEM}},type={symbols},description={A write model function that determines if a change \( \symchange \) can be proagated to an index \( \symindex \).}}
+\newglossaryentry{symwritem}{sort={DLsymwritem},name=\ensuremath{\mathtt{WRITEM}},symbol=\ensuremath{\mathtt{WRITEM}},type={symbols},description={A write model function that determines if a change \( \symchange \) can be propagated to an index \( \symindex \).}}
 \newcommand{\symwritem}{\glssymbol{symwritem}}
 
-\newglossaryentry{symfailm}{sort={DMsymfailm},name=\ensuremath{\mathtt{FAILM}},symbol=\ensuremath{\mathtt{FAILM}},type={symbols},description={A failure model function that adjusts the state of an index \( \symindex \) for a change that occurred \( \symchange \).}}
+\newglossaryentry{symfailm}{sort={DMsymfailm},name=\ensuremath{\mathtt{FAILM}},symbol=\ensuremath{\mathtt{FAILM}},type={symbols},description={A failure model function that adjusts the state of an index \( \symindex \) for a change \( \symchange \).}}
 \newcommand{\symfailm}{\glssymbol{symfailm}}
 
-\newglossaryentry{symrebuild}{sort={DNsymrebuild},name=\ensuremath{\mathtt{REBUILD}},symbol=\ensuremath{\mathtt{REBUILD}},type={symbols},description={A rebuild function that can rebuild the \( \symindex \) based on primary data in \( \relation \) .}}
+\newglossaryentry{symrebuild}{sort={DNsymrebuild},name=\ensuremath{\mathtt{REBUILD}},symbol=\ensuremath{\mathtt{REBUILD}},type={symbols},description={A rebuild function that can rebuild the index \( \symindex \) based on primary data in \( \relation \) .}}
 \newcommand{\symrebuild}{\glssymbol{symrebuild}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
