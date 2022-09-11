@@ -32,13 +32,6 @@ end
 
 df2 = df2 |> @filter(_.Query in ["Mean", "Range", "NNS"]) |> DataFrame
 
-# Load SIMD data
-df3 = DataFrame(Entity = String[],  Dimension = Int32[], Query = String[], QueryOrder = Int32[], Index = String[], IndexOrder = Int32[], Parallel = Int32[], Runtime = Float64[], Recall = Float64[], NDCG = Float64[])
-dict = read_json(joinpath("./evaluation/data/analytics/","analytics-simd~measurements.json"))
-for (entity, query, index, parallel, runtime, recall, dcg) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["ndcg"])
-    push!(df3, (replace(entity,"features_" => ""), entities[entity], query, queries[query], index, indexes[index], parallel, runtime, recall, dcg))
-end
-
 # Generate PDFs
 nnsr = df1 |>
     @filter(_.Parallel in [2, 8, 16]) |>
@@ -127,6 +120,7 @@ quality_range = plot(nnsq |> @filter(_.Query == "Range") |> DataFrame,
     ), 
     Guide.xlabel(nothing),
     Guide.ylabel("Quality"),
+    Guide.colorkey(title="Metric"),
     Scale.x_discrete,
     Scale.color_discrete_manual("#D2EBE9","#DD879B"),
     Theme(
@@ -152,6 +146,7 @@ quality_nns = plot(nnsq |> @filter(_.Query == "NNS") |> DataFrame,
     ),
     Guide.xlabel(nothing),
     Guide.ylabel("Quality"),
+    Guide.colorkey(title="Metric"),
     Scale.x_discrete,
     Scale.color_discrete_manual("#D2EBE9","#DD879B"),
     Theme(
