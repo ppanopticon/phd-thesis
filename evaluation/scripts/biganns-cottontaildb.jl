@@ -93,6 +93,7 @@ for (query, name) in query_names
             Guide.yticks(ticks=[0.0, 0.25, 0.5, 0.75, 1.0])
         ),
         Guide.xlabel("Quality"),
+        Guide.colorkey(title="Metric"),
         Guide.ylabel(nothing),
         Scale.x_discrete,
         Scale.y_continuous(minvalue = 0.0, maxvalue=1.0),
@@ -108,7 +109,7 @@ for (query, name) in query_names
             key_position=:inside
         )
     )
-    draw(PDF("./appendices/01-appendix/figures/bignns-cottontail-quality-$(query).pdf",21cm,29cm),p2);
+    draw(PDF("./appendices/02-additional-results/figures/bignns-cottontail-quality-$(query).pdf",21cm,29cm),p2);
 end
 
 
