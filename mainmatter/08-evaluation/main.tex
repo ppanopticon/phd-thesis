@@ -149,7 +149,7 @@ The test protocol starts by obtaining a random vector from the test collection, 
     select mean(euclidean(feature, <q>)) from <collection> 
 
     /* Q1c: Perform a range search query --> r1. */
-    select id, euclidean(feature, <q>) as dst from <collection> where dst BETWEEN (m/2.0, m) order by dst asc limit 1000
+    select id, euclidean(feature, <q>) as dst from <collection> where dst between m/2.0, m order by dst asc limit 1000
 
     /* Q1d: Perform a nearest neighbour search query --> r2. */
     select id, euclidean(feature, <q>) as dst from <collection> order by dst asc limit 1000
