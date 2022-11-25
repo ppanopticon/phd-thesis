@@ -55,7 +55,7 @@ nns = df |> @filter(_.Parallel == 32) |>
     NDCGMean=Statistics.mean(_.NDCG), 
     NDCGMin=minimum(_.NDCG),
     RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-    RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+    RuntimeMeanMin=Statistics.mean(_.Runtime)-Statistics.std(_.Runtime), 
     Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))",
     LabelPosition=minimum([Statistics.mean(_.Runtime), 100]), 
 }) |> DataFrame
@@ -112,4 +112,5 @@ for (query, name) in query_names
     draw(PDF("./appendices/02-additional-results/figures/bignns-cottontail-quality-$(query).pdf",21cm,29cm),p2);
 end
 
-
+# For evaluation
+d3 = nns |> @filter(_.Query == "NNS (Q2a)" && _.Index != "IVFPQ") |> DataFrame

@@ -25,6 +25,22 @@ function loadMilvus(name, df)
     end
 end
 
+# Functions used to load Cottontail DB data
+function loadCottontailData(name, df)
+    dict = read_json(joinpath("./evaluation/data/biganns/cottontaildb","cottontail-$(name)~measurements.json"))
+    for (entity, query, index, parallel, runtime, recall, dcg) in zip(dict["entity"], dict["query"], dict["index"], dict["parallel"], dict["runtime"], dict["recall"], dict["dcg"])
+        if (entity == "yandex_deep5m")
+            push!(df, (query_names[query], "5M", 1, index, parallel, runtime, recall, dcg))
+        elseif (entity == "yandex_deep10m")
+            push!(df, (query_names[query], "10M", 2, index, parallel, runtime, recall, dcg))
+        elseif (entity == "yandex_deep100m")
+            push!(df, (query_names[query], "100M", 3, index, parallel, runtime, recall, dcg))
+        else
+            push!(df, (query_names[query], "1B", 4, index, parallel, runtime, recall, dcg))
+        end
+    end
+end
+
 # Load data files
 df = DataFrame(Collection = String[], Query = String[], Index = String[], Mode = String[], Runtime = Float64[])
 loadMilvus("flat", df)
@@ -44,7 +60,7 @@ nns = df |>
         LabelPosition=minimum([Statistics.mean(_.Runtime), 200]), 
         RuntimeMean=Statistics.mean(_.Runtime), 
         RuntimeMeanMax=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
-        RuntimeMeanMin=Statistics.mean(_.Runtime)+Statistics.std(_.Runtime), 
+        RuntimeMeanMin=Statistics.mean(_.Runtime)-Statistics.std(_.Runtime), 
         Label="$(round(Statistics.mean(_.Runtime), digits=2))±$(round(Statistics.std(_.Runtime), digits=2))"}
     ) |> DataFrame
 
@@ -88,4 +104,9 @@ p2 = plot(nns |> @filter(_.Mode == "Latency [s] (disk)") |> DataFrame,
     )
 )
 
-draw(PDF("./mainmatter/08-evaluation/figures/bignns/milvus/bignns-milvus.pdf",44cm,24cm),vstack(p1,p2));
+# Presentation
+d3 = nns |> @filter(_.Query == "NNS" && _.Mode == "Latency [s] (memory)") |> DataFrame
+d4 = nns |> @filter(_.Query == "NNS" && _.Mode == "Latency [s] (disk)") |> DataFrame
+
+#CSV.write("./presentation/milvus-memory-biganns.csv", d3)
+#CSV.write("./presentation/milvus-disk-biganns.csv", d4)
