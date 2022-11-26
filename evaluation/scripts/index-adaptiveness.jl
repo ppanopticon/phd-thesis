@@ -85,6 +85,7 @@ for i in ["pq","vaf"]
         )
 
         draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-no-rebuild.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(speedup, quality)));
+        CSV.write("./presentation/index-$(i)-adaptiveness-$(r)-no-rebuild.csv", df)
     end
 end
 
@@ -152,5 +153,6 @@ for i in ["pq","vaf"]
         theme
     ) 
     draw(PDF("./mainmatter/08-evaluation/figures/index/index-$(i)-adaptiveness-$(r)-with-rebuild-and-jitter.pdf",30cm,20cm),vstack(hstack(count, operations), hstack(speedup, quality)));
+    CSV.write("./presentation/index-$(i)-adaptiveness-$(r)-with-rebuild-and-jitter.csv", df)
 end
 end
