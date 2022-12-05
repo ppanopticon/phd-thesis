@@ -24,7 +24,7 @@ Starting with the vector space model for similarity search~\cite{Zezula:2006Simi
 
 \cref{definition:pbq} simply requires a notion of proximity between an attribute and a query to be obtained by evaluating a distance function. The definition does not make any assumptions as to what data domains $\domain_f$ the query and probing attribute belong to, nor how the distance is being used within the query. 
 
-It is obvious, that similarity search falls into the broader category of a proximity-based query, wherein the distance is used to rank a relation and subsequently limit its cardinality. In addition to this common application, the definition of proximity-based queries also includes operations such as evaluating a distance function followed by some filtering (e.g., range search) or aggregation based on the computed value (e.g., clustering). That is, we are not limited to mere \acrshort{nns}, since we consider obtaining the distance as one step, which can be freely combined with all other operations supported by the underlying algebra.
+It is obvious, that similarity search falls into the category of a proximity-based query, wherein the distance is used to rank a relation and subsequently limit its cardinality. In addition to this common application, the definition of proximity-based queries also includes operations such as evaluating a distance function followed by some filtering (e.g., range search) or aggregation based on the computed value (e.g., clustering). That is, we are not limited to mere \acrshort{nns}, since we consider obtaining the distance as one step, which can be freely combined with all other operations supported by the underlying algebra.
 
 \subsection{Revisiting Distance Computation}
 
@@ -156,7 +156,7 @@ If now we assume any DFC supported by the \acrshort{dbms} to be a member of $\ma
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
-            $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{painted}}$ & $\attribute_{\mathtt{feature}}$ \\ 
+            $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ & $\attribute_{\mathtt{feature}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 &  $[2.0,7.0,-8.0]$ \\
@@ -168,15 +168,16 @@ If now we assume any DFC supported by the \acrshort{dbms} to be a member of $\ma
         \end{tabular}
     \end{center}
 
-    The extended projection $\projection_{P} (\relation)$ with $P = (\attribute_{\mathtt{title}}, \symdist([0,0,0],\attribute_{\mathtt{feature}}))$, projects onto the attribute $\attribute_{\mathtt{title}}$ and the distance $\symdist \in \mathcal{F}$ between query argument $q = [0,0,0] \subset \symreal^3$ and probing argument $\attribute_{\mathtt{feature}}$. This is the relational algebra equivalent to the following SQL query and leads to $\relation_{\mathtt{result}}$ (assuming $\symdist$ to be the the Manhattan distance).
+    The extended projection $\projection_{P} (\relation)$ with $P = (\attribute_{\mathtt{title}}, \symdist([0,0,0],\attribute_{\mathtt{feature}}))$, projects onto the attribute $\attribute_{\mathtt{title}}$ and the Manhattan distance $\symdist \in \mathcal{F}$ between query argument $q = [0,0,0] \in \domain_f \subset \symreal^3$ and probing argument $\attribute_{\mathtt{feature}}$. This is the relational algebra equivalent to the following SQL query and leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title, d([0,0,0],feature) from paintings
+    
+    select title, d([0,0,0],feature) from paintings
     \end{lstlisting}
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
-            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attribute_{\mathtt{distance}}$ \\ 
+            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attribute_{\mathtt{d}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  $17.0$ \\
@@ -227,7 +228,7 @@ It is to be noted, that the ranking $O$ is an inherent property of a ranked rela
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
-            $\relation^{\emptyset}_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{painted}}$ &  $\attribute_{\mathtt{distance}}$\\ 
+            $\relation^{\emptyset}_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ &  $\attribute_{\mathtt{distance}}$\\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 & $17.0$ \\
@@ -241,15 +242,17 @@ It is to be noted, that the ranking $O$ is an inherent property of a ranked rela
         \end{tabular}
     \end{center}
 
-    The order operation $\order_{O}(\relation_{\mathtt{painting}})$ with $O = ((\attribute_{\mathtt{distance}}, \preceq_{\downarrow}), (\attribute_{\mathtt{title}}, \preceq_{\uparrow}))$, which orders by $\attribute_{\mathtt{distance}}$ in descending and $\attribute_{\mathtt{title}}$ in ascending order. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$.
+    The order operation $\order_{O}(\relation_{\mathtt{painting}})$ with $O = ((\attribute_{\mathtt{distance}}, \preceq_{\downarrow}), (\attribute_{\mathtt{title}}, \preceq_{\uparrow}))$ sorts by $\attribute_{\mathtt{distance}}$ in descending and $\attribute_{\mathtt{title}}$ in ascending order. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select * from paintings order by score desc, title asc
+       
+                select * from paintings 
+            order by distance desc, title asc
     \end{lstlisting}
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
-            $\relation^{O}_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{painted}}$ & $\attribute_{\mathtt{distance}}$ \\ 
+            $\relation^{O}_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ & $\attribute_{\mathtt{distance}}$ \\ 
             \hline
             \hline
             $t_1$ & Mars and Venus & Sandro Botticelli & 1483 & $17.0$ \\
@@ -291,7 +294,7 @@ The s,k-selection operation is inherently sensitive to ranking since it selects 
 
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation^{\emptyset}_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation^{\emptyset}_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ \\ 
             \hline
             \hline
             $t_1$ & Mars and Venus & Sandro Botticelli & 1483 \\
@@ -305,15 +308,16 @@ The s,k-selection operation is inherently sensitive to ranking since it selects 
         \end{tabular}
     \end{center}
 
-    $\limit_{0,3}(\relation_{\mathtt{painting}})$ limits the result to the first two entries. It is the relational algebra equivalent of the following SQL query and produces $\relation_{\mathtt{result}}$.
+    $\limit_{0,3}(\relation_{\mathtt{painting}})$ limits the result to the first three entries. It is the relational algebra equivalent of the following SQL query and produces $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select * from paintings limit 3
+        
+            select * from paintings limit 3
     \end{lstlisting}
 
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
-            $\relation^{\emptyset}_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{painted}}$ \\ 
+            $\relation^{\emptyset}_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ \\ 
             \hline
             \hline
             $t_1$ & Mars and Venus & Sandro Botticelli & 1483 \\
@@ -331,11 +335,11 @@ The s,k-selection operation is inherently sensitive to ranking since it selects 
 The proposed operations can now be freely combined to form proximity-based queries. In \Cref{example:proximity_based_queries} we demonstrate this for \acrshort{knn} and range search. A list of additional types of queries is provided in \Cref{table:proximity_based_queries}.
 
 \begin{example}[label=example:proximity_based_queries]{\acrshort{knn} and $\epsilon$NN using Extended Relational Algebra}{}
-    The following table lists the schema, extent and rank of $\relation^{\emptyset}_{\mathtt{painting}}$, with their title $\mathcal{A}_{\mathtt{(t)itle}}$ and a feature $\mathcal{A}_{\mathtt{(f)eature}}$. Let further $P = (\attribute_{\mathtt{title}}, \symdist([0,0,0],\attribute_{\mathtt{feature}}))$ be a list of projections, $\symdist \in \mathcal{F}$ be a distance between query argument $q = [0,0,0] \in \domain_f \subset \symreal^3$ and probing argument $\attribute_{\mathtt{feature}}$.
+    The following table lists the schema, extent and rank of $\relation^{\emptyset}_{\mathtt{painting}}$, with their title $\mathcal{A}_{\mathtt{title}}$ and a feature $\mathcal{A}_{\mathtt{feature}}$. Let further $P = (\attribute_{\mathtt{title}}, \symdist([0,0,0],\attribute_{\mathtt{feature}}))$ be a list of projections, $\symdist \in \mathcal{F}$ be the Manhattan distance between query argument $q = [0,0,0] \in \domain_f \subset \symreal^3$ and probing argument $\attribute_{\mathtt{feature}}$.
 
     \begin{center}
         \begin{tabular}{ l || l | l | l | l |}
-            $\relation^{\emptyset}_{\mathtt{(p)ainting}}$ & $\attributep_{\mathtt{(t)itle}}$  & $\attributef_{\mathtt{(a)rtist}}$ & $\attribute_{\mathtt{(p)ainted}}$ & $\attribute_{\mathtt{(f)eature}}$ \\ 
+            $\relation^{\emptyset}_{\mathtt{(p)ainting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$ & $\attribute_{\mathtt{year}}$ & $\attribute_{\mathtt{feature}}$ \\ 
             \hline
             \hline
             $t_1$ & Mona Lisa &  Leonardo da Vinci & 1506 &  $[2.0,7.0,-8.0]$ \\
@@ -347,28 +351,21 @@ The proposed operations can now be freely combined to form proximity-based queri
         \end{tabular}
     \end{center}
 
-    \acrshort{knn}-search can be expressed as $\limit_k(\order_{\attribute_d\uparrow}(\projection_{P} (\relation)))$ with $k = 2$. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$ (assuming $ \symdist$ to be the Manhattan distance).
+    \acrshort{knn}-search can be expressed as $\limit_k(\order_{\attribute_d\uparrow}(\projection_{P} (\relation)))$ with $k = 2$. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title, d(feature, [0.0,0.0,0.0]) as dst from paintings order by dst limit 2
+    
+    select title, d(feature, [0.0,0.0,0.0]) as distance
+        from paintings order by distance limit 2
     \end{lstlisting}
 
-    \begin{center}
-        \begin{tabular}{ l || l | l | l | l |}
-            $\relation_{\mathtt{result}}$ & $\attributep_{\mathtt{title}}$  & $\attribute_{\mathtt{distance}}$ \\ 
-            \hline
-            \hline
-            $t_1$ & Mona Lisa &  $17.0$ \\
-            \hline
-            $t_2$ & Las Meninas & $13.0$ \\
-            \hline
-        \end{tabular}
-    \end{center}
-
-    Range search (or $\epsilon$NN) can be expressed as $\selection_{\attribute_d > \epsilon}(\projection_{P} (\relation))$ with and $\epsilon = 15.0$. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$ (assuming $ \symdist$ to be the Manhattan distance).
+    Range search (or $\epsilon$NN) can be expressed as $\selection_{\attribute_d > \epsilon}(\projection_{P} (\relation))$ with and $\epsilon = 15.0$. This is the relational algebra equivalent of the following SQL query and also leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title, d(feature, [0.0,0.0,0.0]) as dst from paintings where dst > 15.0 order by dst
+    
+    select title, d(feature, [0.0,0.0,0.0]) as distance 
+             from paintings where distance > 15.0 
+                    order by distance
     \end{lstlisting}
 
     \begin{center}

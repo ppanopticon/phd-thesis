@@ -12,7 +12,7 @@ The first commercial \acrshort{dbms} were introduced in the 1960s \cite{Garcia:2
     \item[Definition] \acrshort{dbms} provide users with the ability to alter the organisation of their data within the constraints of the data model using a \acrfull{ddl}. 
     \item[Manipulation] \acrshort{dbms} provide users with the ability to modify the data within the constraints of the data model using a \acrfull{dml}. Modifications may include adding, removing, or changing entries.
     \item[Querying] \acrshort{dbms} provide users with the ability to query the data using a \acrfull{dql}. Such queries can be used to answer specific ``questions'' about the data and to generate the aforementioned insights.
-    \item[Guarantees] \acrshort{dbms} usually provide guarantees, such as assuring durability upon failure or providing access control for concurrent read and write operations. A well-known set of guarantees offered by many modern \acrshort{dbms} is known by its acronym \acrshort{acid} -- which stands for \textbf{A}tomicity, \textbf{C}onsistency, \textbf{I}solation and \textbf{D}urability \cite{Haerder:1983principles}. Another one is known as \acrshort{base} \cite{Pritchett:2008Base}.
+    \item[Guarantees] \acrshort{dbms} usually provide guarantees, such as assuring durability upon failure or providing access control for concurrent operations. A well-known set of guarantees offered by many modern \acrshort{dbms} is known by its acronym \acrshort{acid} \cite{Haerder:1983principles}, which was later complemented by the more relaxed \acrshort{base} guarantees offered by many \acrshort{nosql} systems \cite{Pritchett:2008Base}.
 \end{description}
 
 \section{Data Management and Data Models}
@@ -170,7 +170,7 @@ Using the idea of key candidates for a relation, Codd proposed a series of \emph
 
 \end{description}
 
-All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{bcnf}, it must also satisfy \acrshort{3nf}, \acrshort{2nf} and \acrshort{1nf} \footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.}. Additional normal forms up to 6NF have been defined. For the sake of brevity, we will omit those since they are not relevant to the discussion ahead.
+All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{bcnf}, it must also satisfy \acrshort{3nf}, \acrshort{2nf} and \acrshort{1nf}. \footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.} Additional normal forms up to 6NF have been defined. For the sake of brevity, we will omit those since they are not relevant to the discussion ahead.
 
 \subsection{Relational Algebra}
 \label{section:rel_algebra}
@@ -352,7 +352,7 @@ The motivation for considering other mathematical structures than sets as an alg
 
 We will not elaborate on all the consequences such a transition may have, and refer to \cite{Garcia:2009Database}, which discusses this issue in great detail. However, for illustrative  purposes, we still provide the \Cref{example:bag_vs_set} inspired by \cite{Garcia:2009Database}. It demonstrates that even minor changes to the properties of the purely relational data model must be taken into account when implementing systems, e.g., during algebraic query optimisation.
 
-\begin{example}[label=example:bag_vs_set]{Searching for Paintings Using SQL}{}
+\begin{example}[label=example:bag_vs_set]{Bag vs. Set Semantics}{}
 
     The following tables list the schema and extent of $\relation_{\mathtt{p1}}$ and $\relation_{\mathtt{p2}}$, which are union compatible and have one tuple in common ($t_1$).
 
@@ -442,17 +442,19 @@ The query interface is the \acrshort{dbms}'s channel to the outside world and en
 
 Queries accepted by the query interface are usually expressed in a specific query language -- which are often designed for human users and therefore human-readable. We have already mentioned \acrshort{sql} \cite{XOpen:1996SQL,Chamberlin:2012Early} as the most prominent example of such a query language, which can be used to express queries using a declarative, textual syntax (see \Cref{example:sql_query}). In addition to SQL, there also exist other, domain-specific languages such as SPARQL \cite{Perez:2009Semantics} to query \acrfull{rdf} data, Cypher to query labelled property graphs \cite{Francis:2018Cypher} found in graph databases such as Neo4j \footnote{See https://neo4j.com/; accessed June 2022.} or the document-oriented query language used by MongoDB.\footnote{See https://www.mongodb.com/; accessed June 2022.}
 
-\begin{example}[label=example:sql_query]{Searching for Paintings Using SQL}{}
+\begin{example}[label=example:sql_query]{Searching for Paintings Using \acrshort{sql}}{}
     Let  $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ be the two relations from \Cref{example:rel_alg_query}, the query ``return the names of all paintings that were painted by an artist who died after 1800'' can be expressed in \acrshort{sql} as follows:
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
-        select title from painting natural join artist where artist.death > 1800
+
+      select title from painting natural join artist 
+                where artist.death > 1800
     \end{lstlisting}
 
     The \texttt{select} clause expresses the projection $\projection$ to attribute \texttt{title}, the \texttt{natural join} clause expresses the natural join $\Join$ between \texttt{paintings} and \texttt{artist} and the \texttt{where} clause expresses the selection $\selection$ to tuples whose \texttt{artist.death} attribute is greater than 1800.
 \end{example}
 
-Early attempts at a client-facing standardisation of the query interface for SQL-based systems led to the inception of the \acrfull{cli} standard \cite{XOpen:1995CLI}, which in its early version enabled embedding of \acrshort{sql} commands into C or Cobol programmes. The \acrshort{cli} standard was later complemented by \acrfull{odbc} and \acrfull{jdbc}, which provide database connectivity to a wide range of \acrshort{sql} and NoSQL systems. In addition, most of the SQL (e.g., MySQL, PostgreSQL, Microsoft SQL, Oracle) and NoSQL (e.g., MongoDB, Neo4j, Redis) systems provide database specific and therefore un-standardised connectivity through a plethora of client libraries that are maintained for different platforms and programming environments by either companies and/or open-source contributors.
+Early attempts at a client-facing standardisation of the query interface for SQL-based systems led to the inception of the \acrfull{cli} standard \cite{XOpen:1995CLI}, which in its early version enabled embedding of \acrshort{sql} commands into C or Cobol programmes. The \acrshort{cli} standard was later complemented by \acrfull{odbc} and \acrfull{jdbc}, which provide database connectivity to a wide range of \acrshort{sql} and \acrshort{nosql} systems. In addition, most of the \acrshort{sql} (e.g., MySQL, PostgreSQL, Microsoft SQL, Oracle) and \acrshort{nosql} (e.g., MongoDB, Neo4j, Redis) systems provide database specific and therefore un-standardised connectivity through a plethora of client libraries that are maintained for different platforms and programming environments by either companies and/or open-source contributors.
 
 \subsection{Query Parser}
 
@@ -522,7 +524,7 @@ However, as queries became more complex, bottom-up optimisation started to reach
     \label{figure:query_planning}
 \end{figure}
 
-As a consequence, attention has shifted towards top-down approaches that focused on holistic optimisation of the entire query plan. Early top-down approaches tried to focus on heuristic methods \cite{Jarke:1984Query}. However, the System-R paper \cite{Selinger:1979Access} published in \citeyear{Selinger:1979Access} established the idea of \emph{cost-based query optimisation} as a gold standard for \acrshort{dbms}. A cost-based query planner enumerates physical plans that employ different strategies and selects the one that minimises the estimated cost. Those costs may involve computation (time used on a CPU), storage access (data accessed on disk) or transmission (data transferred between nodes) required by a query \cite{Jarke:1984Query,Garcia:2009Database}. Which of those metrics are used is highly dependent on the system: In the not-too-distant past before the invention of the \acrfull{ssd}, access to secondary storage was considered to be the defining cost \cite{Garcia:2009Database}. However, for distributed databases, the transfer of data between nodes has become another factor to consider \cite{Bruno2013:Continuous}.
+As a consequence, attention has shifted towards top-down approaches that focused on holistic optimisation of the entire query plan. Early top-down approaches tried to focus on heuristic methods \cite{Jarke:1984Query}. However, the System-R paper \cite{Selinger:1979Access} published in \citeyear{Selinger:1979Access} established the idea of \emph{cost-based query optimisation} as a gold standard for \acrshort{dbms}. A cost-based query planner enumerates physical plans that employ different strategies and selects the one that minimises the estimated cost. Those costs may involve computation (time used on a CPU), storage access (data accessed on disk) or transmission (data transferred between nodes) required by a query \cite{Jarke:1984Query,Garcia:2009Database}. Which of those metrics are used is highly dependent on the system: In the not-too-distant past before the invention of the \acrfull{ssd}, access to secondary storage was considered to be the defining cost \cite{Garcia:2009Database}. However, for distributed databases, the transfer of data between nodes has become another factor to consider \cite{Franklin:1996Performance,Bruno2013:Continuous}.
 
 Cost-based query planning relies on an internal representation of the query, e.g., the logical plan illustrated in \Cref{figure:query-tree}, which is transformed into equivalent alternatives over multiple iterations as illustrated in \Cref{figure:query_planning}. As queries become more complex (e.g., multiple joins) the solution space grows exponentially, i.e., the problem is NP-hard and must be solved heuristically. Often, the query optimisation process is divided into three phases as described for the \emph{Volcano Optimiser Generator}  \cite{Jarke:1984Query,Graefe:1993Volcano} and the \emph{Cascades Framework} \cite{Graefe:1995Cascades} (which still serve as a foundation for systems today, e.g., \cite{Soliman:Orca2014,Begoli:2018Apache}):
 
