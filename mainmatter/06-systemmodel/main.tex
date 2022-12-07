@@ -351,21 +351,20 @@ The proposed operations can now be freely combined to form proximity-based queri
         \end{tabular}
     \end{center}
 
-    \acrshort{knn}-search can be expressed as $\limit_k(\order_{\attribute_d\uparrow}(\projection_{P} (\relation)))$ with $k = 2$. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$.
+    \acrshort{knn}-search can be expressed as $\limit_k(\order_{\attribute_d\uparrow}(\projection_{P} (\relation)))$ with $k = 1$. This is the relational algebra equivalent of the following SQL query and leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
     
-    select title, d(feature, [0.0,0.0,0.0]) as distance
-        from paintings order by distance limit 2
+  select title, d(feature, [0.0,0.0,0.0]) as distance
+        from paintings order by distance limit 1
     \end{lstlisting}
 
     Range search (or $\epsilon$NN) can be expressed as $\selection_{\attribute_d > \epsilon}(\projection_{P} (\relation))$ with and $\epsilon = 15.0$. This is the relational algebra equivalent of the following SQL query and also leads to $\relation_{\mathtt{result}}$.
 
     \begin{lstlisting}[language=SQL, showspaces=false, basicstyle=\ttfamily, numbers=none]
     
-    select title, d(feature, [0.0,0.0,0.0]) as distance 
-             from paintings where distance > 15.0 
-                    order by distance
+  select title, d(feature, [0.0,0.0,0.0]) as distance 
+ from paintings where distance > 15.0 order by distance
     \end{lstlisting}
 
     \begin{center}
@@ -377,7 +376,12 @@ The proposed operations can now be freely combined to form proximity-based queri
             \hline
         \end{tabular}
     \end{center}
+
+    Even though both queries generate the same result for the purpose of this example, it is worth pointing out that they do so by applying very different semantics -- that of selection by cardinality on the one hand and that of selecting by predicate on the other.
+
 \end{example}
+
+\clearpage
 
 \begin{table}[bt]
     \caption{Proximity-based queries supported by the extended relational algebra.}
