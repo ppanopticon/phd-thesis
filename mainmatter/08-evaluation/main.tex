@@ -142,17 +142,19 @@ This series of experiments is about demonstrating \cottontail{}'s ability to exe
 The test protocol starts by obtaining a random vector from the test collection, which will then act as a query vector $q$. It then goes on to obtain the mean distance $m$ of all vectors in the collection from that vector $q$ to then perform a range search to find all entries that are between $m$ and $\frac{m}{2}$ away from $q$, which results in result $r_1{}$. Subsequently, it performs a simple \acrshort{nns} query using $q$ as a query vector, which results in $r_2$. Finally, it obtains the segment entries that are associated with the returned entries in $r_1$ and $r_2$. In summary, we execute two ordinary Boolean queries and three different types of proximity-based queries. The queries are expressed as Pseudo-SQL in \Cref{listing:analytics_queries}.
 
 \begin{lstlisting}[language=SQL, caption={Pseudo-SQL of the queries executed for the analytics workload.}, label=listing:analytics_queries, numbers=none]
-    /* Q1a: Select a random vector from collection --> q. */
-    select feature from <collection> skip <random> limit 1
+     /* Q1a: Select a random vector from collection --> q. */
+      select feature from <collection> skip <random> limit 1
     
-    /* Q1b: Select mean distance from the query vector --> m*/
-    select mean(euclidean(feature, <q>)) from <collection> 
+     /* Q1b: Select mean distance from the query vector --> m*/
+      select mean(euclidean(feature, <q>)) from <collection> 
 
-    /* Q1c: Perform a range search query --> r1. */
-    select id, euclidean(feature, <q>) as dst from <collection> where dst between m/2.0, m order by dst asc limit 1000
+          /* Q1c: Perform a range search query --> r1. */
+    select id, euclidean(feature, <q>) as dst from <collection> 
+      where dst between m/2.0, m order by dst asc limit 1000
 
     /* Q1d: Perform a nearest neighbour search query --> r2. */
-    select id, euclidean(feature, <q>) as dst from <collection> order by dst asc limit 1000
+    select id, euclidean(feature, <q>) as dst from <collection> 
+                    order by dst asc limit 1000
 
     /* Q1e: Obtain segment entries associated with the IDs. */
     select * from cineast_segment where segmentid in <r1 + r2>
@@ -289,15 +291,18 @@ This experiment is a direct comparison of Milvus and \cottontail{} and is about 
 \end{enumerate*} 
 The Pseudo-SQL is provided in \Cref{listing:big_nns_query}. We use the query vectors provided with the Deep1B dataset and establish a ground truth by executing a brute-force search.
 
-\begin{lstlisting}[language=SQL, caption={Pseudo-SQL of the queries executed for this measurement.}, label=listing:big_nns_query, numbers=none]
-    /* Q2a: Simple NNS without feature vectors. */
-    select id, euclidean(feature, <query>) as dst from <collection> order by dst limit 1000
+\begin{lstlisting}[language=SQL, caption={Pseudo-SQL of the queries executed for this experiment.}, label=listing:big_nns_query, numbers=none]
+           /* Q2a: Simple NNS without feature vectors. */
+  select id, euclidean(feature, <query>) as dst from <collection> 
+                    order by dst limit 1000
     
-    /* Q2b: NSS that returns feature vectors. */
-    select id, feature, euclidean(feature, <query>) as dst from <collection> order by dst limit 1000
+           /* Q2b: NSS that returns feature vectors. */
+      select id, feature, euclidean(feature, <query>) as dst 
+            from <collection> order by dst limit 1000
 
-    /* Q2c: Hybrid query without feature vector. */
-    select id, euclidean(feature, <query>) as dst from <collection> where category = <category> order by dst limit 1000
+         /* Q2c: Hybrid query without feature vector. */
+  select id, euclidean(feature, <query>) as dst from <collection> 
+        where category = <category> order by dst limit 1000
 \end{lstlisting}
 
 \subsection{\cottontail}
