@@ -127,14 +127,14 @@ final      % disables draft mode and todonotes
 \else
   % front matter
   \subincludefrom{frontmatter/title/}{title}
+  \subincludefrom{frontmatter/handin/}{verso}
 
   % license, add cclicense option above
   \ifcclicense{}
     \subincludefrom{frontmatter/disclaimer/}{disclaimer}
-  \fi
+\fi
 
-  \subincludefrom{frontmatter/handin/}{verso}
-
+  
   %\subincludefrom{frontmatter/dedication/}{dedication}
   \subincludefrom{frontmatter/quote/}{quote}
 
@@ -232,7 +232,7 @@ final      % disables draft mode and todonotes
 \else
   \subincludefrom{backmatter/quote/}{quote}
   \subincludefrom{backmatter/cv/}{cv}
-  \subincludefrom{backmatter/authorship/}{authorship}
+  %\subincludefrom{backmatter/authorship/}{authorship}
 \fi
 
 \end{document}
