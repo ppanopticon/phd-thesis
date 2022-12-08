@@ -536,10 +536,10 @@ Cost-based query planning relies on an internal representation of the query, e.g
 
 Each of the aforementioned steps involve sub-steps that apply algebraic equivalence rules \cite{Garcia:2009Database}  (e.g., commutativity of operations), heuristics \cite{Garcia:2009Database,Graefe:1993Query,Swami:1989Optimization,Bruno:2010Polynomial,Tsialiamanis:2012Heuristics,} (e.g., predicate pushdown) or special rules to handle certain (edge-)cases \cite{Jarke:1984Query,Graefe:1993Query} (e.g., replace table by index scan). 
 
-Indexes deserve a special mention in this context, since they are of huge practical importance. An index is an auxiliary data structure that organises access to the data in a relation based on one or multiple attributes to allow for more efficient data access when searching for an indexed attribute -- $\mathcal{O}(\log N)$ instead of $\mathcal{O}(N)$, with $N = |\relation|$ for $B^{+}$-trees. \Cref{example:index_scan} illustrates this for a simple filter operation. We will address indexes structurally in \Cref{section:databases_storage_manager}.
+Indexes deserve a special mention in this context, since they are of huge practical importance. An index is an auxiliary data structure that organises access to the data in a relation based on one or multiple attributes to allow for more efficient data access when searching for an indexed attribute -- $\mathcal{O}(\log N)$ instead of $\mathcal{O}(N)$, with $N = |\relation|$ for $B^{+}$-trees (see \Cref{section:indexes}). \Cref{example:index_scan} illustrates this for a simple filter operation. We will address indexes structurally in \Cref{section:databases_storage_manager}.
 
 \begin{example}[label=example:index_scan]{Index Scan vs. Table Scan}{}
-    Let us consider the logical and physical plan of \Cref{example:logical_vs_physical}. And let us further assume that there exists a  $B^{+}$-tree index on $\attribute_{\mathtt{death}}$ in $\relation_{\mathtt{artist}}$. The following query plan could be an optimisation of the original plan:
+    Let us consider the logical and physical plan of \Cref{example:logical_vs_physical}. And let us further assume that there exists a $B^{+}$-tree index on $\attribute_{\mathtt{death}}$ in $\relation_{\mathtt{artist}}$. The following query plan could be an optimisation of the original plan:
 
     \begin{center}
         \begin{tabular}{| l | l | p{6cm} |}
@@ -611,7 +611,7 @@ Another popular approach used to minimise the overhead incurred by the iterator 
 \label{section:databases_storage_manager}
 At the lowest levels of any \acrshort{dbms} there is the storage manager, which orchestrates access to data on primary and/or secondary storage devices. Many different approaches to storage have been implemented over the years and we will simply focus on some basic concepts and refer to \cite{Petrov:2019Database} for more information on the topic. What most \acrshort{dbms} have in common is that they implement a two-level memory architecture wherein data resides on disk (which is slower but durable) and in \acrshort{ram} (which is faster but volatile). The two aspects are handled by the two main components: the \emph{disk manager} and the \emph{buffer pool manager} \cite{Petrov:2019Database}. Recent years have also seen a trend towards main memory databases that keep data primarily in \acrshort{ram} \cite{Garcia:1992Main,Faerber:2017Main} or \acrfull{nvm} \cite{Arulraj:2017Build}.
 
-\subsubsection{Data Organisation and Disk Manager}
+\subsubsection{Data Organisation}
 \acrshort{dbms} are typically required to accommodate multiple design goals at once. They are supposed to store data, such that,
 \begin{enumerate*}[label=(\roman*),itemjoin={{, }}, itemjoin*={{, and, }}, after={{.}}]
     \item space occupied by the data
@@ -630,7 +630,13 @@ In order to be able to locate and relate individual records across different pag
 
 $\mathtt{TID}$ can be considered an implicit, internal primary key of $\relation$ that is often not visible to the outside and may even change its value as entries are being changed. However, some systems make the tuple identifier accessible, e.g., Oracle with its $\mathtt{ROWID}$ and in some database implementations, an explicit primary key may act as $\mathtt{TID}$, which, however, does not affect its definition and purpose.
 
-Index files enable faster data access, especially in the presence of predicates on specific attributes. \cite{Petrov:2019Database} distinguishes between primary indexes and secondary indexes. A primary index typically indexes the primary key or tuple identifier and is the main mean of data access. However, depending on how the data file is organised, no auxiliary data structure is required for this (e.g., index-organised tables). Queries that do not involve the evaluation of the primary key, typically result in a \emph{linear scan} of the primary index and/or the data files, which scales poorly to a large number of entries. This is addressed by auxiliary, secondary indexes, which are used to optimise query execution performance for certain queries by indexing selected attributes. A very popular index structure is the $B^{+}$-tree \cite{Bayer:2002Organization}, which reduces runtime complexity of certain search operations from $\mathcal{O}(N)$ (linear scan) to $\mathcal{O}(\log N)$ with $N = |\relation|$. Logically, an index can be regarded as described in \Cref{definition:index}.
+\subsubsection{Indexes}
+\label{section:indexes}
+Indexes are on-disk data structures that enable faster data access, especially in the presence of predicates on specific attributes. In a relational database, indexes are typically built from one or multiple attributes of a relation. \cite{Petrov:2019Database} distinguishes between primary indexes and secondary indexes. A primary index typically indexes the primary key or tuple identifier and is the main mean of data access. However, depending on how the data file is organised, no auxiliary data structure is required for this (e.g., index-organised tables or clustered indexes). Since queries may also rely on columns other than the primary key, which, in absence of any other index, would result in a \emph{linear scan} of the primary index and/or the data files, one often creates auxiliary, secondary indexes, which are used to optimise query execution performance for certain queries by indexing selected attributes. 
+
+A very popular (if not the most popular) index structure in both \acrshort{sql} and \acrshort{nosql} systems is the $B^{+}$-tree \cite{Bayer:2002Organization}, which reduces runtime complexity of certain search operations from $\mathcal{O}(N)$ (linear scan) to $\mathcal{O}(\log N)$ with $N = |\relation|$. 
+
+Logically, an index can be regarded as described in \Cref{definition:index}.
 
 \begin{definition}[label=definition:index]{Index Structure for Relation $\relation$}{}
     Let $\relation$ be a relation with tuple identifier $\mathtt{TID}$ and $I = \{ \attribute_{1}, \ldots, \attribute_{K} \} \subset \schema (\relation)$. We call $\symindex^{\relation}_I$ a (dense) index of relation $\relation$ with respect to $I$ if $\symindex^{\relation}_I$ contains at least $\mathtt{TID}$ and if $|\symindex^{\relation}_I| = |\relation|$ and $\exists (t_1, t_2) : t_1[\mathtt{TID}] = t_2[\mathtt{TID}] \forall t_1 \in \relation, t_2 \in \symindex^{\relation}_I$.
