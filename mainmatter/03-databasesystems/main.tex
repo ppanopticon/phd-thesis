@@ -93,7 +93,7 @@ Given the idea of a relation, the sum of all data managed by a \acrshort{dbms} c
 
 \begin{example}[label=example:relational_table]{Table Representation of a Relation $\relation_{\mathtt{painting}}$}{}
     
-    The following table lists the schema and extent of a ternary relation ($N = 5$) $\relation_{\mathtt{year}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{year}}, \attribute_{\mathtt{artist}}$, $\attribute_{\mathtt{birth}}$,$\attribute_{\mathtt{death}}$ correspond to the table's columns. The tuples $\tuple_i$ are ``valid'' combinations of painting title, year of conception and artist information under a \acrshort{cwa} and constitute the rows.
+    The following table lists the schema and extent of a ternary relation ($N = 5$) $\relation_{\mathtt{painting}}$. The attributes $\attribute_{\mathtt{title}}, \attribute_{\mathtt{year}}, \attribute_{\mathtt{artist}}$, $\attribute_{\mathtt{birth}}$,$\attribute_{\mathtt{death}}$ correspond to the table's columns. The tuples $\tuple_i$ are ``valid'' combinations of attributes under a \acrshort{cwa} and constitute the rows.
         
     \begin{center}
         \begin{tabular}{ l || l | l | l | l | l |}
@@ -115,19 +115,42 @@ Given the idea of a relation, the sum of all data managed by a \acrshort{dbms} c
 
 \subsection{Keys and Normal Forms}
 
-The notion of a relation provides us with the basic tools for data modelling. In addition to \Cref{definition:relation}, Codd proposed a range of constraints to guarantee proper data definition using the following constructs~\cite{Codd:1970Relational}:
+The notion of a relation provides us with the basic tools for data modelling. In addition to \Cref{definition:relation}, Codd proposed a range of constraints to guarantee proper data definition using the following constructs~\cite{Codd:1970Relational,Codd:1972Further}:
 
 \begin{description}
-    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a minimal set of attributes $\mathcal{P} \subseteq \schema(\relation)$ that uniquely identify a tuple $t \in \relation$. That is, the attributes that are not part of the \acrshort{pk} and the associated values are functionally determined by $\mathcal{P}$. In case multiple key candidates exists for a relation $\relation$, then the \acrshort{pk} constitutes a particular choice of \acrfull{ck}. Using \Cref{example:relational_table_pkfk}, the painting and all its attributes are functionally determined by the name of the painting, which uniquely identifies the entry and is therefore the only \acrshort{ck} and thus \acrshort{pk}.
+    \item[A \acrfull{ck}] $\mathcal{K}$ of relation $\relation$ is a minimal (or irreducible) set of attributes $\mathcal{K} \subseteq \schema(\relation)$ that uniquely identify a tuple $t \in \relation$. That is, the attributes that are not part of a \acrshort{ck} and the associated values are determined by the choice $\mathcal{K}$ and it is thus impossible to find two distinct tuples that agree on all attributes in $\mathcal{K}$. \acrshort{ck}s can be found by determining the functional dependencies in a relation $\relation$ and applying Armstrong's axioms \cite{Armstrong:1974Dependency}.
+    
+    Using $\relation_{\mathtt{painting}}$ from \Cref{example:relational_table}, a painting's artist and the year of its conception are functionally determined by the the title of the painting and therefore $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{artist}},\attribute_{\mathtt{year}}$. Furthermore, the date of birth and death are implied by the artist, and thus, $\attribute_\mathtt{artist} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$. Given these two dependencies, there is a \emph{superkey} $(\attribute_\mathtt{title}, \attribute_{\mathtt{artist}})$ that determines all the other attributes. However, a \acrshort{ck} must also be minimal and $\attribute_{\mathtt{artist}}$ is implied by $\attribute_\mathtt{title}$ (transitivity). Hence, the \acrshort{ck} for $\relation_{\mathtt{painting}}$ is $\attribute_\mathtt{title}$.
+
+    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a particular choice of \acrshort{ck} in case a relation has multiple. By definition, a \acrshort{pk} cannot contain empty, that is, \texttt{NULL} values. In this thesis, we indicate a \acrshort{pk} attribute with a star.
  
-    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a set of attributes $\mathcal{F} \subseteq \schema(\relation)$ that reference a \acrshort{pk} of $\relation$ or some other relation $R^{*}$. \acrshort{fk}s can be used to model relationships between relations. Using \Cref{example:relational_table_pkfk}, the artist that created a painting is referenced through a \acrshort{fk} $\attributef_{\mathtt{artist}}$ in $\relation_{\mathtt{painting}}$ that references the \acrshort{pk} $\attributep_{\mathtt{artist}}$ in $\relation_{\mathtt{artist}}$.
+    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a set of attributes $\mathcal{F} \subseteq \schema(\relation)$ that reference a \acrshort{pk} of a relation $\relation^{\prime}$. \acrshort{fk}s can be used to model relationships between relations. In this thesis, we indicate a \acrshort{fk} attribute with an overline.
 \end{description}
 
-\acrshort{pk}s and \acrshort{fk}s are indicated with star and overline respectively. Note that we assume in our examples that artists and paintings are uniquely identified by their first and last name and their title respectively, which is obviously a simplification. In real-world applications, artificial (surrogate) \acrshort{pk}s are often generated to avoid unintended collisions. Furthermore, it is typically the task of the \acrshort{dbms} to guarantee entity and referential integrity as part of keeping the data consistent.
+In addition, Codd proposed a series of \emph{normal forms} \cite{Codd:1970Relational,Codd:1972Further,Codd:1974Recent} that build onto one another and that are an indication of the quality of a data model based on the functional dependency of the attributes on a \acrshort{ck}. The basic idea is to avoid redundancy by normalisation, i.e., by putting data that belongs together into dedicated relations and modelling relationships between them using \acrshort{fk}s. The most important forms proposed by Codd are the following:
+
+\begin{description}
+    \item[\acrfull{1nf}] \cite{Codd:1970Relational} requires that all attributes in a relation are atomic, i.e., do not contain multiple values.
+    
+    Given $\relation_{\mathtt{painting}}$ in \Cref{example:relational_table}, this means, for instance, that $\attribute_{\mathtt{artist}}$ cannot hold multiple entries for a single tuple, in case one would want to model multiple artists that contributed to the same piece of artwork. Since it does not, $\relation_{\mathtt{painting}}$ is already in \acrshort{1nf}.
+   
+    \item[\acrfull{2nf}] \cite{Codd:1972Further} requires that $\relation$ is in \acrshort{1nf} and that every attribute that is not part of a \acrshort{ck} is determined by the entirety of all \acrshort{ck}s.
+    
+    Given $\relation_{\mathtt{painting}}$ in \Cref{example:relational_table}, we can see that it is also in \acrshort{2nf} since all attributes only depend on $\attribute_\mathtt{title}$.
+     
+    \item[\acrfull{3nf}] \cite{Codd:1972Further} requires that $\relation$ is in \acrshort{2nf} and that every attribute that is not part of a \acrshort{ck} is non-transitively determined by every \acrshort{ck}. 
+    
+    Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table}, we must acknowledge that it is not in \acrshort{3nf} since, as we have argued, $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$ is a transitive dependency, since, $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{artist}}$ and $\attribute_{\mathtt{artist}} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$. To resolve this, we can split the relation into two relations as done in \Cref{example:relational_table_pkfk}. The attribute $\attributef_{\mathtt{artist}} \in \relation_{\mathtt{painting}}$ now becomes a \acrshort{fk}.
+    
+    \item[\acrfull{bcnf}] \cite{Codd:1974Recent} is a stronger version of \acrshort{3nf} formulated by R. F. Boyce and E. F. Codd and eliminates certain anomalies found in \acrshort{3nf}. \acrshort{bcnf} requires that for every functional dependency $X \rightarrow Y$ found in a relation $\relation$, $X$ must be a superkey of $\relation$. Consequently, every attribute in $\relation$ can only depend on that key. \footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.}
+    
+     Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table_pkfk}, this means that $\relation_{\mathtt{paintings}}$ cannot hold any attributes that are not directly implied by $\attributep_{\mathtt{title}}$ (which there are not).
+\end{description}
+
+Additional normal forms up to 6NF have been defined. For the sake of brevity, we will omit those since they are not relevant to the discussion ahead. 
 
 \begin{example}[label=example:relational_table_pkfk]{Relations with Primary and Foreign Keys}{}
-    
-    The following tables list the schema and extent of $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$.
+    The following tables list the schema and extent of $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$, which are in \acrshort{bcnf}. The attributes $\attributep_{\mathtt{title}}$ and  $\attributep_{\mathtt{artist}}$ act as the respective \acrshort{pk}s and  $\attributef_{\mathtt{artist}} \in \relation_{\mathtt{painting}}$ is a \acrshort{fk} that references $\relation_{\mathtt{artist}}$.
     \begin{center}
         \begin{tabular}{ l || l | l | l |}
             $\relation_{\mathtt{painting}}$ & $\attributep_{\mathtt{title}}$  & $\attributef_{\mathtt{artist}}$  & $\attribute_{\mathtt{year}}$ \\ 
@@ -138,6 +161,8 @@ The notion of a relation provides us with the basic tools for data modelling. In
             $t_2$ & The Starry Night & Vincent van Gogh & 1889 \\
             \hline
             $t_3$ & Las Meninas & Diego Velázquez & 1665 \\
+            \hline
+            $t_4$ & Irises & Vincent van Gogh & 1890 \\
             \hline
         \end{tabular}
     \end{center}
@@ -155,22 +180,9 @@ The notion of a relation provides us with the basic tools for data modelling. In
             \hline
         \end{tabular}
     \end{center}
+
+    Note that we assume artists and paintings to be uniquely identified by their names and titles respectively, which is a simplification.
 \end{example}
-
-Using the idea of key candidates for a relation, Codd proposed a series of \emph{normal forms} that are an indication of the quality of a data model based on the functional dependency of the attributes on a \acrshort{ck}. The basic idea is to avoid redundancy by normalisation, i.e., by putting data that belongs together into dedicated relations and modelling relationships between them using \acrshort{fk}s:
-
-\begin{description}
-    \item[\acrfull{1nf}] requires that no attribute in a relation has other relations as values, i.e., attributes are atomic and instead, relationships can be established by means of \acrshort{fk}s. Given $\relation_{\mathtt{painting}}$ in \Cref{example:relational_table_pkfk}, this means, for instance, that $\attributef_{\mathtt{artist}}$ cannot hold multiple entries for a single tuple. To model such a relationship, we would require an additional mapping relation between $\relation_{\mathtt{painting}}$ and $\relation_{\mathtt{artist}}$ instead.
-   
-    \item[\acrfull{2nf}] requires that every non-prime attribute -- that is, an attribute that is not part of any and thus functionally determined by a \acrshort{ck} -- relies on the entirety of its \acrshort{ck} and not any subset thereof. Given $\relation_{\mathtt{artist}}$ in \Cref{example:relational_table_pkfk} and assuming that  $\attributep_{\mathtt{artist}}$ was split into two attributes $\attributep_{\mathtt{firstname}}$ and $\attributep_{\mathtt{lastname}}$ (composite key), this means that all remaining attributes must be jointly determined by $\attributep_{\mathtt{firstname}}$ and $\attributep_{\mathtt{lastname}}$, i.e., the full name, and not just either $\attributep_{\mathtt{firstname}}$ or $\attributep_{\mathtt{lastname}}$.
-     
-    \item[\acrfull{3nf}] requires that every non-prime attribute is functionally determined by a \acrshort{ck}. Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table_pkfk}, this means, that the relation cannot hold any attributes that are neither determined by $\attributep_{\mathtt{title}}$ nor part of any other \acrshort{ck} themselves (which we do not have).
-    
-    \item[\acrfull{bcnf}] requires that every attribute is functionally determined solely by the \acrshort{pk}, i.e., it does not allow for alternative \acrshort{ck}s. Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table_pkfk}, this means that $\relation_{\mathtt{paintings}}$  cannot hold any attributes that are not determined by $\attributep_{\mathtt{title}}$.
-
-\end{description}
-
-All the normal forms build onto one another, i.e., for a data model to be considered \acrshort{bcnf}, it must also satisfy \acrshort{3nf}, \acrshort{2nf} and \acrshort{1nf}. \footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.} Additional normal forms up to 6NF have been defined. For the sake of brevity, we will omit those since they are not relevant to the discussion ahead.
 
 \subsection{Relational Algebra}
 \label{section:rel_algebra}
@@ -189,7 +201,7 @@ Those relational operators can then be composed to express a query of arbitrary 
     \mathtt{QUERY} = \mathtt{OP_{1}} \circ \mathtt{OP_{2}}, \ldots , \circ \mathtt{OP_{m}}
 \end{equation}
 
-In addition to this idea, Codd proposed a minimal set of relational operators listed in \Cref{table:relational_operators} and explained in the following sections. We must note that the notation and operators may differ slightly depending on the source. We mainly use \cite{Garcia:2009Database} as our reference, with a few adjustments of our own for the sake of internal consistency.
+Codd proposed a minimal set of relational operators listed in \Cref{table:relational_operators} and explained in the following sections. The notation and operators may differ slightly depending on the source. We mainly use \cite{Garcia:2009Database} as our reference, with a few adjustments of our own for the sake of internal consistency.
 
 \begin{table}
     \caption{The relational operators proposed by Codd et al. \cite{Codd:1970Relational,Garcia:2009Database}.}
@@ -209,9 +221,9 @@ In addition to this idea, Codd proposed a minimal set of relational operators li
         \hline
         Rename & $\rho_{\attribute_\mathtt{A} \rightarrow \attribute_\mathtt{B}}$ &  1 & Renames attribute $\attribute_\mathtt{A}$ in input relation to $\attribute_\mathtt{B}$. \\
         \hline
-        Selection & $\selection_{S}$ &  1 & Removes tuples from the input relation that do not match predicate $S$. \\
+        Selection & $\selection_{S}$ &  1 & Eliminates tuples (i.e., rows) from the input relation that do not match predicate $S$. \\
         \hline
-        Projection & $\projection_{P}$ &  1 & Removes attributes from the input relation that are not included in $P$. \\
+        Projection & $\projection_{P}$ &  1 & Eliminates attributes (i.e., columns) from the input relation that are not included in $P$. \\
         \hline
         Natural join & $\Join$ & 2 & Pairs each tuple from the left with every tuple of the right input relation if their shared attributes match and concatenates them. \\
         \hline
@@ -243,7 +255,7 @@ The difference $\relation_L \setminus \relation_R$ generates a new relation of a
     \relation_L \setminus \relation_R = \{ t \colon t \in \relation_L \symand t \notin \relation_R \}
 \end{equation}
 
-These basic set operations simply combine two input relations without changing their structure, i.e., $\schema(R_{L}) = \schema(R_{R}) = \schema(R_{O})$. 
+These set operations simply combine two input relations without changing their structure, i.e., $\schema(R_{L}) = \schema(R_{R}) = \schema(R_{O})$. 
 
 \subsubsection{Cartesian Product}
 The binary, \emph{Cartesian product} or \emph{cross product} $\relation_L \times \relation_R$ of two input relations $\relation_L,\relation_R$ concatenates every tuple $t_{L} \in \relation_L$ with every tuple $t_{R} \in \relation_R$ to form a new output tuple, as expressed by \Cref{equation:rel_op_cartesian}.
