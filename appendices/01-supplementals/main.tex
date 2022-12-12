@@ -21,7 +21,7 @@
 } 
 \end{lstlisting}
 
-\newpage
+\clearpage
 
 \begin{table}[h]
     \caption{State of the Yandex Deep 1B \cite{Babenko:2016Efficient} shards used during the evaluation with \cottontail{}.}
@@ -30,73 +30,75 @@
       \hline
       \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
       \hline\hline
-      yandex\_deep5m & ENTITY & - & \SI{5e6}{} & - & - \\
+      yandex\_deep5m & ENTITY & - & 5e6 & - & - \\
       \hline
-      yandex\_deep5m.id & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
+      yandex\_deep5m.id & COLUMN & INTEGER & 5e6 & 1 & NOT NULL \\
       \hline
-      yandex\_deep5m.feature & COLUMN & FLOATVEC & \SI{5e6}{} & 96 & NOT NULL \\
+      yandex\_deep5m.feature & COLUMN & FLOATVEC & 5e6 & 96 & NOT NULL \\
       \hline
-      yandex\_deep5m.category & COLUMN & INTEGER & \SI{5e6}{} & 1 & NOT NULL \\
+      yandex\_deep5m.category & COLUMN & INTEGER & 5e6 & 1 & NOT NULL \\
       \hline
-      yandex\_deep5m.idx\_feature\_vaf & INDEX & VAF & \SI{5e6}{} & - & CLEAN \\
+      yandex\_deep5m.idx\_feature\_vaf & INDEX & VAF & 5e6 & - & CLEAN \\
       \hline
-      yandex\_deep5m.idx\_category\_btree & INDEX & BTREE & \SI{5e6}{} & - & CLEAN \\
+      yandex\_deep5m.idx\_category\_btree & INDEX & BTREE & 5e6 & - & CLEAN \\
       \hline
-      yandex\_deep5m.idx\_feature\_pq & INDEX & PQ & \SI{5e6}{} & -  & CLEAN \\
+      yandex\_deep5m.idx\_feature\_pq & INDEX & PQ & 5e6 & -  & CLEAN \\
       \hline
-      yandex\_deep5m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{5e6}{} & - & CLEAN \\
-      \hline
-      \hline
-      yandex\_deep10m & ENTITY & - & \SI{1e7}{} & - & - \\
-      \hline
-      yandex\_deep10m.id & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
-      \hline
-      yandex\_deep10m.feature & COLUMN & FLOATVEC & \SI{1e7}{}  & 96 & NOT NULL \\
-      \hline
-      yandex\_deep10m.category & COLUMN & INTEGER & \SI{1e7}{}  & 1 & NOT NULL \\
-      \hline
-      yandex\_deep10m.idx\_feature\_vaf & INDEX & VAF & \SI{1e7}{}  & -  & CLEAN \\
-      \hline
-      yandex\_deep10m.idx\_category\_btree & INDEX & BTREE & \SI{1e7}{}  & - & CLEAN \\
-      \hline
-      yandex\_deep10m.idx\_feature\_pq & INDEX & PQ & \SI{1e7}{}  & - & CLEAN \\
-      \hline
-      yandex\_deep10m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e7}{} & - & CLEAN \\
+      yandex\_deep5m.idx\_feature\_ivfpq & INDEX & IVFPQ & 5e6 & - & CLEAN \\
       \hline
       \hline
-      yandex\_deep100m & ENTITY & - & \SI{1e8}{} & - & - \\
+      yandex\_deep10m & ENTITY & - & 1e7 & - & - \\
       \hline
-      yandex\_deep100m.id & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
+      yandex\_deep10m.id & COLUMN & INTEGER & 1e7  & 1 & NOT NULL \\
       \hline
-      yandex\_deep100m.feature & COLUMN & FLOATVEC & \SI{1e8}{}  & 96 & NOT NULL \\
+      yandex\_deep10m.feature & COLUMN & FLOATVEC & 1e7  & 96 & NOT NULL \\
       \hline
-      yandex\_deep100m.category & COLUMN & INTEGER & \SI{1e8}{}  & 1 & NOT NULL \\
+      yandex\_deep10m.category & COLUMN & INTEGER & 1e7  & 1 & NOT NULL \\
       \hline
-      yandex\_deep100m.idx\_feature\_vaf & INDEX & VAF & \SI{1e8}{}  &  - & CLEAN \\
+      yandex\_deep10m.idx\_feature\_vaf & INDEX & VAF & 1e7  & -  & CLEAN \\
       \hline
-      yandex\_deep100m.idx\_category\_btree & INDEX & BTREE & \SI{1e8}{} &  - & CLEAN \\
+      yandex\_deep10m.idx\_category\_btree & INDEX & BTREE & 1e7  & - & CLEAN \\
       \hline
-      yandex\_deep100m.idx\_feature\_pq & INDEX & PQ & \SI{1e8}{} & - & CLEAN \\
+      yandex\_deep10m.idx\_feature\_pq & INDEX & PQ & 1e7  & - & CLEAN \\
       \hline
-      yandex\_deep100m.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e8}{}  & - & CLEAN \\
+      yandex\_deep10m.idx\_feature\_ivfpq & INDEX & IVFPQ & 1e7 & - & CLEAN \\
       \hline
       \hline
-      yandex\_deep1b & ENTITY & - & \SI{1e9}{} & - & - \\
+      yandex\_deep100m & ENTITY & - & 1e8 & - & - \\
       \hline
-      yandex\_deep1b.id & COLUMN & INTEGER & \SI{1e9}{} & 1 & NOT NULL\\
+      yandex\_deep100m.id & COLUMN & INTEGER & 1e8  & 1 & NOT NULL \\
       \hline
-      yandex\_deep1b.feature & COLUMN & FLOATVEC & \SI{1e9}{} & 96 &  NOT NULL \\
+      yandex\_deep100m.feature & COLUMN & FLOATVEC & 1e8  & 96 & NOT NULL \\
       \hline
-      yandex\_deep1b.category & COLUMN & INTEGER & \SI{1e9}{}& 1 & NOT NULL \\
+      yandex\_deep100m.category & COLUMN & INTEGER & 1e8  & 1 & NOT NULL \\
       \hline
-      yandex\_deep1b.idx\_feature\_vaf & INDEX & VAF & \SI{1e9}{} & - & CLEAN \\
+      yandex\_deep100m.idx\_feature\_vaf & INDEX & VAF & 1e8  &  - & CLEAN \\
       \hline
-      yandex\_deep1b.idx\_feature\_pq & INDEX & PQ & \SI{1e9}{} & - & CLEAN \\
+      yandex\_deep100m.idx\_category\_btree & INDEX & BTREE & 1e8 &  - & CLEAN \\
       \hline
-      yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & \SI{1e9}{} & - & CLEAN \\
+      yandex\_deep100m.idx\_feature\_pq & INDEX & PQ & 1e8 & - & CLEAN \\
+      \hline
+      yandex\_deep100m.idx\_feature\_ivfpq & INDEX & IVFPQ & 1e8  & - & CLEAN \\
+      \hline
+      \hline
+      yandex\_deep1b & ENTITY & - & 1e9 & - & - \\
+      \hline
+      yandex\_deep1b.id & COLUMN & INTEGER & 1e9 & 1 & NOT NULL\\
+      \hline
+      yandex\_deep1b.feature & COLUMN & FLOATVEC & 1e9 & 96 &  NOT NULL \\
+      \hline
+      yandex\_deep1b.category & COLUMN & INTEGER & 1e9& 1 & NOT NULL \\
+      \hline
+      yandex\_deep1b.idx\_feature\_vaf & INDEX & VAF & 1e9 & - & CLEAN \\
+      \hline
+      yandex\_deep1b.idx\_feature\_pq & INDEX & PQ & 1e9 & - & CLEAN \\
+      \hline
+      yandex\_deep1b.idx\_feature\_ivfpq & INDEX & IVFPQ & 1e9 & - & CLEAN \\
       \hline
     \end{tabular}
 \end{table}
+
+\clearpage
 
 \begin{table}[h!]
   \caption{State of the V3C-based \cite{Berns:2019V3C1,Rossetto:2021Insights} entities used during the evaluation with \cottontail{}.}
@@ -105,59 +107,59 @@
    \hline
    \textbf{DBO} & \textbf{Class} & \textbf{Type} & \textbf{Rows} & \textbf{Size} & \textbf{Info} \\
    \hline\hline
-   averagecolor & ENTITY & - & \SI{2512715}{} & - & - \\
+   averagecolor & ENTITY & - & 2512715 & - & - \\
    \hline
-   averagecolor.id & COLUMN & STRING & \SI{2512715}{} & 1 & NOT NULL\\
+   averagecolor.id & COLUMN & STRING & 2512715 & 1 & NOT NULL\\
    \hline
-   averagecolor.feature & COLUMN & FLOATVEC & \SI{2512715}{} & 3 &  NOT NULL \\
+   averagecolor.feature & COLUMN & FLOATVEC & 2512715 & 3 &  NOT NULL \\
    \hline
-   averagecolor.idx\_feature\_vaf & INDEX & VAF & \SI{2512715}{} & - & CLEAN \\
+   averagecolor.idx\_feature\_vaf & INDEX & VAF & 2512715 & - & CLEAN \\
    \hline
-   averagecolor.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
-   \hline
-   \hline
-   visualtextcoembedding & ENTITY & - & \SI{2506273}{} & - & - \\
-   \hline
-   visualtextcoembedding.id & COLUMN & STRING & \SI{2506273}{} & 1 & NOT NULL\\
-   \hline
-   visualtextcoembedding.feature & COLUMN & FLOATVEC & \SI{2506273}{} & 256 &  NOT NULL \\
-   \hline
-   visualtextcoembedding.idx\_feature\_vaf & INDEX & VAF & \SI{2506273}{} & - & CLEAN \\
-   \hline
-   visualtextcoembedding.idx\_feature\_pq & INDEX & PQ & \SI{2506273}{} & - & CLEAN \\
+   averagecolor.idx\_feature\_pq & INDEX & PQ & 2512715 & - & CLEAN \\
    \hline
    \hline
-   hogmf25k512 & ENTITY & - & \SI{2512715}{} & - & - \\
+   visualtextcoembedding & ENTITY & - & 2506273 & - & - \\
    \hline
-   hogmf25k512.id & COLUMN & STRING & \SI{2512715}{} & 1 & NOT NULL\\
+   visualtextcoembedding.id & COLUMN & STRING & 2506273 & 1 & NOT NULL\\
    \hline
-   hogmf25k512.feature & COLUMN & FLOATVEC & \SI{2512715}{} & 512 &  NOT NULL \\
+   visualtextcoembedding.feature & COLUMN & FLOATVEC & 2506273 & 256 &  NOT NULL \\
    \hline
-   hogmf25k512.idx\_feature\_vaf & INDEX & VAF & \SI{2512715}{} & - & CLEAN \\
+   visualtextcoembedding.idx\_feature\_vaf & INDEX & VAF & 2506273 & - & CLEAN \\
    \hline
-   hogmf25k512.idx\_feature\_pq & INDEX & PQ & \SI{2512715}{} & - & CLEAN \\
-   \hline
-   \hline
-   inceptionresnetv2 & ENTITY & - & \SI{2508358}{} & - & - \\
-   \hline
-   inceptionresnetv2.id & COLUMN & STRING & \SI{2508358}{} & 1 & NOT NULL\\
-   \hline
-   inceptionresnetv2.feature & COLUMN & FLOATVEC & \SI{2508358}{} & 1536 &  NOT NULL \\
-   \hline
-   inceptionresnetv2.idx\_feature\_vaf & INDEX & VAF & \SI{2508358}{} & - & CLEAN \\
-   \hline
-   inceptionresnetv2.idx\_feature\_pq & INDEX & PQ & \SI{2508358}{} & - & CLEAN \\
+   visualtextcoembedding.idx\_feature\_pq & INDEX & PQ & 2506273 & - & CLEAN \\
    \hline
    \hline
-   conceptmasksade20k & ENTITY & - & \SI{2469844}{} & - & - \\
+   hogmf25k512 & ENTITY & - & 2512715 & - & - \\
    \hline
-   conceptmasksade20k.id & COLUMN & STRING & \SI{2469844}{} & 1 & NOT NULL\\
+   hogmf25k512.id & COLUMN & STRING & 2512715 & 1 & NOT NULL\\
    \hline
-   conceptmasksade20k.feature & COLUMN & FLOATVEC & \SI{2469844}{} & 2048 &  NOT NULL \\
+   hogmf25k512.feature & COLUMN & FLOATVEC & 2512715 & 512 &  NOT NULL \\
    \hline
-   conceptmasksade20k.idx\_feature\_vaf & INDEX & VAF & \SI{2469844}{} & - & CLEAN \\
+   hogmf25k512.idx\_feature\_vaf & INDEX & VAF & 2512715 & - & CLEAN \\
    \hline
-   conceptmasksade20k.idx\_feature\_pq & INDEX & PQ & \SI{2469844}{} & - & CLEAN \\
+   hogmf25k512.idx\_feature\_pq & INDEX & PQ & 2512715 & - & CLEAN \\
+   \hline
+   \hline
+   inceptionresnetv2 & ENTITY & - & 2508358 & - & - \\
+   \hline
+   inceptionresnetv2.id & COLUMN & STRING & 2508358 & 1 & NOT NULL\\
+   \hline
+   inceptionresnetv2.feature & COLUMN & FLOATVEC & 2508358 & 1536 &  NOT NULL \\
+   \hline
+   inceptionresnetv2.idx\_feature\_vaf & INDEX & VAF & 2508358 & - & CLEAN \\
+   \hline
+   inceptionresnetv2.idx\_feature\_pq & INDEX & PQ & 2508358 & - & CLEAN \\
+   \hline
+   \hline
+   conceptmasksade20k & ENTITY & - & 2469844 & - & - \\
+   \hline
+   conceptmasksade20k.id & COLUMN & STRING & 2469844 & 1 & NOT NULL\\
+   \hline
+   conceptmasksade20k.feature & COLUMN & FLOATVEC & 2469844 & 2048 &  NOT NULL \\
+   \hline
+   conceptmasksade20k.idx\_feature\_vaf & INDEX & VAF & 2469844 & - & CLEAN \\
+   \hline
+   conceptmasksade20k.idx\_feature\_pq & INDEX & PQ & 2469844 & - & CLEAN \\
    \hline
   \end{tabular}
 \end{table}
