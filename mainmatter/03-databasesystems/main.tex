@@ -42,9 +42,9 @@ In June 1970, E. F. Codd published his pivotal research paper \emph{Relational M
 
 The relational model is structured around \emph{relations}, which are a mathematical construct but can be visualised as two-dimensional tables. Such a table consists of columns -- which are called \emph{attributes} -- and rows -- which are called \emph{tuples} and hold \emph{attribute values}. Semantically, a relation can be seen as a knowledge-base about some fact -- such as, the paintings held by a museum -- under a \acrfull{cwa} \cite{Reiter:1981Closed}. That is, the relation contains all the information available about the fact and can thus be used do derive conclusive answers or results given a stated question or query.
 
-In order to formalise the structure of and the operations that can be executed on the data represented by a relation, one can turn to \Cref{definition:relation}. 
+In order to formalise the structure of and the operations that can be executed on the data represented by a relation, one can turn to \Cref{definition:relation} \cite{Codd:1970Relational}. 
 
-\begin{definition}[label=definition:relation]{Relation according to \cite{Codd:1970Relational}}{}
+\begin{definition}[label=definition:relation]{Relation}{}
     Let $\domain_j$ be sets we call \emph{data domains} with $j \in \left[ 1, N \right]$ and $N \in \symnatural_{> 0}$ . A \emph{relation} $\relation$ constructed over these data domains is a set of $M$ \emph{tuples} $t_i = (a_{i,1}, a_{i,2} ... a_{i,N})$ with $i \in \left[ 1, M \right]$ and $M \in \symnatural_{> 0}$ such that the first attribute value of any tuple comes from $\domain_1$, the second from $\domain_2$, and so forth. That is, values $a_{i,1} \in \domain_1, a_{i,2} \in \domain_2 ... a_{i,N} \in \domain_N$. A relation can thus be seen as a subset of the Cartesian product of all data domains over which it was constructed, i.e., $\relation \subset \domain_1 \times \domain_2 ... \times \domain_N$.
 \end{definition}
 
@@ -112,22 +112,33 @@ Given the idea of a relation, the sum of all data managed by a \acrshort{dbms} c
     \end{center}
 \end{example}
 
-
 \subsection{Keys and Normal Forms}
 
-The notion of a relation provides us with the basic tools for data modelling. In addition to \Cref{definition:relation}, Codd proposed a range of constraints to guarantee proper data definition using the following constructs~\cite{Codd:1970Relational,Codd:1972Further}:
+The notion of a relation provides us with the basic tools for data modelling. Codd proposed a range of constraints \cite{Codd:1970Relational} to guarantee proper data definition using the concept of functional dependencies between attributes and different types of keys that can be derived from those dependencies by applying Armstrong's axioms \cite{Armstrong:1974Dependency}.
 
-\begin{description}
-    \item[A \acrfull{ck}] $\mathcal{K}$ of relation $\relation$ is a minimal (or irreducible) set of attributes $\mathcal{K} \subseteq \schema(\relation)$ that uniquely identify any tuple $t \in \relation$. That is, the attributes that are not part of a \acrshort{ck} and the associated values are determined by the choice $\mathcal{K}$ and it is thus impossible to find two distinct tuples that agree on all attributes in $\mathcal{K}$. \acrshort{ck}s can be found by determining the functional dependencies in a relation $\relation$ and applying Armstrong's axioms \cite{Armstrong:1974Dependency}.
-    
-    Using $\relation_{\mathtt{painting}}$ from \Cref{example:relational_table}, a painting's artist and the year of its conception are functionally determined by the the title of the painting and therefore $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{artist}},\attribute_{\mathtt{year}}$. Furthermore, the date of birth and death are implied by the artist, and thus, $\attribute_\mathtt{artist} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$. Given these two dependencies, there is a \emph{superkey} $(\attribute_\mathtt{title}, \attribute_{\mathtt{artist}})$ that determines all the other attributes. However, a \acrshort{ck} must also be minimal and $\attribute_{\mathtt{artist}}$ is implied by $\attribute_\mathtt{title}$ (transitivity). Hence, the \acrshort{ck} for $\relation_{\mathtt{painting}}$ is $\attribute_\mathtt{title}$.
+\begin{definition}[label=definition:functional_dependency]{Functional Dependency between Attributes}{}
+    Let $X,Y \subset \schema(\relation)$ be sets of attributes that belong to a relation $\relation$. We say that the attributes in $Y$ are functionally dependent on (determined by) the attributes in $X$, if the values of all attributes in $Y$ are implied by the choice of all values for attributes in $X$ for all instances of $\relation$. In this case, we write $X \rightarrow Y$.
+\end{definition}
 
-    \item[A \acrfull{pk}] $\mathcal{P}$ of relation $\relation$ is a particular choice of \acrshort{ck} in case a relation has multiple. By definition, a \acrshort{pk} cannot contain empty, that is, \texttt{NULL} values. In this thesis, we indicate a \acrshort{pk} attribute with a star.
- 
-    \item[A \acrfull{fk}] $\mathcal{F}$ of relation $\relation$ is a set of attributes $\mathcal{F} \subseteq \schema(\relation)$ that reference a \acrshort{pk} of a relation $\relation^{\prime}$. \acrshort{fk}s can be used to model relationships between relations. In this thesis, we indicate a \acrshort{fk} attribute with an overline.
-\end{description}
+\begin{definition}[label=definition:superkey]{Superkey of a Relation}{}
+    A superkey $S$ is a set of attributes $S \subseteq \schema(\relation)$ that uniquely identify any tuple $t \in \relation$. Hence, all the non-key attributes $Y = \lbrace a \colon a \in \schema(\relation) \symand a \notin S \rbrace$ are functionally dependent on $S$ and thus $S \rightarrow Y$.
+\end{definition}
 
-In addition, Codd proposed a series of \emph{normal forms} \cite{Codd:1970Relational,Codd:1972Further,Codd:1974Recent} that build onto one another and that are an indication of the quality of a data model based on the functional dependency of the attributes on a \acrshort{ck}. The basic idea is to avoid redundancy by normalisation, i.e., by putting data that belongs together into dedicated relations and modelling relationships between them using \acrshort{fk}s. The most important forms proposed by Codd are the following:
+\begin{definition}[label=definition:candidate_key]{\acrlong{ck} of a Relation}{}
+    A \acrfull{ck} $K$ is a set of attributes $K \subseteq \schema(\relation)$ such that $K$ is a superkey that is minimal (or irreducible). Consequently, given $K \rightarrow Y$, no attribute can be removed from $K$ without changing $Y$.
+\end{definition}
+
+Using $\relation_{\mathtt{painting}}$ from \Cref{example:relational_table}, we can see that a painting's artist and the year of its conception are functionally determined by its title and therefore $\lbrace \attribute_\mathtt{title} \rbrace \rightarrow \lbrace \attribute_{\mathtt{artist}},\attribute_{\mathtt{year}} \rbrace$. Furthermore, the date of birth and death are implied by the artist, and thus, $\lbrace \attribute_\mathtt{artist}  \rbrace  \rightarrow \lbrace \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}} \rbrace $. Given these two dependencies, there is a superkey $\lbrace \attribute_\mathtt{title}, \attribute_{\mathtt{artist}} \rbrace$ that determines all the other attributes. However, a \acrshort{ck} must also be minimal and $\attribute_{\mathtt{artist}}$ is implied by $\attribute_\mathtt{title}$ (transitivity). Hence, the \acrshort{ck} for $\relation_{\mathtt{painting}}$ must be $\lbrace \attribute_\mathtt{title} \rbrace $.
+
+\begin{definition}[label=definition:primary_key]{\acrlong{pk}}{}
+    A \acrfull{pk} of relation $\relation$ is a particular choice of \acrshort{ck} (in case a relation has multiple). By definition, a \acrshort{pk} cannot contain empty, that is, \texttt{NULL} values. In this thesis, we indicate a \acrshort{pk} attribute with a star.
+\end{definition}
+
+\begin{definition}[label=definition:foreign_key]{\acrlong{fk}}{}
+    A \acrfull{fk} $F$ of relation $\relation$ is a set of attributes $F \subseteq \schema(\relation)$ that reference a \acrshort{pk} of a relation $\relation^{\prime}$. \acrshort{fk}s can be used to model relationships between relations. In this thesis, we indicate a \acrshort{fk} attribute with an overline.
+\end{definition}
+
+In addition to Definitions \ref{definition:functional_dependency} to \ref{definition:foreign_key}, Codd proposed a series of \emph{normal forms} \cite{Codd:1970Relational,Codd:1972Further,Codd:1974Recent} that build onto one another and that are an indication of the quality of a data model based on the functional dependency of the attributes on a \acrshort{ck}. The basic idea is to avoid redundancy by normalisation, i.e., by putting data that belongs together into dedicated relations and modelling relationships between them using \acrshort{fk}s. The major forms proposed by Codd are the following:
 
 \begin{description}
     \item[\acrfull{1nf}] \cite{Codd:1970Relational} requires that all attributes in a relation are atomic, i.e., do not contain multiple values.
@@ -140,7 +151,7 @@ In addition, Codd proposed a series of \emph{normal forms} \cite{Codd:1970Relati
      
     \item[\acrfull{3nf}] \cite{Codd:1972Further} requires that $\relation$ is in \acrshort{2nf} and that every attribute that is not part of a \acrshort{ck} is non-transitively determined by every \acrshort{ck}. 
     
-    Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table}, we must acknowledge that it is not in \acrshort{3nf} since, as we have argued, $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$ is a transitive dependency, since, $\attribute_\mathtt{title} \rightarrow \attribute_{\mathtt{artist}}$ and $\attribute_{\mathtt{artist}} \rightarrow \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}}$. To resolve this, we can split the relation into two relations as done in \Cref{example:relational_table_pkfk}. The attribute $\attributef_{\mathtt{artist}} \in \relation_{\mathtt{painting}}$ now becomes a \acrshort{fk}.
+    Given $\relation_{\mathtt{paintings}}$ in \Cref{example:relational_table}, we must acknowledge that it is not in \acrshort{3nf} since, as we have argued, $\lbrace \attribute_\mathtt{title} \rbrace \rightarrow \lbrace \attribute_{\mathtt{birth}},\attribute_{\mathtt{death}} \rbrace$ is a transitive dependency. To resolve this, we can split the relation into two relations as done in \Cref{example:relational_table_pkfk}. The attribute $\attributef_{\mathtt{artist}} \in \relation_{\mathtt{painting}}$ now becomes a \acrshort{fk}.
     
     \item[\acrfull{bcnf}] \cite{Codd:1974Recent} is a stronger version of \acrshort{3nf} formulated by R. F. Boyce and E. F. Codd to eliminate certain anomalies found in \acrshort{3nf}. \acrshort{bcnf} requires that for every functional dependency $X \rightarrow Y$ found in a relation $\relation$, $X$ must be a superkey of $\relation$. Consequently, every attribute in $\relation$ can only depend on that key.\footnote{This has led to the mnemonic \emph{``The key, the whole key, and nothing but the key, So help me Codd.''} in reference to a similarly structured oath often used in courts of law.}
     
@@ -646,9 +657,9 @@ $\mathtt{TID}$ can be considered an implicit, internal \acrshort{ck} of $\relati
 \label{section:indexes}
 Indexes are on-disk structures that enable faster data access, especially in the presence of predicates that query an indexed attribute. In a relational database, indexes are typically built from one or multiple attributes of a relation. One can distinguish between primary and secondary indexes \cite{Petrov:2019Database}: A primary index always indexes the \acrshort{pk} or tuple identifier and is the main mean of data access. Depending on how the data files are organised, the primary index is either an auxiliary structure or integrated into the data files, e.g., for index-organised tables or clustered indexes. Since queries may also rely on attributes other than the \acrshort{pk}, one often creates auxiliary, secondary indexes, which are used to optimise query execution performance for certain query types by indexing selected attributes. Since every index structure must also be maintained when records are updated, there is an inherent trade-off between read and write performance.
 
-A very popular (if not the most popular) index structure in both \acrshort{sql} and \acrshort{nosql} systems is a $B$-tree \cite{Bayer:2002Organization} variant called the $B^{+}$-tree \cite{Garcia:2009Database}, which has been built to support both fast point lookups as well as range search while at the same time being able to gracefully handle inserts, deletes and updates. An example of a $B^{+}$-tree is provided in \Cref{figure:bptree}.
+A very popular (if not the most popular) index structure in both \acrshort{sql} and \acrshort{nosql} systems is a $B$-tree \cite{Bayer:2002Organization} variant called the $B^{+}$-tree \cite{Garcia:2009Database}, which supports both fast point lookups as well as range search while at the same time being able to gracefully handle inserts, deletes and updates to the data. An example of a $B^{+}$-tree is provided in \Cref{figure:bptree}.
 
-The $B^{+}$-tree arranges the indexed attributes (the key) in the leaf nodes of a balanced search tree often alongside with the indexed data (i.e., the tuple) or a pointer into the data files (i.e., a tuple identifier). The leaf nodes at this bottom-most level of the tree are connected so that the keys can be traversed as an ordered, linked list. This allows for sequential access.
+The $B^{+}$-tree arranges the indexed attributes (the key) in the leaf nodes of a balanced search tree often alongside with the indexed data or a pointer into the data files, i.e., a tuple identifier or a set of identifiers for non-\acrshort{pk} attributes. The leaf nodes at this bottom-most level of the tree are connected so that the keys can be traversed as an ordered, linked list to facilitate sequential access.
 
 Every internal (or itermediate) node of the $B^{+}$-tree can contain $m$ children with $\lceil \frac{b}{2} \rceil \leq m \leq b$, wherein the order $b$ is a chosen constant for the tree. Each child of a node covers a certain key interval and points to either an internal node at the next level or to a leaf node. The root node at the top is a special kind of internal node with $2 \leq m \leq b$ (unless it is the only node in the tree). 
 
@@ -659,7 +670,7 @@ Every internal (or itermediate) node of the $B^{+}$-tree can contain $m$ childre
     \label{figure:bptree}
 \end{figure}
 
-When searching for value in the $B^{+}$-tree, the \acrshort{dbms} can traverse the tree from the root downwards. At every node it decides which child node to follow based on the key intervals they cover. If, for example, we were to lookup the value $87$ in the $B^{+}$-tree illustrated in \Cref{figure:bptree}, the lookup algorithm would follow the left child twice (since $87 < 540$ and $87 < 258$) until it reaches the left-most leaf node. Within the leaf, the algorithm performs a sequential scan until $87$ is reached. Since only a single branch of the tree is traversed, the runtime complexity of such a point lookup can be improved from $\mathcal{O}(N)$ (sequential scan) to $\mathcal{O}(\log N)$ with $N = |\relation|$. The linked list at the base of the tree can furthermore be used to perform efficient range search, e.g., $<$, $\leq$, $>$, $\geq$ comparisons.
+When searching for value in the $B^{+}$-tree, the \acrshort{dbms} can traverse the tree from the root downwards. At every node it decides which child node to follow based on the key intervals they cover. If, for example, we were to lookup the value $87$ in the $B^{+}$-tree illustrated in \Cref{figure:bptree}, the lookup algorithm would follow the left child twice (since $87 < 540$ and $87 < 248$) until it reaches the left-most leaf node. Within the leaf, the algorithm performs a sequential scan until $87$ is reached. Since only a single branch of the tree is traversed, the runtime complexity of such a point lookup can be improved from $\mathcal{O}(N)$ (sequential scan) to $\mathcal{O}(\log N)$ with $N = |\relation|$. The linked list at the base of the tree can furthermore be used to perform efficient range search, e.g., for $<$, $\leq$, $>$, $\geq$ comparisons.
 
 Logically, an index $\symindex^{\relation}_{I}$ can be seen as a copy of $\relation$ with respect to the attribute $\mathtt{TID}$ as described in  \Cref{definition:index}. That is, every value of $\mathtt{TID}$ in $\relation$ is somehow contained in $\symindex^{\relation}_{I}$.
 
