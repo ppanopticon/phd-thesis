@@ -12,7 +12,7 @@
 %endnotes, % enable endnotes
 %medievalnumerals,    % use medieval numerals (https://en.wikipedia.org/wiki/Text_figures, https://de.wikipedia.org/wiki/Medi%C3%A4valziffer)
 %ebook,     % highlight links
-edoc,      % display edoc information, only necessary for final online version; removes logo
+%edoc,      % display edoc information, only necessary for final online version; removes logo
 cclicense, % add CC license
 %phddraft,  % use draft mode
 %todonotes, % enables the todonotes package
@@ -28,7 +28,7 @@ final      % disables draft mode and todonotes
 \usepackage{siunitx}
 \usepackage{epigraph}
 \usepackage{colorprofiles}
-\usepackage[a-2a,mathxmp]{pdfx}
+%\usepackage[a-2a,mathxmp]{pdfx}
 \usepackage{hyperref}
 
 \newcommand{\cmark}{\ding{51}}%
@@ -235,7 +235,7 @@ final      % disables draft mode and todonotes
 \else
   \subincludefrom{backmatter/memoriam/}{memoriam} 
   \subincludefrom{backmatter/quote/}{quote}
-  %\subincludefrom{backmatter/cv/}{cv}
+  \subincludefrom{backmatter/cv/}{cv}
   %\subincludefrom{backmatter/authorship/}{authorship}
 \fi
 
