@@ -152,6 +152,8 @@ Under this premise, we consider the dissimilarity function $\symdist(f,q)$ to be
 \end{equation}
 
 \begin{table}[hb]
+    \caption{List of distance functions often used in similarity search.}
+    \label{table:similarity_measures}
     \begin{tabular}{ | c | c | c | c | c | c |}
         \hline
         \textbf{Name} & \textbf{Symbol} &  $\symdist \mathbf{(f,q)}$ & \textbf{Domain} & \textbf{Co-Domain} & \textbf{Metric} \\
@@ -178,8 +180,6 @@ Under this premise, we consider the dissimilarity function $\symdist(f,q)$ to be
         LCS \cite{Hirschberg:1977Algorithms} & - & - &  $\mathbb{S}$ & $\symnatural$ & non-metric \\
         \hline
     \end{tabular}
-    \caption{List of distance functions often used in similarity search.}
-    \label{table:similarity_measures}
 \end{table}
 
 In broad terms, one can distinguish between \emph{continuous} and \emph{discrete} distance functions \cite{Zezula:2006Similarity}. Continuous functions typically exhibit a very large, potentially infinite co-domain whereas discrete functions map to a limited, often pre-defined set of values. Furthermore, some distance functions induce a topology on the underlying vector space -- often denoted as  \emph{metric space} $(\symfeatures, \symdist)$. We call these \emph{metric distances}, and they satisfy the \emph{non-negativity}, \emph{symmetry}, \emph{identity of indiscernibles}, and \emph{triangle inequality}. 
@@ -282,6 +282,8 @@ The additional dependency on $d$ has a major impact on the execution performance
 Nevertheless, the issue of index structures that allow for more efficient \acrshort{nns} was taken on by various researchers and is still an active area of research with results of high practical relevance. At a high-level, indexing algorithms can be classified along three dimensions: Firstly, based on whether they provide any guarantees with respect to the quality of the results, wherein quality is often measured in terms of precision and recall of a result produced by an index as compared to the result produced by a linear scan \cite{Echihabi:2021High}. Since a majority of established techniques sacrifice quality for speed \cite{Siguroardottir:2005Quality}, this is also known as \acrfull{anns}. Secondly, based on their \emph{organisation structure} \cite{Shaft:2006Theory}, e.g., graph and inverted index \cite{Sivic:2003Video} or multi-index \cite{Babenko:2014Inverted}. And finally, by the method that is employed, e.g., \emph{quantisation}, \emph{hashing}, \emph{partitioning}, or \emph{clustering}. An overview of different algorithms is provided in \Cref{table:index_structures}.
 
 \begin{table}
+    \caption{Non-exhaustive list of high-dimensional index structures employed in similarity search and retrieval.}
+    \label{table:index_structures}
     \begin{tabular}{ | l | c | c | c |}
         \hline
         \textbf{Name} & \textbf{Guarantees} & \textbf{Structure} & \textbf{Method} \\
@@ -310,8 +312,6 @@ Nevertheless, the issue of index structures that allow for more efficient \acrsh
         SPANN \cite{Chen:2021SPANN} & approximate & graph & proximity graph \\ 
         \hline
     \end{tabular}
-    \caption{Non-exhaustive list of high-dimensional index structures employed in similarity search and retrieval.}
-    \label{table:index_structures}
 \end{table}
 
 Early examples of high-dimensional indexes mainly relied on space or data partitioning, i.e., they assigned features to buckets or data files based on some partitioning of either the vector space \cite{Bentley:1975Multidimensional,Robinson:1981KDB,Finkel:1974Quad} or the data \cite{Guttmann:1984RTrees,Beckmann:1990RTree,Ciaccia:1997Mtree}. While these indexes were able to produce exact results, the speed-up they could provide quickly diminished as dimensionality increased due to the aforementioned dimensionality curse \cite{Shaft:2006Theory}, which led to the inception of approximate technique such as \acrshort{lsh} \cite{Indyk1998:Approximate} or \acrshort{pq} \cite{Jegou:2010Product}.

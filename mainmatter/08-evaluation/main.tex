@@ -18,6 +18,8 @@ Rather than working with randomly generated data, we decided to use existing dat
 Necessary index structures are prepared beforehand if not stated otherwise. Every entity exhibits the columns \texttt{id} and \texttt{feature}. The \texttt{id} column serves as a primary key and is either a \texttt{string} (all V3C-based datasets) or a \texttt{long} value (all Deep1B-based datasets). The Deep1B shards also exhibit an additional \texttt{category} column, which holds a randomly assigned \texttt{int} value that is used for Boolean filtering. The state of all collections is listed in \Cref{chapter:appendix_supplementals}.
 
 \begin{table}
+    \caption{List of the data collections used for this evaluation.}
+    \label{table:datasets}
     \begin{tabular}{ | l | c | c | c | p{5cm} |}
         \hline
         \textbf{Entity} & \textbf{Source} & \textbf{d} & \textbf{N} & \textbf{Description} \\
@@ -45,8 +47,6 @@ Necessary index structures are prepared beforehand if not stated otherwise. Ever
         \hline
         \hline
     \end{tabular}
-    \caption{List of the data collections used for this evaluation.}
-    \label{table:datasets}
 \end{table}
 
 Both \cottontail{} and Milvus are deployed on the same physical server (but they do not run at the same time). This server exhibits two \acrshort{numa} nodes with an Intel Xeon CPU E5-2630 v4 (20 cores@\SI{2.2}{\giga\hertz}) and \SI{192}{\giga\byte} \acrshort{ram} each. Therefore, the machine provides 40 compute cores and a total of \SI{384}{\giga\byte} of \acrshort{ram}. The \acrshort{cpu} supports the AVX2 instruction set extension, which allows for vectorised execution. The data directories from which Milvus and \cottontail{} access their data resides on three \SI{500}{\giga\byte} \acrshort{ssd}s that have been combined into a single, logical disk using \acrshort{raid}0 (striping). The server runs Ubuntu 20.04 and the OpenJDK Java version 17.0.3. All benchmarks are orchestrated by and sent from a separate node on the same network to minimise the impact on query execution. The evaluation scripts we used are available online.\footnote{See https://github.com/ppanopticon/cottontaildb-evaluation/; accessed July 2022.}
@@ -266,7 +266,7 @@ For both Q1b and Q1c using \acrshort{pq} or a full entity scan were the only ava
 
 \newpage
 
-\subsection{Benchmark 3: Influence of Optimisation}
+\subsection{Experiment 3: Influence of Optimisation}
 We have demonstrated in the first experiment, that high-dimensional index selection has a considerable impact on query execution performance. However, as described in \Cref{chapter:cottontaildb}, in addition to selecting indexes, the query planner also performs other optimisations of the plan before executing it. For this experiment, we completely bypassed plan optimisation and observed the execution time for an unoptimised plan -- which is a naive implementation of the canonical operator tree. All experiments were performed with parallelisation switched off, i.e., single-threadedly. The results are depicted in \Cref{figure:cottontail_analytics_optimisation}.
 
 \begin{figure}[p]

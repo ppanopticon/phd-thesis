@@ -92,7 +92,6 @@ Conceptually, \cottontail{} distinguishes between \emph{Nullary}, \emph{Unary}, 
 \begin{table}
     \caption{Main types of physical operators implemented by \cottontail{} alongside with their arity, their correspondence to relational operators and whether they require materialisation.}
     \label{table:cottontail_operators}
-
     \begin{tabular}{| l || c | p{30mm}  | c | p{70mm} |}
         \hline
         \textbf{Type} & \textbf{Arity} & \textbf{Rel. Op.} & \textbf{Mat.} & \textbf{Description} \\ 
@@ -250,7 +249,6 @@ Even though the layer of storage manager abstraction could be used to combine di
 \begin{table}
     \caption{Primitive operations offered by the storage engines' \texttt{Tx} abstractions to interact with \acrshort{dbo}s including the argument and return types ($\mathtt{arg} \rightarrow \mathtt{ret}$).}
     \label{table:cottontail_dbo_primitives}
-
     \begin{tabular}{| l || c | c  | c | c |}
         \hline
         \textbf{Type} & \textbf{Schema} & \textbf{Entity} & \textbf{Index} & \textbf{Column} \\ 
